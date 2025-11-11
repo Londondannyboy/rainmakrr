@@ -17,7 +17,7 @@ const companies = await sql`
     created_at
   FROM companies
   WHERE status = 'published'
-    AND company_type = 'placement_agents'
+    AND company_type = 'placement_agent'
   ORDER BY
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
