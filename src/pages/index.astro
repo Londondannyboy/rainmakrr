@@ -688,6 +688,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       padding: 120px 60px;
       max-width: 1200px;
       margin: 0 auto;
+      position: relative;
     }
 
     .content-section.dark {
@@ -696,6 +697,46 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
     .content-section.gradient {
       background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    }
+
+    .content-section.has-background {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-section.has-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .content-section.has-background > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .content-section.top-agents::before {
+      background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=80');
+    }
+
+    .content-section.fee-structures::before {
+      background-image: url('https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1920&q=80');
+    }
+
+    .content-section.trends::before {
+      background-image: url('https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=1920&q=80');
+    }
+
+    .content-section.animated {
+      opacity: 0;
+      transform: translateY(40px);
     }
 
     .section-title {
@@ -749,6 +790,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 16px;
       padding: 32px;
       transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .item-card:hover {
@@ -795,6 +838,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 16px;
       padding: 28px;
       transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .agent-card:hover {
@@ -848,6 +893,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 12px;
       padding: 28px;
       transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .phase-item:hover {
@@ -944,6 +991,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 16px;
       padding: 28px;
       transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .faq-item:hover {
@@ -978,6 +1027,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 12px;
       padding: 24px;
       transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .reference-item:hover {
@@ -1098,7 +1149,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
   <!-- Intro Section -->
   {sections.intro && (
-    <section class="content-section dark">
+    <section class="content-section dark animated">
       <h2 class="section-title">{sections.intro.title}</h2>
       {sections.intro.subtitle && <p class="section-subtitle">{sections.intro.subtitle}</p>}
 
@@ -1110,9 +1161,28 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </section>
   )}
 
+  <!-- Stats - Qualitative Statements (MOVED UP) -->
+  <section class="stats-section animated">
+    <div class="stats-bg"></div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-title">Curated<br>Excellence</div>
+        <div class="stat-label">Top placement agents vetted for fundraising success and market expertise</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-title">Fundraising<br>Intelligence</div>
+        <div class="stat-label">Comprehensive market data, deal metrics, and PE fundraising insights</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-title">Expert<br>Guidance</div>
+        <div class="stat-label">Expert guidance from leading PE placement agents and fundraising advisors</div>
+      </div>
+    </div>
+  </section>
+
   <!-- Role Section -->
   {sections.role && (
-    <section class="content-section gradient">
+    <section class="content-section gradient animated">
       <h2 class="section-title">{sections.role.title}</h2>
       {sections.role.subtitle && <p class="section-subtitle">{sections.role.subtitle}</p>}
 
@@ -1131,9 +1201,29 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </section>
   )}
 
+  <!-- Portfolio Item - Capital Raising -->
+  <section class="portfolio-section">
+    <div class="portfolio-grid">
+      <div class="portfolio-item">
+        <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=1200&q=80" alt="Capital Raising">
+        <div class="portfolio-overlay">
+          <div class="portfolio-title">Capital Raising</div>
+          <div class="portfolio-desc">Connect with premier <strong>private equity placement agents</strong> specializing in PE fundraising</div>
+        </div>
+      </div>
+      <div class="portfolio-item">
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80" alt="Fund Marketing">
+        <div class="portfolio-overlay">
+          <div class="portfolio-title">Fund Marketing</div>
+          <div class="portfolio-desc">Access leading <strong>PE fundraising experts</strong> for top-tier administrative talent</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Top Agents Section -->
   {sections.top_agents && (
-    <section class="content-section dark">
+    <section class="content-section dark has-background top-agents animated">
       <h2 class="section-title">{sections.top_agents.title}</h2>
       {sections.top_agents.subtitle && <p class="section-subtitle">{sections.top_agents.subtitle}</p>}
 
@@ -1154,7 +1244,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
   <!-- How It Works Section -->
   {sections.how_it_works && (
-    <section class="content-section gradient">
+    <section class="content-section gradient animated">
       <h2 class="section-title">{sections.how_it_works.title}</h2>
       {sections.how_it_works.subtitle && <p class="section-subtitle">{sections.how_it_works.subtitle}</p>}
 
@@ -1176,9 +1266,23 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </section>
   )}
 
+  <!-- Full-width Image Section (MOVED UP) -->
+  <section class="fullwidth-image-section">
+    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80" alt="Modern Workspace">
+    <div class="fullwidth-image-overlay">
+      <div class="fullwidth-image-content">
+        <h2>Capital Raising Agencies</h2>
+        <p>
+          Connecting exceptional talent with world-class organizations through<br>
+          specialized top placement agents and PE fundraising experts
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Fee Structures Section -->
   {sections.fee_structures && (
-    <section class="content-section dark">
+    <section class="content-section dark has-background fee-structures animated">
       <h2 class="section-title">{sections.fee_structures.title}</h2>
       {sections.fee_structures.subtitle && <p class="section-subtitle">{sections.fee_structures.subtitle}</p>}
 
@@ -1238,7 +1342,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
   <!-- Selection Criteria Section -->
   {sections.selection && (
-    <section class="content-section gradient">
+    <section class="content-section gradient animated">
       <h2 class="section-title">{sections.selection.title}</h2>
       {sections.selection.subtitle && <p class="section-subtitle">{sections.selection.subtitle}</p>}
 
@@ -1264,112 +1368,9 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </section>
   )}
 
-  <!-- Trends Section -->
-  {sections.trends && (
-    <section class="content-section dark">
-      <h2 class="section-title">{sections.trends.title}</h2>
-      {sections.trends.subtitle && <p class="section-subtitle">{sections.trends.subtitle}</p>}
-
-      <div class="items-grid">
-        {sections.trends.content.trends?.map((trend: any) => (
-          <div class="item-card">
-            <h3>{trend.name}</h3>
-            <p>{trend.description}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- Why Use Section -->
-  {sections.why_use && (
-    <section class="content-section gradient">
-      <h2 class="section-title">{sections.why_use.title}</h2>
-      {sections.why_use.subtitle && <p class="section-subtitle">{sections.why_use.subtitle}</p>}
-
-      <div class="items-grid">
-        {sections.why_use.content.reasons?.map((reason: any) => (
-          <div class="item-card">
-            <h3>{reason.title}</h3>
-            <p>{reason.description}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- FAQ Section -->
-  {sections.faq && (
-    <section class="content-section dark">
-      <h2 class="section-title">{sections.faq.title}</h2>
-      {sections.faq.subtitle && <p class="section-subtitle">{sections.faq.subtitle}</p>}
-
-      <div class="faq-list">
-        {sections.faq.content.questions?.map((item: any) => (
-          <div class="faq-item">
-            <div class="faq-question">{item.question}</div>
-            <div class="faq-answer">{item.answer}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- References Section -->
-  {sections.references && (
-    <section class="content-section gradient">
-      <h2 class="section-title">{sections.references.title}</h2>
-      {sections.references.subtitle && <p class="section-subtitle">{sections.references.subtitle}</p>}
-
-      <div class="references-list">
-        {sections.references.content.sources?.map((source: any) => (
-          <div class="reference-item">
-            <div class="reference-title">
-              <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} →</a>
-            </div>
-            <div class="reference-description">{source.description}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- Stats - Qualitative Statements -->
-  <section class="stats-section">
-    <div class="stats-bg"></div>
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-title">Curated<br>Excellence</div>
-        <div class="stat-label">Top placement agents vetted for fundraising success and market expertise</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-title">Fundraising<br>Intelligence</div>
-        <div class="stat-label">Comprehensive market data, deal metrics, and PE fundraising insights</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-title">Expert<br>Guidance</div>
-        <div class="stat-label">Expert guidance from leading PE placement agents and fundraising advisors</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Portfolio-style Image Grid -->
+  <!-- Portfolio Item - Career & Global -->
   <section class="portfolio-section">
     <div class="portfolio-grid">
-      <div class="portfolio-item">
-        <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=1200&q=80" alt="Capital Raising">
-        <div class="portfolio-overlay">
-          <div class="portfolio-title">Capital Raising</div>
-          <div class="portfolio-desc">Connect with premier <strong>private equity placement agents</strong> specializing in PE fundraising</div>
-        </div>
-      </div>
-      <div class="portfolio-item">
-        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80" alt="Fund Marketing">
-        <div class="portfolio-overlay">
-          <div class="portfolio-title">Fund Marketing</div>
-          <div class="portfolio-desc">Access leading <strong>PE fundraising experts</strong> for top-tier administrative talent</div>
-        </div>
-      </div>
       <div class="portfolio-item">
         <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&q=80" alt="Career Development">
         <div class="portfolio-overlay">
@@ -1387,19 +1388,56 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </div>
   </section>
 
-  <!-- Full-width Image Section -->
-  <section class="fullwidth-image-section">
-    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80" alt="Modern Workspace">
-    <div class="fullwidth-image-overlay">
-      <div class="fullwidth-image-content">
-        <h2>Capital Raising Agencies</h2>
-        <p>
-          Connecting exceptional talent with world-class organizations through<br>
-          specialized top placement agents and PE fundraising experts
-        </p>
+  <!-- Trends Section -->
+  {sections.trends && (
+    <section class="content-section dark has-background trends animated">
+      <h2 class="section-title">{sections.trends.title}</h2>
+      {sections.trends.subtitle && <p class="section-subtitle">{sections.trends.subtitle}</p>}
+
+      <div class="items-grid">
+        {sections.trends.content.trends?.map((trend: any) => (
+          <div class="item-card">
+            <h3>{trend.name}</h3>
+            <p>{trend.description}</p>
+          </div>
+        ))}
       </div>
-    </div>
-  </section>
+    </section>
+  )}
+
+  <!-- Why Use Section -->
+  {sections.why_use && (
+    <section class="content-section gradient animated">
+      <h2 class="section-title">{sections.why_use.title}</h2>
+      {sections.why_use.subtitle && <p class="section-subtitle">{sections.why_use.subtitle}</p>}
+
+      <div class="items-grid">
+        {sections.why_use.content.reasons?.map((reason: any) => (
+          <div class="item-card">
+            <h3>{reason.title}</h3>
+            <p>{reason.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ Section -->
+  {sections.faq && (
+    <section class="content-section dark animated">
+      <h2 class="section-title">{sections.faq.title}</h2>
+      {sections.faq.subtitle && <p class="section-subtitle">{sections.faq.subtitle}</p>}
+
+      <div class="faq-list">
+        {sections.faq.content.questions?.map((item: any) => (
+          <div class="faq-item">
+            <div class="faq-question">{item.question}</div>
+            <div class="faq-answer">{item.answer}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 
   <!-- Companies Section -->
   <section class="companies-section">
@@ -1448,8 +1486,27 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </div>
   </section>
 
+  <!-- References Section -->
+  {sections.references && (
+    <section class="content-section dark animated">
+      <h2 class="section-title">{sections.references.title}</h2>
+      {sections.references.subtitle && <p class="section-subtitle">{sections.references.subtitle}</p>}
+
+      <div class="references-list">
+        {sections.references.content.sources?.map((source: any) => (
+          <div class="reference-item">
+            <div class="reference-title">
+              <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} →</a>
+            </div>
+            <div class="reference-description">{source.description}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
   <!-- Services Grid -->
-  <section class="services-section">
+  <section class="services-section animated">
     <div class="section-header">
       <h2>Our Services</h2>
       <p>Comprehensive recruitment solutions from specialized top placement agents and PE fundraising experts tailored to your organization's needs</p>
@@ -1659,6 +1716,34 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       });
     });
 
+        // Animate all content sections with .animated class
+        gsap.utils.toArray('.content-section.animated, .stats-section.animated, .services-section.animated').forEach((section) => {
+          gsap.to(section, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 80%'
+            }
+          });
+        });
+
+        // Animate item cards within sections
+        gsap.utils.toArray('.item-card, .agent-card, .phase-item, .faq-item, .reference-item').forEach((card, i) => {
+          gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            delay: i * 0.05,
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 90%'
+            }
+          });
+        });
+
         // Video parallax effect
         gsap.to('.hero-video', {
           scale: 1.2,
@@ -1668,6 +1753,20 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
             end: 'bottom top',
             scrub: 1
           }
+        });
+
+        // Background image parallax for content sections
+        gsap.utils.toArray('.content-section.has-background::before').forEach((bg) => {
+          gsap.to(bg, {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: bg,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1
+            }
+          });
         });
       }
     });
