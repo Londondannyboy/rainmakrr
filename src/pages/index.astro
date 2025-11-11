@@ -47,6 +47,16 @@ const articles = await sql`
 
 const sections = {
   hero: homepageContent.find((s: any) => s.section_type === 'hero'),
+  intro: homepageContent.find((s: any) => s.section_type === 'intro'),
+  role: homepageContent.find((s: any) => s.section_type === 'role'),
+  top_agents: homepageContent.find((s: any) => s.section_type === 'top_agents'),
+  how_it_works: homepageContent.find((s: any) => s.section_type === 'how_it_works'),
+  fee_structures: homepageContent.find((s: any) => s.section_type === 'fee_structures'),
+  selection: homepageContent.find((s: any) => s.section_type === 'selection'),
+  trends: homepageContent.find((s: any) => s.section_type === 'trends'),
+  why_use: homepageContent.find((s: any) => s.section_type === 'why_use'),
+  faq: homepageContent.find((s: any) => s.section_type === 'faq'),
+  references: homepageContent.find((s: any) => s.section_type === 'references'),
 };
 
 // Mux video playback ID - can be moved to database later
@@ -673,6 +683,367 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       font-size: 14px;
     }
 
+    /* Content Sections from Database */
+    .content-section {
+      padding: 120px 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .content-section.dark {
+      background: #000;
+    }
+
+    .content-section.gradient {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    }
+
+    .section-title {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 900;
+      margin-bottom: 16px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 60px;
+      line-height: 1.6;
+    }
+
+    /* Intro Section */
+    .intro-content {
+      font-size: 18px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .intro-content p {
+      margin-bottom: 24px;
+    }
+
+    .intro-content a {
+      color: #667eea;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+      transition: border-color 0.3s;
+    }
+
+    .intro-content a:hover {
+      border-color: #667eea;
+    }
+
+    /* Role/Items Grid */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .item-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .item-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .item-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .item-card p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .summary-text {
+      font-size: 17px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.85);
+      font-style: italic;
+      padding: 24px;
+      background: rgba(102, 126, 234, 0.1);
+      border-left: 4px solid #667eea;
+      border-radius: 8px;
+      margin-top: 40px;
+    }
+
+    /* Top Agents */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 24px;
+    }
+
+    .agent-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+
+    .agent-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(102, 126, 234, 0.5);
+      transform: translateY(-4px);
+    }
+
+    .agent-name {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #fff, #f093fb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .agent-meta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .agent-meta span {
+      background: rgba(102, 126, 234, 0.2);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .agent-description {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Phases/Timeline */
+    .phases-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .phase-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid #667eea;
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+
+    .phase-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-left-color: #f093fb;
+    }
+
+    .phase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .phase-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .phase-duration {
+      font-size: 14px;
+      font-weight: 600;
+      color: #667eea;
+      background: rgba(102, 126, 234, 0.2);
+      padding: 6px 16px;
+      border-radius: 12px;
+    }
+
+    .phase-description {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Fee Structures */
+    .fee-section {
+      margin-bottom: 48px;
+    }
+
+    .fee-section h3 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+
+    .fee-table {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .fee-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      padding: 20px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background 0.3s;
+    }
+
+    .fee-row:last-child {
+      border-bottom: none;
+    }
+
+    .fee-row:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .fee-label {
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .fee-value {
+      font-weight: 700;
+      color: #667eea;
+      text-align: right;
+    }
+
+    /* FAQ Section */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .faq-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .faq-question {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .faq-answer {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* References Section */
+    .references-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .reference-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+
+    .reference-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(102, 126, 234, 0.5);
+      transform: translateX(8px);
+    }
+
+    .reference-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .reference-title a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .reference-title a:hover {
+      color: #667eea;
+    }
+
+    .reference-description {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Criteria/Red Flags */
+    .red-flags {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 40px;
+    }
+
+    .red-flags h3 {
+      color: #ef4444;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .red-flags ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .red-flags li {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 15px;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .red-flags li::before {
+      content: '⚠️';
+      position: absolute;
+      left: 0;
+    }
+
     @media (max-width: 768px) {
       nav { padding: 20px; }
       .hero h1 { font-size: 42px; }
@@ -681,6 +1052,11 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       .portfolio-grid { grid-template-columns: 1fr; }
       .portfolio-item { height: 60vh; }
       .services-grid { grid-template-columns: 1fr; }
+      .content-section { padding: 80px 20px; }
+      .agents-grid { grid-template-columns: 1fr; }
+      .items-grid { grid-template-columns: 1fr; }
+      .fee-row { grid-template-columns: 1fr; gap: 8px; }
+      .fee-value { text-align: left; }
     }
   </style>
 </head>
@@ -719,6 +1095,244 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       </div>
     </div>
   </section>
+
+  <!-- Intro Section -->
+  {sections.intro && (
+    <section class="content-section dark">
+      <h2 class="section-title">{sections.intro.title}</h2>
+      {sections.intro.subtitle && <p class="section-subtitle">{sections.intro.subtitle}</p>}
+
+      <div class="intro-content">
+        {sections.intro.content.paragraphs?.map((para: any) => (
+          <p set:html={para.text}></p>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Role Section -->
+  {sections.role && (
+    <section class="content-section gradient">
+      <h2 class="section-title">{sections.role.title}</h2>
+      {sections.role.subtitle && <p class="section-subtitle">{sections.role.subtitle}</p>}
+
+      <div class="items-grid">
+        {sections.role.content.items?.map((item: any) => (
+          <div class="item-card">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </div>
+        ))}
+      </div>
+
+      {sections.role.content.summary && (
+        <div class="summary-text">{sections.role.content.summary}</div>
+      )}
+    </section>
+  )}
+
+  <!-- Top Agents Section -->
+  {sections.top_agents && (
+    <section class="content-section dark">
+      <h2 class="section-title">{sections.top_agents.title}</h2>
+      {sections.top_agents.subtitle && <p class="section-subtitle">{sections.top_agents.subtitle}</p>}
+
+      <div class="agents-grid">
+        {sections.top_agents.content.firms?.map((firm: any) => (
+          <div class="agent-card">
+            <div class="agent-name">{firm.name}</div>
+            <div class="agent-meta">
+              <span>Fees: {firm.fees}</span>
+              <span>Min: {firm.minimum}</span>
+            </div>
+            <p class="agent-description">{firm.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- How It Works Section -->
+  {sections.how_it_works && (
+    <section class="content-section gradient">
+      <h2 class="section-title">{sections.how_it_works.title}</h2>
+      {sections.how_it_works.subtitle && <p class="section-subtitle">{sections.how_it_works.subtitle}</p>}
+
+      <div class="phases-list">
+        {sections.how_it_works.content.phases?.map((phase: any) => (
+          <div class="phase-item">
+            <div class="phase-header">
+              <div class="phase-name">{phase.name}</div>
+              <div class="phase-duration">{phase.duration}</div>
+            </div>
+            <p class="phase-description">{phase.description}</p>
+          </div>
+        ))}
+      </div>
+
+      {sections.how_it_works.content.summary && (
+        <div class="summary-text">{sections.how_it_works.content.summary}</div>
+      )}
+    </section>
+  )}
+
+  <!-- Fee Structures Section -->
+  {sections.fee_structures && (
+    <section class="content-section dark">
+      <h2 class="section-title">{sections.fee_structures.title}</h2>
+      {sections.fee_structures.subtitle && <p class="section-subtitle">{sections.fee_structures.subtitle}</p>}
+
+      {sections.fee_structures.content.standard_fees && (
+        <div class="fee-section">
+          <h3>Standard Fees by Fund Size</h3>
+          <div class="fee-table">
+            {sections.fee_structures.content.standard_fees.map((fee: any) => (
+              <div class="fee-row">
+                <div class="fee-label">{fee.fund_type}</div>
+                <div class="fee-value">{fee.fee_range}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {sections.fee_structures.content.retainer_models && (
+        <div class="fee-section">
+          <h3>Retainer Models</h3>
+          {sections.fee_structures.content.retainer_models.map((model: any) => (
+            <div class="item-card">
+              <h3>{model.type}</h3>
+              {model.monthly_retainer && <p><strong>Monthly Retainer:</strong> {model.monthly_retainer}</p>}
+              {model.success_fee && <p><strong>Success Fee:</strong> {model.success_fee}</p>}
+              {model.note && <p style="font-style: italic; color: rgba(255, 255, 255, 0.7);">{model.note}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {sections.fee_structures.content.example && (
+        <div class="fee-section">
+          <h3>Example: {sections.fee_structures.content.example.fund_size} Fund</h3>
+          <div class="fee-table">
+            <div class="fee-row">
+              <div class="fee-label">Retainer</div>
+              <div class="fee-value">{sections.fee_structures.content.example.retainer}</div>
+            </div>
+            <div class="fee-row">
+              <div class="fee-label">Success Fee</div>
+              <div class="fee-value">{sections.fee_structures.content.example.success_fee}</div>
+            </div>
+            <div class="fee-row">
+              <div class="fee-label">Expenses</div>
+              <div class="fee-value">{sections.fee_structures.content.example.expenses}</div>
+            </div>
+            <div class="fee-row">
+              <div class="fee-label">Total</div>
+              <div class="fee-value">{sections.fee_structures.content.example.total}</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  )}
+
+  <!-- Selection Criteria Section -->
+  {sections.selection && (
+    <section class="content-section gradient">
+      <h2 class="section-title">{sections.selection.title}</h2>
+      {sections.selection.subtitle && <p class="section-subtitle">{sections.selection.subtitle}</p>}
+
+      <div class="items-grid">
+        {sections.selection.content.criteria?.map((criterion: any) => (
+          <div class="item-card">
+            <h3>{criterion.name}</h3>
+            <p>{criterion.description}</p>
+          </div>
+        ))}
+      </div>
+
+      {sections.selection.content.red_flags && sections.selection.content.red_flags.length > 0 && (
+        <div class="red-flags">
+          <h3>Red Flags to Watch For</h3>
+          <ul>
+            {sections.selection.content.red_flags.map((flag: string) => (
+              <li>{flag}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  )}
+
+  <!-- Trends Section -->
+  {sections.trends && (
+    <section class="content-section dark">
+      <h2 class="section-title">{sections.trends.title}</h2>
+      {sections.trends.subtitle && <p class="section-subtitle">{sections.trends.subtitle}</p>}
+
+      <div class="items-grid">
+        {sections.trends.content.trends?.map((trend: any) => (
+          <div class="item-card">
+            <h3>{trend.name}</h3>
+            <p>{trend.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Why Use Section -->
+  {sections.why_use && (
+    <section class="content-section gradient">
+      <h2 class="section-title">{sections.why_use.title}</h2>
+      {sections.why_use.subtitle && <p class="section-subtitle">{sections.why_use.subtitle}</p>}
+
+      <div class="items-grid">
+        {sections.why_use.content.reasons?.map((reason: any) => (
+          <div class="item-card">
+            <h3>{reason.title}</h3>
+            <p>{reason.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ Section -->
+  {sections.faq && (
+    <section class="content-section dark">
+      <h2 class="section-title">{sections.faq.title}</h2>
+      {sections.faq.subtitle && <p class="section-subtitle">{sections.faq.subtitle}</p>}
+
+      <div class="faq-list">
+        {sections.faq.content.questions?.map((item: any) => (
+          <div class="faq-item">
+            <div class="faq-question">{item.question}</div>
+            <div class="faq-answer">{item.answer}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- References Section -->
+  {sections.references && (
+    <section class="content-section gradient">
+      <h2 class="section-title">{sections.references.title}</h2>
+      {sections.references.subtitle && <p class="section-subtitle">{sections.references.subtitle}</p>}
+
+      <div class="references-list">
+        {sections.references.content.sources?.map((source: any) => (
+          <div class="reference-item">
+            <div class="reference-title">
+              <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} →</a>
+            </div>
+            <div class="reference-description">{source.description}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 
   <!-- Stats - Qualitative Statements -->
   <section class="stats-section">
