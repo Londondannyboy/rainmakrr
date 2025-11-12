@@ -3,7 +3,6 @@
 /* Main consent modal - purple gradient background */
 #cc-main .cm {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95)) !important;
-  backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
@@ -11,6 +10,8 @@
   padding: 24px 32px !important;
   max-width: 1200px !important;
   margin: 0 auto 20px !important;
+  will-change: transform !important;
+  transform: translateZ(0) !important;
 }
 
 /* Title styling */

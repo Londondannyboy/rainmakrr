@@ -9,7 +9,7 @@ if (!slug) {
   return Astro.redirect('/');
 }
 
-// Fetch the company
+// Fetch the company - use singular placement_agent
 const companies = await sql`
   SELECT
     id,
@@ -28,8 +28,7 @@ const companies = await sql`
     geographic_focus
   FROM companies
   WHERE slug = ${slug}
-    AND company_type IN ('placement_agents', 'executive_assistant_recruiters')
-    AND status = 'published'
+    AND company_type = 'placement_agent'
   LIMIT 1
 `;
 

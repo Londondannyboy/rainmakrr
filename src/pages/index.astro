@@ -101,9 +101,6 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   <link rel="preconnect" href="https://stream.mux.com">
   <link rel="preconnect" href="https://images.unsplash.com">
 
-  <!-- HLS.js for video -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest" defer></script>
-
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1755,57 +1752,55 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </footer>
 
   <script define:vars={{ muxPlaybackId }}>
-    // Wait for DOM and libraries to load - use load event since scripts are deferred
-    window.addEventListener('load', function() {
-      // Initialize Mux HLS video for hero
-      const heroVideo = document.getElementById('hero-video');
-      const heroVideoSrc = `https://stream.mux.com/${muxPlaybackId}.m3u8`;
-
-      if (heroVideo && typeof Hls !== 'undefined' && Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(heroVideoSrc);
-        hls.attachMedia(heroVideo);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-          heroVideo.play().catch(e => console.log('Hero video autoplay prevented:', e));
-        });
-      } else if (heroVideo && heroVideo.canPlayType('application/vnd.apple.mpegurl')) {
-        heroVideo.src = heroVideoSrc;
-        heroVideo.addEventListener('loadedmetadata', function() {
-          heroVideo.play().catch(e => console.log('Hero video autoplay prevented:', e));
-        });
+    // Lazy load HLS.js only when needed
+    function loadHLS(callback) {
+      if (typeof Hls !== 'undefined') {
+        callback();
+        return;
       }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+      script.onload = callback;
+      document.head.appendChild(script);
+    }
 
-      // Initialize Mux HLS video for companies section - only when scrolled near
-      const companiesSection = document.querySelector('.companies-section');
-      if (companiesSection) {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const companiesVideo = document.getElementById('companies-video');
+    // Initialize video only when in viewport
+    function initVideo(videoId, sectionSelector) {
+      const section = document.querySelector(sectionSelector);
+      if (!section) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            loadHLS(function() {
+              const video = document.getElementById(videoId);
               const videoSrc = `https://stream.mux.com/${muxPlaybackId}.m3u8`;
 
-              if (companiesVideo && typeof Hls !== 'undefined' && Hls.isSupported()) {
-                const hls2 = new Hls();
-                hls2.loadSource(videoSrc);
-                hls2.attachMedia(companiesVideo);
-                hls2.on(Hls.Events.MANIFEST_PARSED, function() {
-                  companiesVideo.play().catch(e => console.log('Companies video autoplay prevented:', e));
+              if (video && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                  video.play().catch(e => console.log('Video autoplay prevented:', e));
                 });
-              } else if (companiesVideo && companiesVideo.canPlayType('application/vnd.apple.mpegurl')) {
-                companiesVideo.src = videoSrc;
-                companiesVideo.addEventListener('loadedmetadata', function() {
-                  companiesVideo.play().catch(e => console.log('Companies video autoplay prevented:', e));
+              } else if (video && video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                  video.play().catch(e => console.log('Video autoplay prevented:', e));
                 });
               }
-              observer.disconnect();
-            }
-          });
-        }, { rootMargin: '200px' });
-        observer.observe(companiesSection);
-      }
+            });
+            observer.disconnect();
+          }
+        });
+      }, { rootMargin: '100px' });
+      observer.observe(section);
+    }
 
-      // All animations removed for optimal mobile performance
-      // No GSAP, no ScrollTrigger, no forced reflows
+    // Initialize videos when sections are near viewport
+    window.addEventListener('DOMContentLoaded', function() {
+      initVideo('hero-video', '.hero');
+      initVideo('companies-video', '.companies-section');
     });
   </script>
 </body>
