@@ -3,7 +3,7 @@ import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
 
-// Fetch all placement agents grouped by country
+// Fetch all placement agents
 const companies = await sql`
   SELECT
     id,
@@ -19,16 +19,10 @@ const companies = await sql`
   WHERE status = 'published'
     AND company_type = 'placement_agent'
   ORDER BY
-    primary_country NULLS LAST,
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
     name ASC
 `;
-
-// Group companies by country
-const ukCompanies = companies.filter((c: any) => c.primary_country === 'UK');
-const usCompanies = companies.filter((c: any) => c.primary_country === 'USA');
-const otherCompanies = companies.filter((c: any) => !c.primary_country);
 ---
 
 <!DOCTYPE html>
@@ -377,13 +371,10 @@ const otherCompanies = companies.filter((c: any) => !c.primary_country);
 <body>
   <!-- Navigation -->
   <nav>
-    <div class="logo">Placement</div>
+    <a href="/" class="logo">Placement</a>
     <ul class="nav-links">
-      <li><a href="/">Home</a></li>
       <li><a href="/articles">Articles</a></li>
       <li><a href="/companies">Placement Agents</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/contact">Contact</a></li>
     </ul>
   </nav>
 
@@ -401,117 +392,35 @@ const otherCompanies = companies.filter((c: any) => !c.primary_country);
   <!-- Companies Section -->
   <section class="companies-section">
     {companies.length > 0 ? (
-      <div>
-        <!-- UK Companies -->
-        {ukCompanies.length > 0 && (
-          <div style="margin-bottom: 60px;">
-            <h2 style="color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 30px; text-align: center;">United Kingdom</h2>
-            <div class="companies-grid">
-              {ukCompanies.map((company: any) => (
-                <a href={`/companies/${company.slug}`} class="company-card">
-                  <div class="company-header">
-                    <div style="flex: 1;">
-                      <div class="company-name">{company.name}</div>
-                      {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
-                        <div class="company-location">📍 {company.headquarters}</div>
-                      )}
-                    </div>
-                    {company.global_rank && (
-                      <div class="company-rank">#{company.global_rank}</div>
-                    )}
-                  </div>
-                  {company.description && (
-                    <p class="company-description">{company.description}</p>
-                  )}
-                  {company.specializations && company.specializations.length > 0 && (
-                    <div class="company-tags">
-                      {company.specializations.slice(0, 3).map((spec: string) => (
-                        <span class="tag">{spec}</span>
-                      ))}
-                      {company.specializations.length > 3 && (
-                        <span class="tag">+{company.specializations.length - 3} more</span>
-                      )}
-                    </div>
-                  )}
-                </a>
-              ))}
+      <div class="companies-grid">
+        {companies.map((company: any) => (
+          <a href={`/companies/${company.slug}`} class="company-card">
+            <div class="company-header">
+              <div style="flex: 1;">
+                <div class="company-name">{company.name}</div>
+                {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
+                  <div class="company-location">{company.headquarters}</div>
+                )}
+              </div>
+              {company.global_rank && (
+                <div class="company-rank">#{company.global_rank}</div>
+              )}
             </div>
-          </div>
-        )}
-
-        <!-- USA Companies -->
-        {usCompanies.length > 0 && (
-          <div style="margin-bottom: 60px;">
-            <h2 style="color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 30px; text-align: center;">United States</h2>
-            <div class="companies-grid">
-              {usCompanies.map((company: any) => (
-                <a href={`/companies/${company.slug}`} class="company-card">
-                  <div class="company-header">
-                    <div style="flex: 1;">
-                      <div class="company-name">{company.name}</div>
-                      {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
-                        <div class="company-location">📍 {company.headquarters}</div>
-                      )}
-                    </div>
-                    {company.global_rank && (
-                      <div class="company-rank">#{company.global_rank}</div>
-                    )}
-                  </div>
-                  {company.description && (
-                    <p class="company-description">{company.description}</p>
-                  )}
-                  {company.specializations && company.specializations.length > 0 && (
-                    <div class="company-tags">
-                      {company.specializations.slice(0, 3).map((spec: string) => (
-                        <span class="tag">{spec}</span>
-                      ))}
-                      {company.specializations.length > 3 && (
-                        <span class="tag">+{company.specializations.length - 3} more</span>
-                      )}
-                    </div>
-                  )}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <!-- Other/Untagged Companies -->
-        {otherCompanies.length > 0 && (
-          <div>
-            <h2 style="color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 30px; text-align: center;">Other Regions</h2>
-            <div class="companies-grid">
-              {otherCompanies.map((company: any) => (
-                <a href={`/companies/${company.slug}`} class="company-card">
-                  <div class="company-header">
-                    <div style="flex: 1;">
-                      <div class="company-name">{company.name}</div>
-                      {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
-                        <div class="company-location">📍 {company.headquarters}</div>
-                      )}
-                    </div>
-                    {company.global_rank && (
-                      <div class="company-rank">#{company.global_rank}</div>
-                    )}
-                  </div>
-                  {company.description && (
-                    <p class="company-description">{company.description}</p>
-                  )}
-                  {company.specializations && company.specializations.length > 0 && (
-                    <div class="company-tags">
-                      {company.specializations.slice(0, 3).map((spec: string) => (
-                        <span class="tag">{spec}</span>
-                      ))}
-                      {company.specializations.length > 3 && (
-                        <span class="tag">+{company.specializations.length - 3} more</span>
-                      )}
-                    </div>
-                  )}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+            {company.description && (
+              <p class="company-description">{company.description}</p>
+            )}
+            {company.specializations && company.specializations.length > 0 && (
+              <div class="company-tags">
+                {company.specializations.slice(0, 3).map((spec: string) => (
+                  <span class="tag">{spec}</span>
+                ))}
+                {company.specializations.length > 3 && (
+                  <span class="tag">+{company.specializations.length - 3} more</span>
+                )}
+              </div>
+            )}
+          </a>
+        ))}
       </div>
     ) : (
       <div class="empty-state">
