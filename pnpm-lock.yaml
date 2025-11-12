@@ -14,6 +14,9 @@ importers:
       '@astrojs/tailwind':
         specifier: ^6.0.2
         version: 6.0.2(astro@5.15.5(@types/node@24.10.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.928.0))(jiti@1.21.7)(rollup@4.53.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1))(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))
+      '@jop-software/astro-cookieconsent':
+        specifier: ^3.0.1
+        version: 3.0.1(vanilla-cookieconsent@3.1.0)
       '@neondatabase/serverless':
         specifier: ^1.0.2
         version: 1.0.2
@@ -32,6 +35,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.18
         version: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
+      vanilla-cookieconsent:
+        specifier: ^3.1.0
+        version: 3.1.0
 
 packages:
 
@@ -523,6 +529,11 @@ packages:
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
+
+  '@jop-software/astro-cookieconsent@3.0.1':
+    resolution: {integrity: sha512-UXo6aMR9/kEEmUIZoRTRJXDf/ADju9qQ0qNRWM1twdf0vRCh2s/ucHqaYOcs57Q2PcKmcq+Sc+0Tq0gSUgVDzA==}
+    peerDependencies:
+      vanilla-cookieconsent: ^3.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -3381,6 +3392,9 @@ packages:
   uzip@0.20201231.0:
     resolution: {integrity: sha512-OZeJfZP+R0z9D6TmBgLq2LHzSSptGMGDGigGiEe0pr8UBe/7fdflgHlHBNDASTXB5jnFuxHpNaJywSg8YFeGng==}
 
+  vanilla-cookieconsent@3.1.0:
+    resolution: {integrity: sha512-/McNRtm/3IXzb9dhqMIcbquoU45SzbN2VB+To4jxEPqMmp7uVniP6BhGLjU8MC7ZCDsNQVOp27fhQTM/ruIXAA==}
+
   vfile-location@5.0.3:
     resolution: {integrity: sha512-5yXvWDEgqeiYiBe1lbxYF7UMAIm/IcopxMHrMQDq3nvKcjPKIhZklUKL+AE7J7uApI4kwe2snsK+eI6UTj9EHg==}
 
@@ -4182,6 +4196,10 @@ snapshots:
       strip-ansi-cjs: strip-ansi@6.0.1
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
+
+  '@jop-software/astro-cookieconsent@3.0.1(vanilla-cookieconsent@3.1.0)':
+    dependencies:
+      vanilla-cookieconsent: 3.1.0
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -7307,6 +7325,8 @@ snapshots:
   uuid@9.0.1: {}
 
   uzip@0.20201231.0: {}
+
+  vanilla-cookieconsent@3.1.0: {}
 
   vfile-location@5.0.3:
     dependencies:
