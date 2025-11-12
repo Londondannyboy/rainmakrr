@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: 'Placement',
-  title: 'Top Private Equity Placement Agents 2025 | PE Fundraising Experts',
-  description: 'Find top private equity placement agents for 2025. Comprehensive guide to PE fundraising, expert rankings, capital raising insights, and connections to leading placement agents for successful fundraising.',
+  title: 'Placement Quest | Top Private Equity Placement Agents',
+  description: 'The ultimate guide to top private equity placement agents. Expert rankings, fee structures, capital raising insights, and market intelligence for PE fundraising success.',
   url: 'https://placement.quest',
   ogImage: 'https://placement.quest/og-image.jpg', // TODO: Add actual OG image
   links: {
