@@ -16,6 +16,7 @@ const organizationSchema = {
   url: siteConfig.url,
   logo: `${siteConfig.url}/logo.png`,
   description: siteConfig.description,
+  about: 'Comprehensive directory and guide to top private equity placement agents, PE fundraising experts, and capital raising professionals worldwide.',
   sameAs: [
     siteConfig.links.twitter,
     siteConfig.links.linkedin,
@@ -95,6 +96,48 @@ if (type === 'company' && company) {
     },
   };
 }
+
+let faqSchema;
+if (type === 'homepage') {
+  faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What are top private equity placement agents?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Top private equity placement agents are specialized financial intermediaries who facilitate capital raising for private equity fund managers. These elite professionals serve as the critical bridge between General Partners (GPs) seeking to raise funds and institutional Limited Partners (LPs) with significant investment capacity.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Why should I work with top private equity placement agents?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Engaging top private equity placement agents provides fund managers with extensive LP networks, sophisticated market knowledge, compelling investment narratives, and access to institutional investors that would take years to develop independently. Leading placement agents also offer guidance on fund structuring, terms negotiation, and competitive positioning.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How do top private equity placement agents get paid?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Top private equity placement agents typically charge a combination of monthly retainers and success fees based on capital raised. Fees generally range from 1-2% of total capital raised for larger funds, with retainer models varying based on fund size, strategy, and agent reputation.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What services do top private equity placement agents provide?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Top private equity placement agents provide comprehensive fundraising services including LP network access, market intelligence, fund positioning strategy, pitch deck development, investor meetings coordination, terms negotiation support, and ongoing fundraising campaign management across the capital raising lifecycle.',
+        },
+      },
+    ],
+  };
+}
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
@@ -102,3 +145,4 @@ if (type === 'company' && company) {
 <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 {articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
 {companySchema && <script type="application/ld+json" set:html={JSON.stringify(companySchema)} />}
+{faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}

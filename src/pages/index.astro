@@ -88,7 +88,7 @@ if (sections.role) {
 }
 
 // Mux video playback ID - can be moved to database later
-const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
+const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
 ---
 
 <!DOCTYPE html>
@@ -452,8 +452,12 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       font-size: 20px;
       color: rgba(255, 255, 255, 0.7);
       max-width: 700px;
-      margin: 0 auto;
+      margin: 0 auto 16px auto;
       line-height: 1.8;
+    }
+
+    .section-header p:last-child {
+      margin-bottom: 0;
     }
 
     .companies-grid {
@@ -692,12 +696,12 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     }
 
     .cta-section p {
-      font-size: 24px;
+      font-size: 22px;
       margin-bottom: 60px;
       max-width: 700px;
       margin-left: auto;
       margin-right: auto;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     /* Footer */
@@ -859,6 +863,11 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
     .intro-content p {
       margin-bottom: 24px;
+      max-width: 80ch;
+    }
+
+    .intro-content p:last-child {
+      margin-bottom: 0;
     }
 
     .intro-content a {
@@ -905,8 +914,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
     .item-card p {
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.8;
       color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 12px;
+    }
+
+    .item-card p:last-child {
+      margin-bottom: 0;
     }
 
     .summary-text {
@@ -1172,6 +1186,15 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       font-size: 16px;
       line-height: 1.8;
       color: rgba(255, 255, 255, 0.85);
+      white-space: pre-line;
+    }
+
+    .faq-answer p {
+      margin-bottom: 16px;
+    }
+
+    .faq-answer p:last-child {
+      margin-bottom: 0;
     }
 
     /* References Section */
@@ -1337,7 +1360,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       </p>
 
       <div class="hero-cta">
-        <a href="/private-equity-placement-agents" class="btn btn-primary">Find Placements →</a>
+        <a href="/private-equity-placement-agents" class="btn btn-primary">Find Private Equity Placement Agents →</a>
         <a href="/articles" class="btn btn-secondary">Read Fundraising Insights</a>
       </div>
     </div>
@@ -1356,6 +1379,51 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       </div>
     </section>
   )}
+
+  <!-- Definition Section - What Are Top Private Equity Placement Agents -->
+  <section class="content-section gradient animated">
+    <h2 class="section-title">What Are Top Private Equity Placement Agents?</h2>
+    <div class="intro-content">
+      <p>
+        Top private equity placement agents are specialized financial intermediaries who facilitate capital raising for private equity fund managers.
+      </p>
+      <p>
+        These elite professionals serve as the critical bridge between General Partners (GPs) seeking to raise funds and institutional Limited Partners (LPs) with significant investment capacity.
+      </p>
+      <p>
+        The best placement agents maintain extensive networks of qualified institutional investors, including pension funds, endowments, foundations, family offices, sovereign wealth funds, and insurance companies.
+      </p>
+      <p>
+        They leverage deep market intelligence, proven fundraising methodologies, and established LP relationships to maximize fundraising success rates.
+      </p>
+
+      <h3 style="font-size: 28px; font-weight: 700; margin: 48px 0 24px 0; color: #fff;">Why Work With Top Private Equity Placement Agents?</h3>
+      <p>
+        Engaging top private equity placement agents provides fund managers with several strategic advantages.
+      </p>
+      <p>
+        These experienced professionals bring sophisticated market knowledge, help craft compelling investment narratives, and provide access to LP networks that would take years to develop independently.
+      </p>
+      <p>
+        Leading placement agents also offer valuable guidance on fund structuring, terms negotiation, and competitive positioning within the crowded PE fundraising landscape.
+      </p>
+
+      <div class="items-grid" style="margin-top: 40px;">
+        <div class="item-card">
+          <h3>Extensive LP Networks</h3>
+          <p>Top private equity placement agents maintain relationships with hundreds of institutional investors globally, providing immediate access to qualified LPs actively seeking PE investment opportunities.</p>
+        </div>
+        <div class="item-card">
+          <h3>Market Intelligence</h3>
+          <p>Leading placement agents offer real-time insights into LP preferences, market conditions, competitive fundraising activity, and optimal timing strategies for successful capital raises.</p>
+        </div>
+        <div class="item-card">
+          <h3>Fundraising Expertise</h3>
+          <p>Elite placement agents bring decades of experience structuring funds, positioning strategies, and navigating the complex dynamics of institutional capital raising across market cycles.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Latest News & Insights -->
   {articles && articles.length > 0 && (
@@ -1396,15 +1464,15 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     <div class="stats-grid">
       <div class="stat-item">
         <div class="stat-title">Curated<br>Excellence</div>
-        <div class="stat-label">Top placement agents vetted for fundraising success and market expertise</div>
+        <div class="stat-label">Top private equity placement agents vetted for fundraising success, market expertise, and proven LP networks</div>
       </div>
       <div class="stat-item">
         <div class="stat-title">Fundraising<br>Intelligence</div>
-        <div class="stat-label">Comprehensive market data, deal metrics, and PE fundraising insights</div>
+        <div class="stat-label">Comprehensive market data from top private equity placement agents, including deal metrics and PE fundraising insights</div>
       </div>
       <div class="stat-item">
         <div class="stat-title">Expert<br>Guidance</div>
-        <div class="stat-label">Expert guidance from leading PE placement agents and fundraising advisors</div>
+        <div class="stat-label">Strategic counsel from the world's leading private equity placement agents and fundraising advisors</div>
       </div>
     </div>
   </section>
@@ -1697,11 +1765,17 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     <div class="companies-content">
       <div class="section-header">
         <h2>Top Private Equity Placement Agents Directory</h2>
-        <p style="font-size: 18px; line-height: 1.7; margin-bottom: 24px;">
-          Placement agents serve as the vital bridge between General Partners (GPs) seeking capital and Limited Partners (LPs) with investment capacity. These specialized intermediaries leverage extensive LP networks, market intelligence, and fundraising expertise to facilitate successful capital raises.
+        <p style="font-size: 18px; line-height: 1.8; margin-bottom: 16px;">
+          Placement agents serve as the vital bridge between General Partners (GPs) seeking capital and Limited Partners (LPs) with investment capacity.
         </p>
-        <p style="font-size: 16px; line-height: 1.6; color: rgba(255, 255, 255, 0.8);">
-          Our curated directory features leading placement agents across all major PE strategies—buyout, growth equity, venture capital, real estate, and infrastructure. Whether you're a first-time fund manager or an established GP looking to expand your LP base, connect with the right placement partner to accelerate your fundraising success.
+        <p style="font-size: 18px; line-height: 1.8; margin-bottom: 32px;">
+          These specialized intermediaries leverage extensive LP networks, market intelligence, and fundraising expertise to facilitate successful capital raises.
+        </p>
+        <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8); margin-bottom: 12px;">
+          Our curated directory features leading placement agents across all major PE strategies—buyout, growth equity, venture capital, real estate, and infrastructure.
+        </p>
+        <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8);">
+          Whether you're a first-time fund manager or an established GP looking to expand your LP base, connect with the right placement partner to accelerate your fundraising success.
         </p>
       </div>
 
@@ -1781,7 +1855,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
     <div class="services-grid">
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=50&auto=format" alt="Executive Search" loading="lazy" decoding="async">
+        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=50&auto=format" alt="Top private equity placement agents - Executive Search" title="Executive search services from top PE placement agents" loading="lazy" decoding="async">
         <div class="service-overlay">
           <div class="service-title">Executive Search</div>
           <div class="service-desc">Identifying and recruiting top-tier Placement talent for C-suite roles</div>
@@ -1789,7 +1863,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       </div>
 
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=50&auto=format" alt="Leadership Assessment" loading="lazy" decoding="async">
+        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=50&auto=format" alt="Leadership assessment by top private equity placement agents" title="Top placement agents providing leadership assessment services" loading="lazy" decoding="async">
         <div class="service-overlay">
           <div class="service-title">Leadership Assessment</div>
           <div class="service-desc">Comprehensive evaluation and profiling of executive candidates</div>
@@ -1797,7 +1871,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       </div>
 
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=50&auto=format" alt="Talent Advisory" loading="lazy" decoding="async">
+        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=50&auto=format" alt="Talent advisory from leading PE placement agents" title="Top private equity placement agents offering talent advisory" loading="lazy" decoding="async">
         <div class="service-overlay">
           <div class="service-title">Talent Advisory</div>
           <div class="service-desc">Strategic guidance on organizational structure and leadership needs</div>
@@ -1834,11 +1908,11 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   <section class="cta-section">
     <h2>Ready to Find Your<br>Perfect Match?</h2>
     <p>
-      Connect with leading placement agents and take the next step<br>
-      in your PE fundraising journey
+      Connect with top private equity placement agents and take the next step<br>
+      in your PE fundraising journey with proven industry experts
     </p>
     <div class="hero-cta">
-      <a href="/private-equity-placement-agents" class="btn btn-primary">Browse Agencies</a>
+      <a href="/private-equity-placement-agents" class="btn btn-primary">Browse Top Placement Agents</a>
       <a href="/articles" class="btn btn-secondary">Read Our Guides</a>
     </div>
   </section>
