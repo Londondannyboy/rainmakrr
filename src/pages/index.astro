@@ -59,6 +59,9 @@ const sections = {
   references: homepageContent.find((s: any) => s.section_type === 'references'),
 };
 
+// Debug: Log which sections are loaded
+console.log('Homepage sections loaded:', Object.entries(sections).map(([key, val]) => ({ key, hasData: !!val })));
+
 // Mux video playback ID - can be moved to database later
 const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 ---
@@ -1259,7 +1262,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </section>
 
   <!-- Intro Section -->
-  {sections.intro && (
+  {sections.intro && sections.intro.content && (
     <section class="content-section dark has-background intro animated">
       <h2 class="section-title">{sections.intro.title}</h2>
       {sections.intro.subtitle && <p class="section-subtitle">{sections.intro.subtitle}</p>}
@@ -1292,13 +1295,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </section>
 
   <!-- Role Section -->
-  {sections.role && (
+  {sections.role && sections.role.content && sections.role.content.items && (
     <section class="content-section gradient animated">
       <h2 class="section-title">{sections.role.title}</h2>
       {sections.role.subtitle && <p class="section-subtitle">{sections.role.subtitle}</p>}
 
       <div class="items-grid">
-        {sections.role.content.items?.map((item: any) => (
+        {sections.role.content.items.map((item: any) => (
           <div class="item-card">
             <h3>{item.title}</h3>
             <p>{item.description}</p>
@@ -1333,13 +1336,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </section>
 
   <!-- Top Agents Section -->
-  {sections.top_agents && (
+  {sections.top_agents && sections.top_agents.content && sections.top_agents.content.firms && (
     <section class="content-section dark has-background top-agents animated">
       <h2 class="section-title">{sections.top_agents.title}</h2>
       {sections.top_agents.subtitle && <p class="section-subtitle">{sections.top_agents.subtitle}</p>}
 
       <div class="agents-grid">
-        {sections.top_agents.content.firms?.map((firm: any) => (
+        {sections.top_agents.content.firms.map((firm: any) => (
           <div class="agent-card">
             <div class="agent-name">{firm.name}</div>
             <div class="agent-meta">
@@ -1354,13 +1357,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   )}
 
   <!-- How It Works Section -->
-  {sections.how_it_works && (
+  {sections.how_it_works && sections.how_it_works.content && sections.how_it_works.content.phases && (
     <section class="content-section gradient animated">
       <h2 class="section-title">{sections.how_it_works.title}</h2>
       {sections.how_it_works.subtitle && <p class="section-subtitle">{sections.how_it_works.subtitle}</p>}
 
       <div class="phases-list">
-        {sections.how_it_works.content.phases?.map((phase: any) => (
+        {sections.how_it_works.content.phases.map((phase: any) => (
           <div class="phase-item">
             <div class="phase-header">
               <div class="phase-name">{phase.name}</div>
@@ -1392,7 +1395,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </section>
 
   <!-- Fee Structures Section -->
-  {sections.fee_structures && (
+  {sections.fee_structures && sections.fee_structures.content && (
     <section class="content-section dark has-background fee-structures animated">
       <h2 class="section-title">{sections.fee_structures.title}</h2>
       {sections.fee_structures.subtitle && <p class="section-subtitle">{sections.fee_structures.subtitle}</p>}
@@ -1452,13 +1455,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   )}
 
   <!-- Selection Criteria Section -->
-  {sections.selection && (
+  {sections.selection && sections.selection.content && sections.selection.content.criteria && (
     <section class="content-section gradient-alt animated">
       <h2 class="section-title">{sections.selection.title}</h2>
       {sections.selection.subtitle && <p class="section-subtitle">{sections.selection.subtitle}</p>}
 
       <div class="items-grid">
-        {sections.selection.content.criteria?.map((criterion: any) => (
+        {sections.selection.content.criteria.map((criterion: any) => (
           <div class="item-card">
             <h3>{criterion.name}</h3>
             <p>{criterion.description}</p>
@@ -1500,13 +1503,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </section>
 
   <!-- Trends Section -->
-  {sections.trends && (
+  {sections.trends && sections.trends.content && sections.trends.content.trends && (
     <section class="content-section dark has-background trends animated">
       <h2 class="section-title">{sections.trends.title}</h2>
       {sections.trends.subtitle && <p class="section-subtitle">{sections.trends.subtitle}</p>}
 
       <div class="items-grid">
-        {sections.trends.content.trends?.map((trend: any) => (
+        {sections.trends.content.trends.map((trend: any) => (
           <div class="item-card">
             <h3>{trend.name}</h3>
             <p>{trend.description}</p>
@@ -1517,13 +1520,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   )}
 
   <!-- Why Use Section -->
-  {sections.why_use && (
+  {sections.why_use && sections.why_use.content && sections.why_use.content.reasons && (
     <section class="content-section gradient-alt has-background why-use animated">
       <h2 class="section-title">{sections.why_use.title}</h2>
       {sections.why_use.subtitle && <p class="section-subtitle">{sections.why_use.subtitle}</p>}
 
       <div class="items-grid">
-        {sections.why_use.content.reasons?.map((reason: any) => (
+        {sections.why_use.content.reasons.map((reason: any) => (
           <div class="item-card">
             <h3>{reason.title}</h3>
             <p>{reason.description}</p>
@@ -1534,13 +1537,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   )}
 
   <!-- FAQ Section -->
-  {sections.faq && (
+  {sections.faq && sections.faq.content && sections.faq.content.questions && (
     <section class="content-section dark has-background faq animated">
       <h2 class="section-title">{sections.faq.title}</h2>
       {sections.faq.subtitle && <p class="section-subtitle">{sections.faq.subtitle}</p>}
 
       <div class="faq-list">
-        {sections.faq.content.questions?.map((item: any) => (
+        {sections.faq.content.questions.map((item: any) => (
           <div class="faq-item">
             <div class="faq-question">{item.question}</div>
             <div class="faq-answer">{item.answer}</div>
@@ -1598,13 +1601,13 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   </section>
 
   <!-- References Section -->
-  {sections.references && (
+  {sections.references && sections.references.content && sections.references.content.sources && (
     <section class="content-section gradient animated">
       <h2 class="section-title">{sections.references.title}</h2>
       {sections.references.subtitle && <p class="section-subtitle">{sections.references.subtitle}</p>}
 
       <div class="references-list">
-        {sections.references.content.sources?.map((source: any) => (
+        {sections.references.content.sources.map((source: any) => (
           <div class="reference-item">
             <div class="reference-title">
               <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} →</a>
