@@ -17,7 +17,7 @@ const companies = await sql`
     primary_country
   FROM companies
   WHERE status = 'published'
-    AND company_type = 'placement_agent'
+    AND company_type = 'placement_agents'
   ORDER BY
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
