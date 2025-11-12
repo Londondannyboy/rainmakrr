@@ -3,7 +3,7 @@ import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
 
-// Fetch all placement agents
+// Fetch all placement agents - try without filters first to see what's in DB
 const companies = await sql`
   SELECT
     id,
@@ -14,15 +14,27 @@ const companies = await sql`
     logo_url,
     specializations,
     global_rank,
-    primary_country
+    primary_country,
+    status,
+    company_type
   FROM companies
-  WHERE status = 'published'
-    AND company_type = 'placement_agents'
   ORDER BY
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
     name ASC
 `;
+
+console.log('Total companies in DB:', companies.length);
+console.log('First company:', companies[0]);
+console.log('Company types:', [...new Set(companies.map((c: any) => c.company_type))]);
+console.log('Statuses:', [...new Set(companies.map((c: any) => c.status))]);
+
+// Filter for published placement agents
+const filteredCompanies = companies.filter((c: any) =>
+  c.status === 'published' && c.company_type === 'placement_agents'
+);
+
+console.log('Filtered companies:', filteredCompanies.length);
 ---
 
 <!DOCTYPE html>

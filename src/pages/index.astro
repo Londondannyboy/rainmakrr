@@ -101,7 +101,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://stream.mux.com">
   <link rel="preconnect" href="https://images.unsplash.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Defer GSAP and HLS.js to improve LCP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
@@ -1808,20 +1808,12 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
         observer.observe(companiesSection);
       }
 
-      // GSAP Animations - Simplified for better performance
+      // GSAP Animations - Minimal for best performance
+      // Hero animations removed to eliminate render delay on LCP element
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero animations - simplified
-        gsap.to('.hero-badge, .hero h1, .hero-subtitle, .hero-cta', {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: 'power2.out'
-        });
-
-        // Simplified scroll animations with fewer triggers
+        // Simplified scroll animations - only for below-fold content
         ScrollTrigger.batch('.stat-item, .company-card', {
           onEnter: (elements) => {
             gsap.to(elements, {
@@ -1850,16 +1842,7 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
           once: true
         });
 
-        // Reduced parallax effect - only on hero video
-        gsap.to('.hero-video', {
-          scale: 1.15,
-          scrollTrigger: {
-            trigger: '.hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 1
-          }
-        });
+        // Parallax removed to eliminate forced reflows
       }
     });
   </script>
