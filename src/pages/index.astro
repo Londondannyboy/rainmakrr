@@ -975,6 +975,70 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       color: rgba(255, 255, 255, 0.8);
     }
 
+    /* News/Articles Section */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    .news-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .news-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(102, 126, 234, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .news-date {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .news-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .news-excerpt {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 20px;
+    }
+
+    .news-link {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .news-link:hover {
+      color: #f093fb;
+      gap: 12px;
+    }
+
     /* Phases/Timeline */
     .phases-list {
       display: flex;
@@ -1293,6 +1357,39 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </section>
   )}
 
+  <!-- Latest News & Insights -->
+  {articles && articles.length > 0 && (
+    <section class="content-section gradient animated">
+      <h2 class="section-title">Latest PE Fundraising News & Insights</h2>
+      <p class="section-subtitle">Stay informed with the latest insights, trends, and analysis from the private equity fundraising world</p>
+
+      <div class="news-grid">
+        {articles.map((article: any) => (
+          <div class="news-card">
+            <div class="news-date">
+              {new Date(article.published_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+            <h3 class="news-title">{article.title}</h3>
+            {article.excerpt && (
+              <p class="news-excerpt">{article.excerpt}</p>
+            )}
+            <a href={`/${article.slug}`} class="news-link">
+              Read Article →
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <div style="text-align: center; margin-top: 48px;">
+        <a href="/articles" class="btn btn-secondary">View All Articles</a>
+      </div>
+    </section>
+  )}
+
   <!-- Stats - Qualitative Statements (MOVED UP) -->
   <section class="stats-section animated">
     <div class="stats-bg"></div>
@@ -1353,23 +1450,42 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     </div>
   </section>
 
-  <!-- Top Agents Section -->
-  {sections.top_agents && sections.top_agents.content && sections.top_agents.content.firms && (
+  <!-- Top Placement Agents Section -->
+  {companies && companies.length > 0 && (
     <section class="content-section dark has-background top-agents animated">
-      <h2 class="section-title">{sections.top_agents.title}</h2>
-      {sections.top_agents.subtitle && <p class="section-subtitle">{sections.top_agents.subtitle}</p>}
+      <h2 class="section-title">Top Private Equity Placement Agents</h2>
+      <p class="section-subtitle">Leading placement agents connecting GPs with LPs for successful fundraising outcomes</p>
 
       <div class="agents-grid">
-        {sections.top_agents.content.firms.map((firm: any) => (
-          <div class="agent-card">
-            <div class="agent-name">{firm.name}</div>
-            <div class="agent-meta">
-              <span>Fees: {firm.fees}</span>
-              <span>Min: {firm.minimum}</span>
+        {companies.map((company: any) => (
+          <a href={`/private-equity-placement-agents/${company.slug}`} style="text-decoration: none;">
+            <div class="agent-card">
+              <div class="agent-name">{company.name}</div>
+              {company.headquarters && (
+                <div class="agent-meta">
+                  <span>📍 {company.headquarters}</span>
+                  {company.global_rank && <span>Rank: #{company.global_rank}</span>}
+                </div>
+              )}
+              {company.description && (
+                <p class="agent-description">{company.description}</p>
+              )}
+              {company.specializations && company.specializations.length > 0 && (
+                <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
+                  {company.specializations.slice(0, 3).map((spec: string) => (
+                    <span style="background: rgba(102, 126, 234, 0.2); color: rgba(255, 255, 255, 0.9); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <p class="agent-description">{firm.description}</p>
-          </div>
+          </a>
         ))}
+      </div>
+
+      <div style="text-align: center; margin-top: 48px;">
+        <a href="/private-equity-placement-agents" class="btn btn-primary">View All Placement Agents</a>
       </div>
     </section>
   )}
@@ -1580,39 +1696,58 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
 
     <div class="companies-content">
       <div class="section-header">
-        <h2>Fund Marketing Agencies</h2>
-        <p>Discover premier PE fundraising experts and top placement agents connecting top talent with leading organizations</p>
+        <h2>Private Equity Placement Agents Directory</h2>
+        <p style="font-size: 18px; line-height: 1.7; margin-bottom: 24px;">
+          Placement agents serve as the vital bridge between General Partners (GPs) seeking capital and Limited Partners (LPs) with investment capacity. These specialized intermediaries leverage extensive LP networks, market intelligence, and fundraising expertise to facilitate successful capital raises.
+        </p>
+        <p style="font-size: 16px; line-height: 1.6; color: rgba(255, 255, 255, 0.8);">
+          Our curated directory features leading placement agents across all major PE strategies—buyout, growth equity, venture capital, real estate, and infrastructure. Whether you're a first-time fund manager or an established GP looking to expand your LP base, connect with the right placement partner to accelerate your fundraising success.
+        </p>
       </div>
 
       {companies.length > 0 ? (
         <div class="companies-grid">
           {companies.map((company: any) => (
-            <div class="company-card">
-              <div class="company-header">
-                <div>
-                  <div class="company-name">{company.name}</div>
-                  {company.headquarters && (
-                    <div class="company-location">📍 {company.headquarters}</div>
-                  )}
+            <a href={`/private-equity-placement-agents/${company.slug}`} style="text-decoration: none; color: inherit;">
+              <div class="company-card">
+                <div class="company-header">
+                  <div>
+                    <div class="company-name">{company.name}</div>
+                    {company.headquarters && (
+                      <div class="company-location">📍 {company.headquarters}</div>
+                    )}
+                    {company.global_rank && (
+                      <div class="company-location">🏆 Rank #{company.global_rank}</div>
+                    )}
+                  </div>
+                </div>
+                {company.description && (
+                  <p class="company-description">{company.description}</p>
+                )}
+                {company.specializations && company.specializations.length > 0 && (
+                  <div class="company-tags">
+                    {company.specializations.slice(0, 3).map((spec: string) => (
+                      <span class="tag">{spec}</span>
+                    ))}
+                  </div>
+                )}
+                <div style="margin-top: 16px; color: #667eea; font-weight: 600; font-size: 14px;">
+                  View Profile →
                 </div>
               </div>
-              {company.description && (
-                <p class="company-description">{company.description}</p>
-              )}
-              {company.specializations && company.specializations.length > 0 && (
-                <div class="company-tags">
-                  {company.specializations.slice(0, 3).map((spec: string) => (
-                    <span class="tag">{spec}</span>
-                  ))}
-                </div>
-              )}
-            </div>
+            </a>
           ))}
         </div>
       ) : (
         <div class="empty-state">
           <h3>Coming Soon</h3>
           <p>We're currently curating the finest placement agents. Check back soon!</p>
+        </div>
+      )}
+
+      {companies.length > 0 && (
+        <div style="text-align: center; margin-top: 48px;">
+          <a href="/private-equity-placement-agents" class="btn btn-primary">Explore All Placement Agents</a>
         </div>
       )}
     </div>
