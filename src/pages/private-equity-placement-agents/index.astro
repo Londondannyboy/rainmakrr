@@ -3,7 +3,7 @@ import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
 
-// Fetch all placement agents - NO FILTERS to show all companies
+// Fetch all placement agents - filter by company_type (singular!)
 const companies = await sql`
   SELECT
     id,
@@ -13,13 +13,36 @@ const companies = await sql`
     headquarters,
     logo_url,
     specializations,
-    global_rank
+    global_rank,
+    primary_country
   FROM companies
+  WHERE company_type = 'placement_agent'
   ORDER BY
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
     name ASC
 `;
+
+// Group companies by country
+const companiesByCountry = companies.reduce((acc: any, company: any) => {
+  const country = company.primary_country || 'Other';
+  if (!acc[country]) {
+    acc[country] = [];
+  }
+  acc[country].push(company);
+  return acc;
+}, {});
+
+// Sort countries: UK first, then USA, then alphabetically
+const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
+  if (a === 'UK') return -1;
+  if (b === 'UK') return 1;
+  if (a === 'USA') return -1;
+  if (b === 'USA') return 1;
+  if (a === 'Other') return 1;
+  if (b === 'Other') return -1;
+  return a.localeCompare(b);
+});
 ---
 
 <!DOCTYPE html>
@@ -389,34 +412,43 @@ const companies = await sql`
   <!-- Companies Section -->
   <section class="companies-section">
     {companies.length > 0 ? (
-      <div class="companies-grid">
-        {companies.map((company: any) => (
-          <a href={`/private-equity-placement-agents/${company.slug}`} class="company-card">
-            <div class="company-header">
-              <div style="flex: 1;">
-                <div class="company-name">{company.name}</div>
-                {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
-                  <div class="company-location">{company.headquarters}</div>
-                )}
-              </div>
-              {company.global_rank && (
-                <div class="company-rank">#{company.global_rank}</div>
-              )}
+      <div>
+        {sortedCountries.map((country: string) => (
+          <div style="margin-bottom: 80px;">
+            <h2 style="color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 40px; text-align: center;">
+              {country}
+            </h2>
+            <div class="companies-grid">
+              {companiesByCountry[country].map((company: any) => (
+                <a href={`/private-equity-placement-agents/${company.slug}`} class="company-card">
+                  <div class="company-header">
+                    <div style="flex: 1;">
+                      <div class="company-name">{company.name}</div>
+                      {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
+                        <div class="company-location">{company.headquarters}</div>
+                      )}
+                    </div>
+                    {company.global_rank && (
+                      <div class="company-rank">#{company.global_rank}</div>
+                    )}
+                  </div>
+                  {company.description && (
+                    <p class="company-description">{company.description}</p>
+                  )}
+                  {company.specializations && company.specializations.length > 0 && (
+                    <div class="company-tags">
+                      {company.specializations.slice(0, 3).map((spec: string) => (
+                        <span class="tag">{spec}</span>
+                      ))}
+                      {company.specializations.length > 3 && (
+                        <span class="tag">+{company.specializations.length - 3} more</span>
+                      )}
+                    </div>
+                  )}
+                </a>
+              ))}
             </div>
-            {company.description && (
-              <p class="company-description">{company.description}</p>
-            )}
-            {company.specializations && company.specializations.length > 0 && (
-              <div class="company-tags">
-                {company.specializations.slice(0, 3).map((spec: string) => (
-                  <span class="tag">{spec}</span>
-                ))}
-                {company.specializations.length > 3 && (
-                  <span class="tag">+{company.specializations.length - 3} more</span>
-                )}
-              </div>
-            )}
-          </a>
+          </div>
         ))}
       </div>
     ) : (
