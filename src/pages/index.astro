@@ -60,7 +60,31 @@ const sections = {
 };
 
 // Debug: Log which sections are loaded
-console.log('Homepage sections loaded:', Object.entries(sections).map(([key, val]) => ({ key, hasData: !!val })));
+console.log('Homepage sections loaded:', Object.entries(sections).map(([key, val]) => ({
+  key,
+  hasData: !!val,
+  hasContent: !!(val && (val as any).content),
+  contentKeys: val ? Object.keys((val as any).content || {}) : []
+})));
+
+// Debug specific sections
+if (sections.intro) {
+  console.log('Intro section:', {
+    title: sections.intro.title,
+    hasContent: !!sections.intro.content,
+    contentType: typeof sections.intro.content,
+    content: sections.intro.content
+  });
+}
+
+if (sections.role) {
+  console.log('Role section:', {
+    title: sections.role.title,
+    hasContent: !!sections.role.content,
+    hasItems: !!(sections.role.content as any)?.items,
+    itemsLength: (sections.role.content as any)?.items?.length
+  });
+}
 
 // Mux video playback ID - can be moved to database later
 const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
@@ -810,9 +834,12 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
     }
 
     .content-section.animated {
-      opacity: 0;
-      transform: translateY(40px);
+      opacity: 1;
+      transform: translateY(0);
     }
+
+    /* Temporarily disable animation to debug content visibility */
+    /* Will re-enable once content is confirmed visible */
 
     .section-title {
       font-size: clamp(36px, 5vw, 56px);
@@ -865,8 +892,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 16px;
       padding: 32px;
       transition: all 0.3s;
-      opacity: 0;
-      transform: translateY(30px);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .item-card:hover {
@@ -913,8 +940,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 16px;
       padding: 28px;
       transition: all 0.3s;
-      opacity: 0;
-      transform: translateY(30px);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .agent-card:hover {
@@ -968,8 +995,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 12px;
       padding: 28px;
       transition: all 0.3s;
-      opacity: 0;
-      transform: translateY(30px);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .phase-item:hover {
@@ -1066,8 +1093,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 16px;
       padding: 28px;
       transition: all 0.3s;
-      opacity: 0;
-      transform: translateY(30px);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .faq-item:hover {
@@ -1102,8 +1129,8 @@ const muxPlaybackId = 'JUdKl1HO7kRD9FcNhNJLHIdgnLhLVvf3q8EmigNUYv4';
       border-radius: 12px;
       padding: 24px;
       transition: all 0.3s;
-      opacity: 0;
-      transform: translateY(30px);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .reference-item:hover {
