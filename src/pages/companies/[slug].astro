@@ -1,5 +1,7 @@
 ---
 import { sql } from '../../lib/db';
+import SEO from '../../components/SEO.astro';
+import Schema from '../../components/Schema.astro';
 
 const { slug } = Astro.params;
 
@@ -26,7 +28,7 @@ const companies = await sql`
     geographic_focus
   FROM companies
   WHERE slug = ${slug}
-    AND company_type IN ('placement_agent', 'executive_assistant_recruiters')
+    AND company_type IN ('placement_agents', 'executive_assistant_recruiters')
     AND status = 'published'
   LIMIT 1
 `;
@@ -41,186 +43,634 @@ if (!company) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <SEO
+    title={`${company.name} - Placement Agent Profile | Placement`}
+    description={company.description || `${company.name} - Leading placement agent specializing in PE fundraising`}
+  />
+  <Schema type="company" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{company.name} - Placement Agent Profile | Placement</title>
-  <meta name="description" content={company.description || `${company.name} - Leading placement agent`}>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+  <!-- GSAP Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000;
+      color: #fff;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 24px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover { opacity: 0.6; }
+
+    /* Hero Section */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 160px 40px 80px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(240, 147, 251, 0.15), rgba(0, 0, 0, 0.95));
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.2), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+    }
+
+    .company-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .company-info {
+      flex: 1;
+    }
+
+    .company-logo {
+      height: 60px;
+      width: auto;
+      margin-bottom: 24px;
+    }
+
+    .company-name {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 900;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff, #f093fb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .company-description {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .company-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .meta-link {
+      color: #667eea;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .meta-link:hover {
+      color: #f093fb;
+    }
+
+    .company-rank-badge {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 24px 32px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .rank-number {
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .rank-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Content Section */
+    .content-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 40px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 60px;
+    }
+
+    .main-content {
+      opacity: 0;
+    }
+
+    .sidebar {
+      opacity: 0;
+    }
+
+    .content-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 32px;
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+
+    .card-content {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .specializations-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .spec-tag {
+      padding: 10px 20px;
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .metrics-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .metric-item {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .regions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .region-item {
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 15px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-top: 40px;
+    }
+
+    .back-link:hover {
+      color: #f093fb;
+      transform: translateX(-4px);
+    }
+
+    /* Footer */
+    footer {
+      padding: 80px 60px 40px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, #000 100%);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      margin-top: 60px;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(180deg, rgba(102, 126, 234, 0.05), transparent);
+      pointer-events: none;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .footer-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 12px;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    @media (max-width: 968px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .company-header {
+        flex-direction: column;
+      }
+
+      .company-rank-badge {
+        align-self: flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 20px 30px; }
+
+      .nav-links {
+        gap: 20px;
+        font-size: 12px;
+      }
+
+      .hero {
+        padding: 140px 30px 60px;
+        min-height: auto;
+      }
+
+      .content-section {
+        padding: 80px 30px;
+      }
+
+      .content-card {
+        padding: 28px;
+      }
+
+      footer {
+        padding: 60px 30px 30px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
+
+<body>
   <!-- Navigation -->
-  <nav class="bg-white shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center">
-          <h1 class="text-2xl font-bold text-blue-600">
-            <a href="/">Placement</a>
-          </h1>
-        </div>
-        <div class="flex items-center space-x-8">
-          <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
-          <a href="/articles" class="text-gray-700 hover:text-blue-600 font-medium">Articles</a>
-          <a href="/companies" class="text-blue-600 font-medium">Companies</a>
-        </div>
-      </div>
-    </div>
+  <nav>
+    <div class="logo">Placement</div>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/articles">Articles</a></li>
+      <li><a href="/companies">Companies</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
   </nav>
 
-  <!-- Company Profile -->
-  <article class="py-12">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-      <!-- Header Section -->
-      <header class="bg-white rounded-lg shadow-sm p-8 mb-8">
-        <div class="flex items-start justify-between">
-          <div class="flex-1">
-            <!-- Company Logo -->
-            {company.logo_url && (
-              <div class="mb-6">
-                <img
-                  src={company.logo_url}
-                  alt={`${company.name} logo`}
-                  class="h-16 w-auto"
-                />
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="company-header">
+        <div class="company-info">
+          {company.logo_url && (
+            <img src={company.logo_url} alt={`${company.name} logo`} class="company-logo" />
+          )}
+          <h1 class="company-name">{company.name}</h1>
+          {company.description && (
+            <p class="company-description">{company.description}</p>
+          )}
+          <div class="company-meta">
+            {company.founded_year && (
+              <div class="meta-item">
+                <span class="meta-label">Founded:</span>
+                <span>{company.founded_year}</span>
               </div>
             )}
+            {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
+              <div class="meta-item">
+                <span class="meta-label">Headquarters:</span>
+                <span>{company.headquarters}</span>
+              </div>
+            )}
+            {company.website_url && company.website_url !== 'Unavailable from provided context' && (
+              <div class="meta-item">
+                <span class="meta-label">Website:</span>
+                <a href={company.website_url} target="_blank" rel="noopener noreferrer" class="meta-link">
+                  {company.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+        {company.global_rank && (
+          <div class="company-rank-badge">
+            <div class="rank-number">#{company.global_rank}</div>
+            <div class="rank-label">Global Rank</div>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
 
-            <!-- Company Name -->
-            <div class="mb-4">
-              <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-3 leading-tight">
-                {company.name}
-              </h1>
-              {company.description && (
-                <p class="text-xl text-gray-600 leading-relaxed">
-                  {company.description}
-                </p>
-              )}
+  <!-- Content Section -->
+  <section class="content-section">
+    <div class="content-grid">
+      <!-- Main Content -->
+      <div class="main-content">
+        {company.overview && (
+          <div class="content-card">
+            <h2 class="card-title">Overview</h2>
+            <div class="card-content">
+              <p>{company.overview}</p>
             </div>
+          </div>
+        )}
 
-            <!-- Quick Facts -->
-            <div class="flex flex-wrap gap-6 text-sm text-gray-600 mt-6">
-              {company.founded_year && (
-                <div class="flex items-center">
-                  <span class="font-semibold mr-2">Founded:</span>
-                  <span>{company.founded_year}</span>
+        {company.specializations && company.specializations.length > 0 && (
+          <div class="content-card">
+            <h2 class="card-title">Specializations</h2>
+            <div class="specializations-list">
+              {company.specializations.map((spec: string) => (
+                <span class="spec-tag">{spec}</span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        {(company.capital_raised_total || company.funds_served) && (
+          <div class="content-card">
+            <h3 class="card-title">Key Metrics</h3>
+            <div class="metrics-grid">
+              {company.capital_raised_total && (
+                <div class="metric-item">
+                  <div class="metric-label">Total Capital Raised</div>
+                  <div class="metric-value">
+                    ${(company.capital_raised_total / 1000000000).toFixed(1)}B
+                  </div>
                 </div>
               )}
-              {company.headquarters && company.headquarters !== 'Unavailable from provided context' && (
-                <div class="flex items-center">
-                  <span class="font-semibold mr-2">Headquarters:</span>
-                  <span>{company.headquarters}</span>
-                </div>
-              )}
-              {company.website_url && company.website_url !== 'Unavailable from provided context' && (
-                <div class="flex items-center">
-                  <span class="font-semibold mr-2">Website:</span>
-                  <a href={company.website_url} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
-                    {company.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                  </a>
+              {company.funds_served && (
+                <div class="metric-item">
+                  <div class="metric-label">Funds Served</div>
+                  <div class="metric-value">{company.funds_served}+</div>
                 </div>
               )}
             </div>
           </div>
+        )}
 
-          <!-- Ranking Badge -->
-          {company.global_rank && (
-            <div class="ml-8">
-              <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-lg p-6 text-center min-w-[120px]">
-                <div class="text-3xl font-bold">#{company.global_rank}</div>
-                <div class="text-sm mt-1 opacity-90">Global Rank</div>
-              </div>
+        {company.geographic_focus && company.geographic_focus.length > 0 && (
+          <div class="content-card">
+            <h3 class="card-title">Geographic Focus</h3>
+            <div class="regions-list">
+              {company.geographic_focus.map((region: string) => (
+                <div class="region-item">{region}</div>
+              ))}
             </div>
-          )}
-        </div>
-      </header>
-
-      <!-- Main Content Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        <!-- Left Column - Main Content -->
-        <div class="lg:col-span-2 space-y-8">
-
-          <!-- Overview Section -->
-          {company.overview && (
-            <section class="bg-white rounded-lg shadow-sm p-8">
-              <h2 class="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
-              <div class="prose prose-lg max-w-none">
-                <p class="text-gray-700 leading-relaxed">{company.overview}</p>
-              </div>
-            </section>
-          )}
-
-          <!-- Specializations Section -->
-          {company.specializations && company.specializations.length > 0 && (
-            <section class="bg-white rounded-lg shadow-sm p-8">
-              <h2 class="text-2xl font-bold text-gray-900 mb-6">Specializations</h2>
-              <div class="flex flex-wrap gap-2">
-                {company.specializations.map((spec: string) => (
-                  <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                    {spec}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
-
-        </div>
-
-        <!-- Right Column - Sidebar -->
-        <div class="space-y-8">
-
-          <!-- Key Metrics -->
-          {(company.capital_raised_total || company.funds_served) && (
-            <section class="bg-white rounded-lg shadow-sm p-6">
-              <h3 class="text-lg font-bold text-gray-900 mb-4">Key Metrics</h3>
-              <div class="space-y-4">
-                {company.capital_raised_total && (
-                  <div>
-                    <div class="text-sm text-gray-600 mb-1">Total Capital Raised</div>
-                    <div class="text-2xl font-bold text-gray-900">
-                      ${(company.capital_raised_total / 1000000000).toFixed(1)}B
-                    </div>
-                  </div>
-                )}
-                {company.funds_served && (
-                  <div>
-                    <div class="text-sm text-gray-600 mb-1">Funds Served</div>
-                    <div class="text-2xl font-bold text-gray-900">{company.funds_served}+</div>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-
-          <!-- Geographic Focus -->
-          {company.geographic_focus && company.geographic_focus.length > 0 && (
-            <section class="bg-white rounded-lg shadow-sm p-6">
-              <h3 class="text-lg font-bold text-gray-900 mb-4">Geographic Focus</h3>
-              <div class="space-y-2">
-                {company.geographic_focus.map((region: string) => (
-                  <div class="text-gray-700">{region}</div>
-                ))}
-              </div>
-            </section>
-          )}
-
-        </div>
-      </div>
-
-      <!-- Back Link -->
-      <div class="mt-12">
-        <a href="/companies" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-          ← Back to all placement agents
-        </a>
+          </div>
+        )}
       </div>
     </div>
-  </article>
+
+    <a href="/companies" class="back-link">
+      ← Back to all placement agents
+    </a>
+  </section>
 
   <!-- Footer -->
-  <footer class="bg-gray-900 text-white py-12 mt-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <p class="text-gray-400">© {new Date().getFullYear()} Placement. All rights reserved.</p>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Placement</h3>
+        <p style="color: rgba(255, 255, 255, 0.6); margin-top: 12px;">
+          The definitive guide to Placement and PE Fundraising recruitment.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Resources</h3>
+        <ul class="footer-links">
+          <li><a href="/articles">Articles & Insights</a></li>
+          <li><a href="/companies">Agency Directory</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Company</h3>
+        <ul class="footer-links">
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Legal</h3>
+        <ul class="footer-links">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Placement. All rights reserved.</p>
     </div>
   </footer>
+
+  <script>
+    // Wait for DOM and GSAP to load
+    window.addEventListener('load', function() {
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero animation
+        gsap.to('.hero-content', {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out'
+        });
+
+        // Main content animation
+        gsap.to('.main-content', {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          delay: 0.3,
+          scrollTrigger: {
+            trigger: '.main-content',
+            start: 'top 80%'
+          }
+        });
+
+        // Sidebar animation
+        gsap.to('.sidebar', {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          delay: 0.4,
+          scrollTrigger: {
+            trigger: '.sidebar',
+            start: 'top 80%'
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
