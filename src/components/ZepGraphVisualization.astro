@@ -74,6 +74,22 @@ const { companyId, companyName } = Astro.props;
 
       const graphData = await response.json();
 
+      // Check response type
+      if (graphData.type === 'screenshot' && graphData.screenshot_url) {
+        // Display screenshot image
+        loadingEl.classList.add('hidden');
+        networkEl.innerHTML = `
+          <img
+            src="${graphData.screenshot_url}"
+            alt="Zep Knowledge Graph for ${companyName}"
+            class="w-full h-full object-contain rounded-xl"
+            style="background: #0f172a;"
+          />
+        `;
+        networkEl.classList.remove('hidden');
+        return;
+      }
+
       if (!graphData.nodes || graphData.nodes.length === 0) {
         // No data - show coming soon message
         loadingEl.classList.add('hidden');

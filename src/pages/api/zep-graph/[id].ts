@@ -36,12 +36,16 @@ export const GET: APIRoute = async ({ params }) => {
     const company = companies[0];
     const payload = company.payload || {};
 
-    // Check if we have zep_graph_data in payload
-    const graphData = payload.zep_graph_data;
+    // Check if we have a screenshot URL (preferred method)
+    const screenshotUrl = payload.zep_graph_screenshot_url;
 
-    if (graphData && graphData.nodes && graphData.nodes.length > 0) {
-      // Return stored graph data
-      return new Response(JSON.stringify(graphData), {
+    if (screenshotUrl) {
+      // Return screenshot URL
+      return new Response(JSON.stringify({
+        type: 'screenshot',
+        screenshot_url: screenshotUrl,
+        message: 'Graph visualization from Zep'
+      }), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -50,11 +54,27 @@ export const GET: APIRoute = async ({ params }) => {
       });
     }
 
-    // No graph data available yet - return empty graph
-    // In the future, we could fetch from Zep API here
+    // Check if we have zep_graph_data in payload (fallback)
+    const graphData = payload.zep_graph_data;
+
+    if (graphData && graphData.nodes && graphData.nodes.length > 0) {
+      // Return stored graph data
+      return new Response(JSON.stringify({
+        type: 'data',
+        nodes: graphData.nodes,
+        edges: graphData.edges
+      }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+        }
+      });
+    }
+
+    // No graph data available yet
     return new Response(JSON.stringify({
-      nodes: [],
-      edges: [],
+      type: 'none',
       message: 'Graph data will be available after next company update'
     }), {
       status: 200,
