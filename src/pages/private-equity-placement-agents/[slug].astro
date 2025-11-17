@@ -388,8 +388,8 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
               .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
               // Bold text
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-              // Split after sentence endings - AVOID breaking after titles like Mr., Mrs., Dr., etc.
-              .replace(/([.!?])(\s+)(?!(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|Inc|Ltd|Corp|Co)\b)([A-Z])/g, '$1</p><p>$3')
+              // Split after sentence endings - AVOID breaking after abbreviations
+              .replace(/([.!?])(\s+)(?!(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|Inc|Ltd|Corp|Co|U\.S|U\.K|U\.N|E\.U|vs)\b)([A-Z])/g, '$1</p><p>$3')
               // Convert newlines to paragraphs
               .replace(/\n\n/g, '</p><p>')
               // Wrap in paragraph
