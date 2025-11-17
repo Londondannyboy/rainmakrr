@@ -148,12 +148,23 @@ console.log('[PLACEMENT] Extracted tags:', tags);
     </div>
   </nav>
 
-  <!-- Hero Section with Hero Image -->
+  <!-- Full-Width Hero Image -->
+  {company.hero_image_url && (
+    <div class="w-full h-96 overflow-hidden">
+      <img
+        src={company.hero_image_url}
+        alt={company.name}
+        class="w-full h-full object-cover"
+      />
+    </div>
+  )}
+
+  <!-- Hero Section -->
   <div class="relative pt-24 pb-16 overflow-hidden">
-    {(company.hero_image_url || company.featured_image_url) && (
+    {company.featured_image_url && !company.hero_image_url && (
       <div class="absolute inset-0 z-0">
         <img
-          src={company.hero_image_url || company.featured_image_url}
+          src={company.featured_image_url}
           alt={company.name}
           class="w-full h-full object-cover opacity-10 blur-sm"
         />
