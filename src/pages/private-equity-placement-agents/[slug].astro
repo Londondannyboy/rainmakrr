@@ -12,14 +12,13 @@ if (!slug) {
 
 console.log('[PLACEMENT] Looking for company with slug:', slug);
 
-// Fetch company with V2 payload structure
+// Fetch company with payload
 const companies = await sql`
   SELECT
     id,
     name,
     slug,
     logo_url,
-    header_image_url,
     payload
   FROM companies
   WHERE slug = ${slug}
@@ -27,42 +26,42 @@ const companies = await sql`
   LIMIT 1
 `;
 
-console.log('[PLACEMENT] Query returned companies:', companies?.length || 0);
+console.log('[PLACEMENT] Query returned:', companies?.length || 0, 'companies');
 
 const companyRow = companies[0];
 
 if (!companyRow) {
   console.error('[PLACEMENT] No company found for slug:', slug);
-  console.error('[PLACEMENT] DATABASE_URL set:', !!import.meta.env.DATABASE_URL);
   return Astro.redirect('/');
 }
 
-// Parse V2 payload
-const payload = typeof companyRow.payload === 'string'
-  ? JSON.parse(companyRow.payload)
-  : companyRow.payload;
+console.log('[PLACEMENT] Company found:', companyRow.name);
 
-// Extract data from V2 structure
+// Parse payload
+const payload = companyRow.payload || {};
+console.log('[PLACEMENT] Payload has profile_sections:', !!payload.profile_sections);
+
+// Build company object
 const company = {
   id: companyRow.id,
   name: companyRow.name,
   slug: companyRow.slug,
   logo_url: companyRow.logo_url || payload.logo_url,
-  header_image_url: companyRow.header_image_url || payload.featured_image_url,
-  // V2 structured fields
   website: payload.website,
   industry: payload.industry,
   headquarters_city: payload.headquarters_city,
   headquarters_country: payload.headquarters_country,
   founded_year: payload.founded_year,
   employee_range: payload.employee_range,
-  // V2 narrative sections
   profile_sections: payload.profile_sections || {},
 };
 
-// Get overview for meta description
+// Get overview for description
 const overviewSection = company.profile_sections.overview;
-const metaDescription = overviewSection?.content?.substring(0, 160) || `${company.name} - Leading placement agent profile`;
+const description = overviewSection?.content?.substring(0, 200) || `${company.name} - Leading placement agent`;
+const metaDescription = overviewSection?.content?.substring(0, 160) || description;
+
+console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_sections).length);
 ---
 
 <!DOCTYPE html>
@@ -77,13 +76,9 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- GSAP Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-
-  <style is:inline>
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html { scroll-behavior: smooth; }
@@ -93,10 +88,8 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       background: #000;
       color: #fff;
       line-height: 1.6;
-      overflow-x: hidden;
     }
 
-    /* Navigation */
     nav {
       position: fixed;
       top: 0;
@@ -107,7 +100,7 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.9);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -119,7 +112,6 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
     }
 
     .nav-links {
@@ -133,51 +125,20 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       text-decoration: none;
       font-weight: 600;
       font-size: 14px;
-      transition: opacity 0.3s;
     }
 
-    .nav-links a:hover { opacity: 0.6; }
-
-    /* Hero Section */
     .hero {
-      min-height: 60vh;
+      min-height: 50vh;
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 160px 40px 80px;
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(240, 147, 251, 0.15), rgba(0, 0, 0, 0.95));
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.2), transparent 70%);
-      pointer-events: none;
+      padding: 140px 40px 60px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1));
     }
 
     .hero-content {
       max-width: 1200px;
+      margin: 0 auto;
       width: 100%;
-      position: relative;
-      z-index: 10;
-      opacity: 0;
-    }
-
-    .company-header {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 40px;
-    }
-
-    .company-info {
-      flex: 1;
     }
 
     .company-logo {
@@ -187,22 +148,20 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
     }
 
     .company-name {
-      font-size: clamp(36px, 6vw, 64px);
+      font-size: 48px;
       font-weight: 900;
       margin-bottom: 16px;
       background: linear-gradient(135deg, #fff, #f093fb);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
     }
 
     .company-description {
-      font-size: clamp(18px, 2.5vw, 22px);
+      font-size: 20px;
       color: rgba(255, 255, 255, 0.8);
-      line-height: 1.6;
       margin-bottom: 32px;
+      max-width: 800px;
     }
 
     .company-meta {
@@ -224,66 +183,10 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       color: rgba(255, 255, 255, 0.9);
     }
 
-    .meta-link {
-      color: #667eea;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    .meta-link:hover {
-      color: #f093fb;
-    }
-
-    .company-rank-badge {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      padding: 24px 32px;
-      text-align: center;
-      min-width: 140px;
-    }
-
-    .rank-number {
-      font-size: 48px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #667eea, #f093fb);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .rank-label {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* Content Section */
     .content-section {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 100px 40px;
-      position: relative;
-      z-index: 10;
-    }
-
-    .content-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 60px;
-    }
-
-    .main-content {
-      opacity: 0;
-    }
-
-    .sidebar {
-      opacity: 0;
+      padding: 60px 40px;
     }
 
     .content-card {
@@ -308,64 +211,22 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       color: rgba(255, 255, 255, 0.85);
     }
 
-    .specializations-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+    .card-content p {
+      margin-bottom: 16px;
     }
 
-    .spec-tag {
-      padding: 10px 20px;
-      background: rgba(102, 126, 234, 0.2);
-      border: 1px solid rgba(102, 126, 234, 0.3);
-      border-radius: 100px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #667eea;
+    .card-content strong {
+      color: #fff;
+      font-weight: 700;
     }
 
-    .metrics-grid {
-      display: grid;
-      gap: 24px;
+    .card-content ul {
+      margin: 16px 0;
+      padding-left: 20px;
     }
 
-    .metric-item {
-      padding: 24px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .metric-label {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.6);
+    .card-content li {
       margin-bottom: 8px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .metric-value {
-      font-size: 32px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #667eea, #f093fb);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .regions-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .region-item {
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 15px;
     }
 
     .back-link {
@@ -375,124 +236,33 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
       color: #667eea;
       text-decoration: none;
       font-weight: 600;
-      transition: all 0.3s;
       margin-top: 40px;
     }
 
     .back-link:hover {
       color: #f093fb;
-      transform: translateX(-4px);
     }
 
-    /* Footer */
     footer {
-      padding: 80px 60px 40px;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, #000 100%);
+      padding: 60px 40px 40px;
+      background: rgba(0, 0, 0, 0.95);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
       margin-top: 60px;
-    }
-
-    footer::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 200px;
-      background: linear-gradient(180deg, rgba(102, 126, 234, 0.05), transparent);
-      pointer-events: none;
-    }
-
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 60px;
-      margin-bottom: 60px;
-    }
-
-    .footer-section h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-
-    .footer-links {
-      list-style: none;
-    }
-
-    .footer-links a {
-      color: rgba(255, 255, 255, 0.6);
-      text-decoration: none;
-      display: block;
-      margin-bottom: 12px;
-      transition: color 0.3s;
-    }
-
-    .footer-links a:hover {
-      color: #fff;
-    }
-
-    .footer-bottom {
       text-align: center;
-      padding-top: 40px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
       color: rgba(255, 255, 255, 0.5);
-      font-size: 14px;
-    }
-
-    @media (max-width: 968px) {
-      .content-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .company-header {
-        flex-direction: column;
-      }
-
-      .company-rank-badge {
-        align-self: flex-start;
-      }
     }
 
     @media (max-width: 768px) {
       nav { padding: 20px 30px; }
-
-      .nav-links {
-        gap: 20px;
-        font-size: 12px;
-      }
-
-      .hero {
-        padding: 140px 30px 60px;
-        min-height: auto;
-      }
-
-      .content-section {
-        padding: 80px 30px;
-      }
-
-      .content-card {
-        padding: 28px;
-      }
-
-      footer {
-        padding: 60px 30px 30px;
-      }
-
-      .footer-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
+      .hero { padding: 120px 30px 40px; }
+      .company-name { font-size: 36px; }
+      .content-section { padding: 40px 30px; }
+      .content-card { padding: 28px; }
     }
   </style>
 </head>
 
 <body>
-  <!-- Navigation -->
   <nav>
     <a href="/" class="logo">Placement</a>
     <ul class="nav-links">
@@ -501,207 +271,77 @@ const metaDescription = overviewSection?.content?.substring(0, 160) || `${compan
     </ul>
   </nav>
 
-  <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <div class="company-header">
-        <div class="company-info">
-          {company.logo_url && (
-            <img src={company.logo_url} alt={`${company.name} logo`} class="company-logo" />
-          )}
-          <h1 class="company-name">{company.name}</h1>
-          {overviewSection && (
-            <p class="company-description">{overviewSection.content.substring(0, 200)}...</p>
-          )}
-          <div class="company-meta">
-            {company.founded_year && (
-              <div class="meta-item">
-                <span class="meta-label">Founded:</span>
-                <span>{company.founded_year}</span>
-              </div>
-            )}
-            {company.employee_range && (
-              <div class="meta-item">
-                <span class="meta-label">Employees:</span>
-                <span>{company.employee_range}</span>
-              </div>
-            )}
-            {company.headquarters_city && (
-              <div class="meta-item">
-                <span class="meta-label">Headquarters:</span>
-                <span>{company.headquarters_city}, {company.headquarters_country}</span>
-              </div>
-            )}
-            {company.website && (
-              <div class="meta-item">
-                <a href={company.website} target="_blank" rel="noopener noreferrer" class="meta-link">Visit Website</a>
-              </div>
-            )}
+      {company.logo_url && (
+        <img src={company.logo_url} alt={`${company.name} logo`} class="company-logo" />
+      )}
+      <h1 class="company-name">{company.name}</h1>
+      {overviewSection && (
+        <p class="company-description">{description}...</p>
+      )}
+      <div class="company-meta">
+        {company.founded_year && (
+          <div class="meta-item">
+            <span class="meta-label">Founded:</span>
+            <span>{company.founded_year}</span>
           </div>
-        </div>
+        )}
+        {company.employee_range && (
+          <div class="meta-item">
+            <span class="meta-label">Employees:</span>
+            <span>{company.employee_range}</span>
+          </div>
+        )}
+        {company.headquarters_city && (
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span>{company.headquarters_city}, {company.headquarters_country}</span>
+          </div>
+        )}
+        {company.website && (
+          <div class="meta-item">
+            <a href={company.website} target="_blank" rel="noopener noreferrer" style="color: #667eea; text-decoration: none;">
+              Visit Website →
+            </a>
+          </div>
+        )}
       </div>
     </div>
   </section>
 
-  <!-- Content Section -->
   <section class="content-section">
-    <div class="content-grid">
-      <!-- Main Content - V2 Dynamic Sections -->
-      <div class="main-content">
-        {Object.entries(company.profile_sections).map(([key, section]: [string, any]) => (
-          <div class="content-card">
-            <h2 class="card-title">{section.title}</h2>
-            <div class="card-content">
-              <div set:html={
-                section.content
-                  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                  .replace(/\n\n/g, '</p><p class="mt-4" style="margin-top: 16px;">')
-                  .replace(/^(.+)$/, '<p>$1</p>')
-                  .replace(/^- (.+)/gm, '<li>$1</li>')
-                  .replace(/(<li>.*<\/li>)/s, '<ul class="list-disc list-inside" style="margin-top: 16px; padding-left: 20px;">$1</ul>')
-              }></div>
-            </div>
-          </div>
-        ))}
-
-        {/* Fallback if no sections */}
-        {Object.keys(company.profile_sections).length === 0 && (
-          <div class="content-card">
-            <div class="card-content">
-              <p style="color: rgba(255, 255, 255, 0.6);">Profile information for {company.name} is being generated. Please check back soon.</p>
-            </div>
-          </div>
-        )}
+    {Object.entries(company.profile_sections).map(([key, section]: [string, any]) => (
+      <div class="content-card">
+        <h2 class="card-title">{section.title}</h2>
+        <div class="card-content">
+          <div set:html={
+            section.content
+              .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\n\n/g, '</p><p>')
+              .replace(/^(.+)$/m, '<p>$1</p>')
+              .replace(/^- (.+)/gm, '<li>$1</li>')
+              .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+          }></div>
+        </div>
       </div>
+    ))}
 
-      <!-- Sidebar - V2 Simplified -->
-      <div class="sidebar">
-        {company.industry && (
-          <div class="content-card">
-            <h3 class="card-title">Industry</h3>
-            <div class="card-content">
-              <p>{company.industry}</p>
-            </div>
-          </div>
-        )}
-
-        {(company.headquarters_city || company.founded_year || company.employee_range) && (
-          <div class="content-card">
-            <h3 class="card-title">Company Info</h3>
-            <div class="card-content">
-              <div style="display: grid; gap: 16px;">
-                {company.founded_year && (
-                  <div>
-                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 4px;">Founded</div>
-                    <div style="font-size: 18px; font-weight: 700;">{company.founded_year}</div>
-                  </div>
-                )}
-                {company.employee_range && (
-                  <div>
-                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 4px;">Employees</div>
-                    <div style="font-size: 18px; font-weight: 700;">{company.employee_range}</div>
-                  </div>
-                )}
-                {company.headquarters_city && (
-                  <div>
-                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 4px;">Location</div>
-                    <div style="font-size: 18px; font-weight: 700;">{company.headquarters_city}, {company.headquarters_country}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+    {Object.keys(company.profile_sections).length === 0 && (
+      <div class="content-card">
+        <div class="card-content">
+          <p>Profile information for {company.name} is being generated. Please check back soon.</p>
+        </div>
       </div>
-    </div>
+    )}
 
     <a href="/private-equity-placement-agents" class="back-link">
       ← Back to all placement agents
     </a>
   </section>
 
-  <!-- Footer -->
   <footer>
-    <div class="footer-content">
-      <div class="footer-section">
-        <h3>Placement</h3>
-        <p style="color: rgba(255, 255, 255, 0.6); margin-top: 12px;">
-          Your definitive private equity placement agents news source.
-        </p>
-        <p style="margin-top: 16px;">
-          <a href="/" style="color: #667eea; text-decoration: none; font-weight: 600;">Top Private Equity Placement Agents</a>
-        </p>
-      </div>
-
-      <div class="footer-section">
-        <h3>Resources</h3>
-        <ul class="footer-links">
-          <li><a href="/articles">Articles & Insights</a></li>
-          <li><a href="/private-equity-placement-agents">Agency Directory</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h3>Company</h3>
-        <ul class="footer-links">
-          <li><a href="/about">About</a></li>
-          <li><a href="/contact">Contact</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h3>Legal</h3>
-        <ul class="footer-links">
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms & Conditions</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 Placement. All rights reserved.</p>
-    </div>
+    <p>© 2025 Placement. All rights reserved.</p>
   </footer>
-
-  <script>
-    // Wait for DOM and GSAP to load
-    window.addEventListener('load', function() {
-      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Hero animation
-        gsap.to('.hero-content', {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out'
-        });
-
-        // Main content animation
-        gsap.to('.main-content', {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          delay: 0.3,
-          scrollTrigger: {
-            trigger: '.main-content',
-            start: 'top 80%'
-          }
-        });
-
-        // Sidebar animation
-        gsap.to('.sidebar', {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          delay: 0.4,
-          scrollTrigger: {
-            trigger: '.sidebar',
-            start: 'top 80%'
-          }
-        });
-      }
-    });
-  </script>
 </body>
 </html>
