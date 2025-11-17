@@ -438,6 +438,80 @@ console.log('[PLACEMENT] Extracted tags:', tags);
       </div>
     </div>
 
+    <!-- Our Coverage Section - Articles we've written about this company -->
+    <div class="mt-12 bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm rounded-2xl p-8 border border-blue-700/30">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+          </div>
+          <span>Our Coverage</span>
+        </h2>
+        <span class="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-semibold rounded-full border border-blue-500/30">
+          Open Access • No Paywall
+        </span>
+      </div>
+
+      <p class="text-slate-300 mb-6">
+        Unlike PE News and other paywalled sources, all our coverage is freely accessible. Here's what we've written about {company.name}:
+      </p>
+
+      <!-- Article Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Example Article 1: The company profile itself -->
+        <a href={`/private-equity-placement-agents/${company.slug}`} class="group bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+              {company.name.charAt(0)}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-300 transition-colors line-clamp-2">
+                {company.name} - Placement Agent Profile
+              </h3>
+              <div class="flex items-center gap-2 text-xs text-slate-400">
+                <span>Company Profile</span>
+                <span>•</span>
+                <span>{new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm line-clamp-3 mb-4">
+            Comprehensive profile covering {company.name}'s services, team, recent deals, and market position in the private equity placement agent industry.
+          </p>
+          <div class="flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors">
+            Read Full Profile →
+          </div>
+        </a>
+
+        <!-- Placeholder for future articles -->
+        <div class="bg-gradient-to-br from-slate-800/30 to-slate-900/30 rounded-xl p-6 border border-slate-700/20 border-dashed">
+          <div class="flex flex-col items-center justify-center text-center py-8">
+            <div class="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </div>
+            <h4 class="text-slate-400 font-semibold mb-2">More Coverage Coming</h4>
+            <p class="text-slate-500 text-sm">
+              Stay tuned for in-depth articles, deal analysis, and industry insights about {company.name}.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-6 pt-6 border-t border-slate-700/30 text-center">
+        <p class="text-slate-400 text-sm">
+          Want to stay updated on {company.name}?
+          <a href="/articles" class="text-blue-400 hover:text-blue-300 transition-colors font-medium ml-1">
+            Browse all articles →
+          </a>
+        </p>
+      </div>
+    </div>
+
     <!-- Resources Section - Full Width at Bottom -->
     {company.profile_sections.resources && (
       <div class="mt-12 bg-gradient-to-br from-slate-900/30 to-slate-800/20 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30">
