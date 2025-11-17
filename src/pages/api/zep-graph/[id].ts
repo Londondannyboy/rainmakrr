@@ -36,38 +36,56 @@ export const GET: APIRoute = async ({ params }) => {
     const company = companies[0];
     const payload = company.payload || {};
 
-    // Check if we have a screenshot URL (preferred method)
-    const screenshotUrl = payload.zep_graph_screenshot_url;
+    // Priority order: 3D video > Interactive data > Screenshot
 
-    if (screenshotUrl) {
-      // Return screenshot URL
+    // Check for 3D video (most engaging - Attempt #2)
+    const videoUrl = payload.zep_graph_3d_video_url;
+
+    if (videoUrl) {
       return new Response(JSON.stringify({
-        type: 'screenshot',
-        screenshot_url: screenshotUrl,
-        message: 'Graph visualization from Zep'
+        type: 'video',
+        video_url: videoUrl,
+        message: '3D animated graph visualization'
       }), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+          'Cache-Control': 'public, max-age=3600'
         }
       });
     }
 
-    // Check if we have zep_graph_data in payload (fallback)
+    // Check for interactive graph data (Attempt #1)
     const graphData = payload.zep_graph_data;
 
     if (graphData && graphData.nodes && graphData.nodes.length > 0) {
-      // Return stored graph data
       return new Response(JSON.stringify({
         type: 'data',
         nodes: graphData.nodes,
-        edges: graphData.edges
+        edges: graphData.edges,
+        message: 'Interactive graph visualization'
       }), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+          'Cache-Control': 'public, max-age=3600'
+        }
+      });
+    }
+
+    // Check for screenshot (Attempt #3 - fallback)
+    const screenshotUrl = payload.zep_graph_screenshot_url;
+
+    if (screenshotUrl) {
+      return new Response(JSON.stringify({
+        type: 'screenshot',
+        screenshot_url: screenshotUrl,
+        message: 'Graph visualization screenshot'
+      }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=3600'
         }
       });
     }

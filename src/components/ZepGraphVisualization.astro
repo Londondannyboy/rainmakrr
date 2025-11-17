@@ -74,9 +74,30 @@ const { companyId, companyName } = Astro.props;
 
       const graphData = await response.json();
 
-      // Check response type
+      // Check response type - Priority: video > data > screenshot
+
+      // Handle 3D video (Attempt #2)
+      if (graphData.type === 'video' && graphData.video_url) {
+        loadingEl.classList.add('hidden');
+        networkEl.innerHTML = `
+          <video
+            autoplay
+            loop
+            muted
+            playsinline
+            class="w-full h-full object-contain rounded-xl"
+            style="background: #0f172a;"
+          >
+            <source src="${graphData.video_url}" type="video/webm" />
+            Your browser does not support video playback.
+          </video>
+        `;
+        networkEl.classList.remove('hidden');
+        return;
+      }
+
+      // Handle screenshot (Attempt #3)
       if (graphData.type === 'screenshot' && graphData.screenshot_url) {
-        // Display screenshot image
         loadingEl.classList.add('hidden');
         networkEl.innerHTML = `
           <img
@@ -90,6 +111,7 @@ const { companyId, companyName } = Astro.props;
         return;
       }
 
+      // Handle interactive data (Attempt #1)
       if (!graphData.nodes || graphData.nodes.length === 0) {
         // No data - show coming soon message
         loadingEl.classList.add('hidden');
