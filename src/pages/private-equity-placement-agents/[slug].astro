@@ -67,7 +67,7 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <SEO
     title={`${company.name} - Placement Agent Profile | Placement`}
@@ -76,342 +76,191 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
   <Schema type="company" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #000;
-      color: #fff;
-      line-height: 1.6;
-    }
-
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 24px 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #667eea, #f093fb);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 40px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .hero {
-      min-height: 60vh;
-      display: flex;
-      align-items: center;
-      padding: 140px 40px 80px;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1));
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: var(--hero-image);
-      background-size: cover;
-      background-position: center 30%;
-      opacity: 0.15;
-      filter: blur(2px);
-      transform: scale(1.1);
-    }
-
-    .hero-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      position: relative;
-      z-index: 10;
-    }
-
-    .company-logo {
-      height: 60px;
-      width: auto;
-      margin-bottom: 24px;
-    }
-
-    .company-name {
-      font-size: 48px;
-      font-weight: 900;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #fff, #f093fb);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .company-description {
-      font-size: 20px;
-      color: rgba(255, 255, 255, 0.8);
-      margin-bottom: 32px;
-      max-width: 800px;
-    }
-
-    .company-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
-      font-size: 15px;
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .meta-label {
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .content-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 60px 40px;
-    }
-
-    .content-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 40px;
-      margin-bottom: 32px;
-    }
-
-    .card-title {
-      font-size: 28px;
-      font-weight: 900;
-      margin-bottom: 24px;
-      color: #fff;
-    }
-
-    .card-content {
-      font-size: 17px;
-      line-height: 2.2;
-      color: rgba(255, 255, 255, 0.85);
-    }
-
-    .card-content p {
-      margin-bottom: 32px;
-    }
-
-    .card-content a {
-      color: #667eea;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-      transition: all 0.3s;
-    }
-
-    .card-content a:hover {
-      color: #f093fb;
-      border-bottom-color: #f093fb;
-    }
-
-    .card-content strong {
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .card-content ul {
-      margin: 24px 0;
-      padding-left: 20px;
-      line-height: 2;
-    }
-
-    .card-content li {
-      margin-bottom: 12px;
-    }
-
-    /* Resources section styling */
-    .resources-card {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.05);
-    }
-
-    .resources-title {
-      font-size: 20px;
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .resources-content {
-      font-size: 14px;
-      line-height: 1.8;
-      color: rgba(255, 255, 255, 0.65);
-    }
-
-    .resources-content ul {
-      margin: 12px 0;
-      padding-left: 16px;
-      line-height: 1.8;
-    }
-
-    .resources-content li {
-      margin-bottom: 8px;
-    }
-
-    .resources-content a {
-      font-size: 14px;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 40px;
-    }
-
-    .back-link:hover {
-      color: #f093fb;
-    }
-
-    footer {
-      padding: 60px 40px 40px;
-      background: rgba(0, 0, 0, 0.95);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      margin-top: 60px;
-      text-align: center;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    @media (max-width: 768px) {
-      nav { padding: 20px 30px; }
-      .hero { padding: 120px 30px 40px; }
-      .company-name { font-size: 36px; }
-      .content-section { padding: 40px 30px; }
-      .content-card { padding: 28px; }
-    }
-  </style>
 </head>
 
-<body>
-  <nav>
-    <a href="/" class="logo">Placement</a>
-    <ul class="nav-links">
-      <li><a href="/articles">Articles</a></li>
-      <li><a href="/private-equity-placement-agents">Placement Agents</a></li>
-    </ul>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 min-h-screen">
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          Placement
+        </a>
+        <div class="flex items-center space-x-8">
+          <a href="/articles" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Articles</a>
+          <a href="/private-equity-placement-agents" class="text-blue-400 text-sm font-medium">Placement Agents</a>
+        </div>
+      </div>
+    </div>
   </nav>
 
-  <section class="hero" style={company.featured_image_url ? `--hero-image: url(${company.featured_image_url})` : ''}>
-    <div class="hero-content">
-      {company.logo_url && (
-        <img src={company.logo_url} alt={`${company.name} logo`} class="company-logo" />
-      )}
-      <h1 class="company-name">{company.name}</h1>
-      {overviewSection && (
-        <p class="company-description">{description}...</p>
-      )}
-      <div class="company-meta">
-        {company.founded_year && (
-          <div class="meta-item">
-            <span class="meta-label">Founded:</span>
-            <span>{company.founded_year}</span>
+  <!-- Hero Section with Featured Image -->
+  <div class="relative pt-24 pb-16 overflow-hidden">
+    {company.featured_image_url && (
+      <div class="absolute inset-0 z-0">
+        <img
+          src={company.featured_image_url}
+          alt={company.name}
+          class="w-full h-full object-cover opacity-10 blur-sm"
+        />
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-900/80 to-slate-950"></div>
+      </div>
+    )}
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row items-start gap-8">
+        <!-- Company Info -->
+        <div class="flex-1">
+          {company.logo_url && (
+            <img
+              src={company.logo_url}
+              alt={`${company.name} logo`}
+              class="h-16 w-auto mb-6 rounded-lg"
+            />
+          )}
+
+          <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-semibold rounded-full mb-4">
+            Placement Agent
+          </span>
+
+          <h1 class="text-4xl lg:text-6xl font-black mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent leading-tight">
+            {company.name}
+          </h1>
+
+          {overviewSection && (
+            <p class="text-xl text-slate-300 leading-relaxed mb-6 max-w-3xl">
+              {description}...
+            </p>
+          )}
+
+          <!-- Meta Info -->
+          <div class="flex flex-wrap gap-6 text-sm">
+            {company.founded_year && (
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500">Founded</span>
+                <span class="font-semibold text-white">{company.founded_year}</span>
+              </div>
+            )}
+            {company.employee_range && (
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500">Employees</span>
+                <span class="font-semibold text-white">{company.employee_range}</span>
+              </div>
+            )}
+            {company.headquarters_city && (
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500">Location</span>
+                <span class="font-semibold text-white">{company.headquarters_city}, {company.headquarters_country}</span>
+              </div>
+            )}
+            {company.website && (
+              <a href={company.website} target="_blank" rel="noopener noreferrer"
+                 class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
+                <span>Visit Website</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </a>
+            )}
           </div>
-        )}
-        {company.employee_range && (
-          <div class="meta-item">
-            <span class="meta-label">Employees:</span>
-            <span>{company.employee_range}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content (2/3) -->
+      <div class="lg:col-span-2 space-y-6">
+        {Object.entries(company.profile_sections)
+          .filter(([key]) => key !== 'resources')
+          .map(([key, section]: [string, any]) => (
+          <div class="group bg-gradient-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
+            <div class="flex items-start gap-4 mb-6">
+              <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                {section.title.charAt(0)}
+              </div>
+              <div class="flex-1">
+                <h2 class="text-2xl font-bold text-white mb-1">{section.title}</h2>
+                <div class="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+              </div>
+            </div>
+
+            <div class="prose prose-invert prose-lg max-w-none
+                        prose-p:text-slate-300 prose-p:leading-relaxed prose-p:mb-6
+                        prose-strong:text-white prose-strong:font-semibold
+                        prose-a:text-blue-400 prose-a:no-underline prose-a:border-b prose-a:border-blue-400/30 hover:prose-a:border-blue-400 prose-a:transition-colors
+                        prose-ul:space-y-3 prose-li:text-slate-300
+                        prose-headings:text-white">
+              <div set:html={
+                section.content
+                  .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+                  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/([.!?])(\s+)(?!(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|Inc|Ltd|Corp|Co|U\.S|U\.K|U\.N|E\.U|vs)\b)([A-Z])/g, '$1</p><p>$3')
+                  .replace(/\n\n/g, '</p><p>')
+                  .replace(/^(.+)$/m, '<p>$1</p>')
+                  .replace(/^- (.+)/gm, '<li>$1</li>')
+                  .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+              }></div>
+            </div>
           </div>
-        )}
-        {company.headquarters_city && (
-          <div class="meta-item">
-            <span class="meta-label">Location:</span>
-            <span>{company.headquarters_city}, {company.headquarters_country}</span>
-          </div>
-        )}
-        {company.website && (
-          <div class="meta-item">
-            <a href={company.website} target="_blank" rel="noopener noreferrer" style="color: #667eea; text-decoration: none;">
-              Visit Website →
-            </a>
+        ))}
+      </div>
+
+      <!-- Sidebar (1/3) -->
+      <div class="space-y-6">
+        <!-- Quick Info Card -->
+        {(company.industry || company.founded_year || company.employee_range || company.headquarters_city) && (
+          <div class="bg-gradient-to-br from-slate-900/80 to-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+              Company Info
+            </h3>
+            <div class="space-y-4">
+              {company.industry && (
+                <div>
+                  <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Industry</div>
+                  <div class="text-white font-medium">{company.industry}</div>
+                </div>
+              )}
+              {company.founded_year && (
+                <div>
+                  <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Founded</div>
+                  <div class="text-white font-medium">{company.founded_year}</div>
+                </div>
+              )}
+              {company.employee_range && (
+                <div>
+                  <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Team Size</div>
+                  <div class="text-white font-medium">{company.employee_range}</div>
+                </div>
+              )}
+              {company.headquarters_city && (
+                <div>
+                  <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Headquarters</div>
+                  <div class="text-white font-medium">{company.headquarters_city}, {company.headquarters_country}</div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
     </div>
-  </section>
 
-  <section class="content-section">
-    {Object.entries(company.profile_sections)
-      .filter(([key]) => key !== 'resources')
-      .map(([key, section]: [string, any]) => (
-      <div class="content-card">
-        <h2 class="card-title">{section.title}</h2>
-        <div class="card-content">
-          <div set:html={
-            section.content
-              // Markdown links: [text](url)
-              .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-              // Bold text
-              .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-              // Split after sentence endings - AVOID breaking after abbreviations
-              .replace(/([.!?])(\s+)(?!(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|Inc|Ltd|Corp|Co|U\.S|U\.K|U\.N|E\.U|vs)\b)([A-Z])/g, '$1</p><p>$3')
-              // Convert newlines to paragraphs
-              .replace(/\n\n/g, '</p><p>')
-              // Wrap in paragraph
-              .replace(/^(.+)$/m, '<p>$1</p>')
-              // Lists
-              .replace(/^- (.+)/gm, '<li>$1</li>')
-              .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-          }></div>
-        </div>
-      </div>
-    ))}
-
-    {/* Resources Section - Styled differently */}
+    <!-- Resources Section - Full Width at Bottom -->
     {company.profile_sections.resources && (
-      <div class="content-card resources-card">
-        <h2 class="card-title resources-title">{company.profile_sections.resources.title}</h2>
-        <div class="resources-content">
+      <div class="mt-12 bg-gradient-to-br from-slate-900/30 to-slate-800/20 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30">
+        <h2 class="text-xl font-bold text-slate-300 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          {company.profile_sections.resources.title}
+        </h2>
+        <div class="prose prose-invert prose-sm max-w-none prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300 prose-li:text-slate-400">
           <div set:html={
             company.profile_sections.resources.content
-              // Markdown links
               .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-              // Lists
               .replace(/^- (.+)/gm, '<li>$1</li>')
               .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
           }></div>
@@ -419,21 +268,23 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
       </div>
     )}
 
-    {Object.keys(company.profile_sections).length === 0 && (
-      <div class="content-card">
-        <div class="card-content">
-          <p>Profile information for {company.name} is being generated. Please check back soon.</p>
-        </div>
-      </div>
-    )}
+    <!-- Navigation -->
+    <div class="mt-12 flex justify-between items-center">
+      <a href="/private-equity-placement-agents"
+         class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 hover:bg-slate-700/50 text-white rounded-xl transition-all duration-300 border border-slate-700/50 hover:border-blue-500/30">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        All Placement Agents
+      </a>
+    </div>
+  </div>
 
-    <a href="/private-equity-placement-agents" class="back-link">
-      ← Back to all placement agents
-    </a>
-  </section>
-
-  <footer>
-    <p>© 2025 Placement. All rights reserved.</p>
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/50 bg-slate-950/50 backdrop-blur-sm py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-slate-500 text-sm">© 2025 Placement. All rights reserved.</p>
+    </div>
   </footer>
 </body>
 </html>
