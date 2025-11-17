@@ -6,8 +6,11 @@ import Schema from '../../components/Schema.astro';
 const { slug } = Astro.params;
 
 if (!slug) {
+  console.error('[PLACEMENT] No slug provided');
   return Astro.redirect('/');
 }
+
+console.log('[PLACEMENT] Looking for company with slug:', slug);
 
 // Fetch the company - use singular placement_agent
 const companies = await sql`
@@ -41,9 +44,13 @@ const companies = await sql`
   LIMIT 1
 `;
 
+console.log('[PLACEMENT] Query returned companies:', companies?.length || 0);
+
 const company = companies[0];
 
 if (!company) {
+  console.error('[PLACEMENT] No company found for slug:', slug);
+  console.error('[PLACEMENT] DATABASE_URL set:', !!import.meta.env.DATABASE_URL);
   return Astro.redirect('/');
 }
 ---
