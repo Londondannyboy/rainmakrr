@@ -20,7 +20,8 @@ const companies = await sql`
     slug,
     logo_url,
     featured_image_url,
-    payload
+    payload,
+    updated_at
   FROM companies
   WHERE slug = ${slug}
     AND company_type = 'placement_agent'
@@ -56,7 +57,15 @@ const company = {
   founded_year: payload.founded_year,
   employee_range: payload.employee_range,
   profile_sections: payload.profile_sections || {},
+  updated_at: companyRow.updated_at,
 };
+
+// Format last updated date
+const lastUpdated = company.updated_at ? new Date(company.updated_at).toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric'
+}) : null;
 
 // Get overview for description
 const overviewSection = company.profile_sections.overview;
@@ -392,6 +401,23 @@ console.log('[PLACEMENT] Extracted tags:', tags);
                 </div>
               )}
             </div>
+
+            {/* Data Freshness Indicator */}
+            {lastUpdated && (
+              <div class="mt-6 pt-4 border-t border-slate-700/30">
+                <div class="flex items-center gap-2 text-xs">
+                  <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-slate-400">
+                    Updated <span class="text-emerald-400 font-semibold">{lastUpdated}</span>
+                  </span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  Live data from our knowledge graph
+                </div>
+              </div>
+            )}
           </div>
         )}
 
