@@ -263,6 +263,37 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
       margin-bottom: 12px;
     }
 
+    /* Resources section styling */
+    .resources-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .resources-title {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .resources-content {
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .resources-content ul {
+      margin: 12px 0;
+      padding-left: 16px;
+      line-height: 1.8;
+    }
+
+    .resources-content li {
+      margin-bottom: 8px;
+    }
+
+    .resources-content a {
+      font-size: 14px;
+    }
+
     .back-link {
       display: inline-flex;
       align-items: center;
@@ -345,7 +376,9 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
   </section>
 
   <section class="content-section">
-    {Object.entries(company.profile_sections).map(([key, section]: [string, any]) => (
+    {Object.entries(company.profile_sections)
+      .filter(([key]) => key !== 'resources')
+      .map(([key, section]: [string, any]) => (
       <div class="content-card">
         <h2 class="card-title">{section.title}</h2>
         <div class="card-content">
@@ -355,8 +388,8 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
               .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
               // Bold text
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-              // Split after sentence endings (. ! ?) followed by space and capital letter
-              .replace(/([.!?])\s+([A-Z])/g, '$1</p><p>$2')
+              // Split after sentence endings - AVOID breaking after titles like Mr., Mrs., Dr., etc.
+              .replace(/([.!?])(\s+)(?!(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|Inc|Ltd|Corp|Co)\b)([A-Z])/g, '$1</p><p>$3')
               // Convert newlines to paragraphs
               .replace(/\n\n/g, '</p><p>')
               // Wrap in paragraph
@@ -368,6 +401,23 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
         </div>
       </div>
     ))}
+
+    {/* Resources Section - Styled differently */}
+    {company.profile_sections.resources && (
+      <div class="content-card resources-card">
+        <h2 class="card-title resources-title">{company.profile_sections.resources.title}</h2>
+        <div class="resources-content">
+          <div set:html={
+            company.profile_sections.resources.content
+              // Markdown links
+              .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+              // Lists
+              .replace(/^- (.+)/gm, '<li>$1</li>')
+              .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+          }></div>
+        </div>
+      </div>
+    )}
 
     {Object.keys(company.profile_sections).length === 0 && (
       <div class="content-card">
