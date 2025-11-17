@@ -10,6 +10,8 @@ const companies = await sql`
     name,
     slug,
     description,
+    featured_image_url,
+    payload->>'short_description' as short_description,
     headquarters,
     logo_url,
     specializations,
@@ -421,6 +423,15 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
             <div class="companies-grid">
               {companiesByCountry[country].map((company: any) => (
                 <a href={`/private-equity-placement-agents/${company.slug}`} class="company-card">
+                  {company.featured_image_url && (
+                    <div style="width: 100%; height: 200px; overflow: hidden; margin-bottom: 20px; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;">
+                      <img
+                        src={company.featured_image_url}
+                        alt={company.name}
+                        style="width: 100%; height: 100%; object-fit: cover;"
+                      />
+                    </div>
+                  )}
                   <div class="company-header">
                     <div style="flex: 1;">
                       <div class="company-name">{company.name}</div>
@@ -432,8 +443,8 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
                       <div class="company-rank">#{company.global_rank}</div>
                     )}
                   </div>
-                  {company.description && (
-                    <p class="company-description">{company.description}</p>
+                  {(company.short_description || company.description) && (
+                    <p class="company-description">{company.short_description || company.description}</p>
                   )}
                   {company.specializations && company.specializations.length > 0 && (
                     <div class="company-tags">

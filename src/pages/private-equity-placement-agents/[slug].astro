@@ -21,6 +21,7 @@ const companies = await sql`
     slug,
     logo_url,
     featured_image_url,
+    hero_image_url,
     payload,
     updated_at
   FROM companies
@@ -51,6 +52,7 @@ const company = {
   slug: companyRow.slug,
   logo_url: companyRow.logo_url || payload.logo_url,
   featured_image_url: companyRow.featured_image_url || payload.featured_image_url,
+  hero_image_url: companyRow.hero_image_url || payload.hero_image_url,
   website: payload.website,
   industry: payload.industry,
   headquarters_city: payload.headquarters_city,
@@ -146,12 +148,12 @@ console.log('[PLACEMENT] Extracted tags:', tags);
     </div>
   </nav>
 
-  <!-- Hero Section with Featured Image -->
+  <!-- Hero Section with Hero Image -->
   <div class="relative pt-24 pb-16 overflow-hidden">
-    {company.featured_image_url && (
+    {(company.hero_image_url || company.featured_image_url) && (
       <div class="absolute inset-0 z-0">
         <img
-          src={company.featured_image_url}
+          src={company.hero_image_url || company.featured_image_url}
           alt={company.name}
           class="w-full h-full object-cover opacity-10 blur-sm"
         />
