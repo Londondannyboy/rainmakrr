@@ -63,7 +63,49 @@ const overviewSection = company.profile_sections.overview;
 const description = overviewSection?.content?.substring(0, 200) || `${company.name} - Leading placement agent`;
 const metaDescription = overviewSection?.content?.substring(0, 160) || description;
 
+// Extract tags from content
+function extractTags(content) {
+  if (!content) return { industries: [], services: [], locations: [] };
+
+  const industries = [];
+  const services = [];
+  const locations = [];
+
+  // Industry/vertical keywords
+  const industryKeywords = ['private equity', 'real estate', 'capital markets', 'private capital', 'venture capital', 'infrastructure', 'energy', 'healthcare', 'technology', 'financial services', 'consumer', 'industrials', 'natural resources'];
+  industryKeywords.forEach(keyword => {
+    if (content.toLowerCase().includes(keyword)) {
+      industries.push(keyword.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+    }
+  });
+
+  // Service keywords
+  const serviceKeywords = ['m&a advisory', 'capital raising', 'restructuring', 'fairness opinions', 'fund placement', 'strategic advisory', 'debt advisory', 'equity advisory', 'placement agent'];
+  serviceKeywords.forEach(keyword => {
+    if (content.toLowerCase().includes(keyword)) {
+      services.push(keyword.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+    }
+  });
+
+  return {
+    industries: [...new Set(industries)].slice(0, 6),
+    services: [...new Set(services)].slice(0, 6),
+    locations: []
+  };
+}
+
+// Extract tags from all content
+const allContent = Object.values(company.profile_sections).map(s => s.content).join(' ');
+const tags = extractTags(allContent);
+
+// Add geographic tags from company data
+if (company.headquarters_city) tags.locations.push(company.headquarters_city);
+if (company.headquarters_country && company.headquarters_country !== company.headquarters_city) {
+  tags.locations.push(company.headquarters_country);
+}
+
 console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_sections).length);
+console.log('[PLACEMENT] Extracted tags:', tags);
 ---
 
 <!DOCTYPE html>
@@ -128,9 +170,40 @@ console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_s
           </h1>
 
           {overviewSection && (
-            <p class="text-xl text-slate-300 leading-relaxed mb-6 max-w-3xl">
-              {description}...
-            </p>
+            <div class="mb-6 max-w-3xl">
+              <p class="text-xl text-slate-300 leading-relaxed mb-4">
+                {overviewSection.content.split('.')[0]}.
+              </p>
+
+              {/* Visual tags for industries, services, locations */}
+              <div class="flex flex-wrap gap-2 mt-4">
+                {tags.industries.map(tag => (
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    {tag}
+                  </span>
+                ))}
+                {tags.services.map(tag => (
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {tag}
+                  </span>
+                ))}
+                {tags.locations.map(tag => (
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
 
           <!-- Meta Info -->
