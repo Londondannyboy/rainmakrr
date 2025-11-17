@@ -3,29 +3,23 @@ import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
 
-// Fetch all published articles with featured images
+// Fetch all published articles with featured images - using Quest schema
 const articles = await sql`
   SELECT
-    a.id,
-    a.title,
-    a.excerpt,
-    a.slug,
-    a.published_at,
-    a.created_at,
-    a.article_angle,
-    a.word_count,
-    a.images,
-    (
-      SELECT json_build_object('url', i.cloudinary_url, 'alt', aiu.alt_text)
-      FROM article_image_usage aiu
-      JOIN images i ON i.id = aiu.image_id
-      WHERE aiu.article_id = a.id AND aiu.role = 'featured'
-      LIMIT 1
-    ) as featured_image_legacy
-  FROM articles a
-  WHERE a.app = 'placement'
-    AND a.status = 'published'
-  ORDER BY a.published_at DESC NULLS LAST, a.created_at DESC
+    id,
+    title,
+    excerpt,
+    slug,
+    published_at,
+    created_at,
+    article_angle,
+    word_count,
+    featured_image_url,
+    featured_image_alt
+  FROM articles
+  WHERE app = 'placement'
+    AND status = 'published'
+  ORDER BY published_at DESC NULLS LAST, created_at DESC
 `;
 ---
 
@@ -412,10 +406,10 @@ const articles = await sql`
       <div class="articles-grid">
         {articles.map((article: any) => (
           <article class="article-card">
-            {(article.images?.featured || article.featured_image_legacy?.url) && (
+            {article.featured_image_url && (
               <img
-                src={article.images?.featured || article.featured_image_legacy.url}
-                alt={article.featured_image_legacy?.alt || article.title}
+                src={article.featured_image_url}
+                alt={article.featured_image_alt || article.title}
                 class="article-image"
                 loading="lazy"
                 decoding="async"
