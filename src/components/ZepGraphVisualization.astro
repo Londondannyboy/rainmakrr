@@ -1,0 +1,214 @@
+---
+/**
+ * Zep Knowledge Graph Visualization Component
+ *
+ * Renders an interactive network graph showing company connections
+ * using vis-network library
+ */
+
+interface Props {
+  companyId: string;
+  companyName: string;
+}
+
+const { companyId, companyName } = Astro.props;
+---
+
+<div class="zep-graph-container">
+  <div id="zep-graph" class="w-full h-96 bg-slate-900/50 rounded-xl border border-slate-700/30 relative">
+    <!-- Loading state -->
+    <div id="graph-loading" class="absolute inset-0 flex items-center justify-center">
+      <div class="text-center">
+        <div class="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-slate-400 text-sm">Loading knowledge graph...</p>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="graph-error" class="absolute inset-0 hidden flex-col items-center justify-center p-6 text-center">
+      <svg class="w-12 h-12 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p class="text-slate-400 text-sm">Knowledge graph visualization coming soon</p>
+      <p class="text-slate-500 text-xs mt-2">Building connections...</p>
+    </div>
+
+    <!-- Graph canvas -->
+    <div id="graph-network" class="w-full h-full"></div>
+  </div>
+
+  <!-- Graph legend -->
+  <div class="mt-4 flex items-center justify-center gap-6 text-xs">
+    <div class="flex items-center gap-2">
+      <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+      <span class="text-slate-400">Companies</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+      <span class="text-slate-400">Deals</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+      <span class="text-slate-400">People</span>
+    </div>
+  </div>
+</div>
+
+<!-- vis-network library from CDN -->
+<script is:inline src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+<script define:vars={{ companyId, companyName }}>
+  // Wait for vis-network to load
+  window.addEventListener('DOMContentLoaded', async () => {
+    const loadingEl = document.getElementById('graph-loading');
+    const errorEl = document.getElementById('graph-error');
+    const networkEl = document.getElementById('graph-network');
+
+    try {
+      // Fetch graph data from API endpoint
+      const response = await fetch(`/api/zep-graph/${companyId}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch graph data');
+      }
+
+      const graphData = await response.json();
+
+      if (!graphData.nodes || graphData.nodes.length === 0) {
+        // No data - show coming soon message
+        loadingEl.classList.add('hidden');
+        errorEl.classList.remove('hidden');
+        errorEl.classList.add('flex');
+        return;
+      }
+
+      // Hide loading, show graph
+      loadingEl.classList.add('hidden');
+      networkEl.classList.remove('hidden');
+
+      // Create vis-network
+      const nodes = new vis.DataSet(graphData.nodes.map(node => ({
+        id: node.id,
+        label: node.label,
+        group: node.group || 'default',
+        title: node.title || node.label,
+        shape: 'dot',
+        size: node.label === companyName ? 30 : 20,  // Make company node bigger
+        font: {
+          color: '#e2e8f0',
+          size: 14,
+          face: 'system-ui'
+        }
+      })));
+
+      const edges = new vis.DataSet(graphData.edges.map(edge => ({
+        from: edge.from,
+        to: edge.to,
+        label: edge.label || '',
+        title: edge.title || '',
+        arrows: 'to',
+        font: {
+          color: '#94a3b8',
+          size: 10,
+          align: 'middle'
+        },
+        color: {
+          color: '#475569',
+          highlight: '#3b82f6'
+        }
+      })));
+
+      const data = { nodes, edges };
+
+      const options = {
+        nodes: {
+          borderWidth: 2,
+          borderWidthSelected: 4,
+          color: {
+            border: '#334155',
+            background: '#1e293b',
+            highlight: {
+              border: '#3b82f6',
+              background: '#1e3a8a'
+            }
+          }
+        },
+        edges: {
+          width: 2,
+          smooth: {
+            type: 'continuous'
+          }
+        },
+        physics: {
+          stabilization: {
+            iterations: 200
+          },
+          barnesHut: {
+            gravitationalConstant: -2000,
+            centralGravity: 0.3,
+            springLength: 150,
+            springConstant: 0.04
+          }
+        },
+        interaction: {
+          hover: true,
+          tooltipDelay: 100,
+          navigationButtons: true,
+          keyboard: true
+        },
+        groups: {
+          company: {
+            color: { background: '#3b82f6', border: '#1e40af' }
+          },
+          deal: {
+            color: { background: '#a855f7', border: '#7e22ce' }
+          },
+          person: {
+            color: { background: '#10b981', border: '#059669' }
+          },
+          article: {
+            color: { background: '#f59e0b', border: '#d97706' }
+          }
+        }
+      };
+
+      const network = new vis.Network(networkEl, data, options);
+
+      // Add click handler
+      network.on('click', (params) => {
+        if (params.nodes.length > 0) {
+          const nodeId = params.nodes[0];
+          const node = nodes.get(nodeId);
+          console.log('Clicked node:', node);
+          // Could navigate to entity page or show details
+        }
+      });
+
+    } catch (error) {
+      console.error('Error loading graph:', error);
+      loadingEl.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+      errorEl.classList.add('flex');
+    }
+  });
+</script>
+
+<style>
+  #graph-network {
+    border-radius: 0.75rem;
+  }
+
+  /* vis-network overrides for dark theme */
+  :global(.vis-network) {
+    background: transparent !important;
+  }
+
+  :global(.vis-tooltip) {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+</style>
