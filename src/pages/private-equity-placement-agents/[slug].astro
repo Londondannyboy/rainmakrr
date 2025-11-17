@@ -438,6 +438,90 @@ console.log('[PLACEMENT] Extracted tags:', tags);
       </div>
     </div>
 
+    <!-- Related in Our Network - Zep Knowledge Graph -->
+    <div class="mt-12 bg-gradient-to-br from-emerald-900/20 to-teal-900/20 backdrop-blur-sm rounded-2xl p-8 border border-emerald-700/30">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <span>Related in Our Network</span>
+        </h2>
+        <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-full border border-emerald-500/30">
+          Knowledge Graph
+        </span>
+      </div>
+
+      <p class="text-slate-300 mb-6">
+        Connections and relationships discovered through our knowledge graph showing how {company.name} relates to other entities in our coverage.
+      </p>
+
+      <!-- Connections Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Related Companies -->
+        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-5 border border-slate-700/30">
+          <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            Related Companies
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div class="text-slate-400">
+              Companies appearing in shared deals, articles, or market analysis
+            </div>
+            <div class="text-emerald-400 font-medium mt-3">
+              Coming soon
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared Deals -->
+        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-5 border border-slate-700/30">
+          <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Shared Deals
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div class="text-slate-400">
+              Transactions involving {company.name} and connected entities
+            </div>
+            <div class="text-emerald-400 font-medium mt-3">
+              Coming soon
+            </div>
+          </div>
+        </div>
+
+        <!-- Market Insights -->
+        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-5 border border-slate-700/30">
+          <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Market Insights
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div class="text-slate-400">
+              Industry trends and market intelligence from our analysis
+            </div>
+            <div class="text-emerald-400 font-medium mt-3">
+              Coming soon
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-6 border-t border-slate-700/30">
+        <p class="text-slate-400 text-sm text-center">
+          Our knowledge graph continuously learns from articles, deals, and market data to reveal hidden connections.
+        </p>
+      </div>
+    </div>
+
     <!-- Our Coverage Section - Articles we've written about this company -->
     <div class="mt-12 bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm rounded-2xl p-8 border border-blue-700/30">
       <div class="flex items-center justify-between mb-6">
