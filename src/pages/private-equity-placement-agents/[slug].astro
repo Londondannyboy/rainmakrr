@@ -427,6 +427,20 @@ console.log('[PLACEMENT] Extracted tags:', tags);
           </div>
         )}
 
+        <!-- Knowledge Graph Card (Sidebar) -->
+        <div class="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 backdrop-blur-sm rounded-2xl p-6 border border-emerald-700/30">
+          <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+            Knowledge Graph
+          </h3>
+          <div class="mb-4">
+            <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
+          </div>
+          <a href="#knowledge-graph" class="inline-block text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
+            View full network →
+          </a>
+        </div>
+
         <!-- Team Highlights Card -->
         {(company.profile_sections.team || company.profile_sections.leadership) && (
           <div class="bg-gradient-to-br from-slate-900/80 to-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 sticky top-[28rem]">
