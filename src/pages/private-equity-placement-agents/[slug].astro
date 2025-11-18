@@ -187,7 +187,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
           {overviewSection && (
             <div class="mb-6 max-w-3xl">
               <p class="text-xl text-slate-300 leading-relaxed mb-4">
-                {overviewSection.content.split('.')[0]}.
+                {overviewSection.content.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1').split('.')[0]}.
               </p>
 
               {/* Visual tags for industries, services, locations */}
