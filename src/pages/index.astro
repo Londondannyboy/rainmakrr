@@ -21,6 +21,7 @@ const companies = await sql`
     description,
     headquarters,
     logo_url,
+    featured_image_url,
     specializations,
     global_rank
   FROM companies
@@ -1563,25 +1564,20 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
   </section>
   <!-- Companies Section -->
   <section class="companies-section">
-    <div class="companies-video-bg">
-      <video id="companies-video" autoplay loop muted playsinline preload="none" loading="lazy"></video>
-    </div>
-    <div class="companies-overlay"></div>
-
     <div class="companies-content">
       <div class="section-header">
         <h2>Top Private Equity Placement Agents Directory</h2>
         <p style="font-size: 18px; line-height: 1.8; margin-bottom: 16px;">
-          Placement agents serve as the vital bridge between General Partners (GPs) seeking capital and Limited Partners (LPs) with investment capacity.
+          Top private equity placement agents serve as the vital bridge between General Partners (GPs) seeking capital and Limited Partners (LPs) with investment capacity.
         </p>
         <p style="font-size: 18px; line-height: 1.8; margin-bottom: 32px;">
           These specialized intermediaries leverage extensive LP networks, market intelligence, and fundraising expertise to facilitate successful capital raises.
         </p>
         <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8); margin-bottom: 12px;">
-          Our curated directory features leading placement agents across all major PE strategies—buyout, growth equity, venture capital, real estate, and infrastructure.
+          Our curated directory features leading top private equity placement agents across all major PE strategies—buyout, growth equity, venture capital, real estate, and infrastructure.
         </p>
         <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8);">
-          Whether you're a first-time fund manager or an established GP looking to expand your LP base, connect with the right placement partner to accelerate your fundraising success.
+          Whether you're a first-time fund manager or an established GP looking to expand your LP base, connect with the right top private equity placement agents to accelerate your fundraising success.
         </p>
       </div>
 
@@ -1590,6 +1586,15 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
           {companies.map((company: any) => (
             <a href={`/private-equity-placement-agents/${company.slug}`} style="text-decoration: none; color: inherit;">
               <div class="company-card">
+                {company.featured_image_url && (
+                  <div style="width: 100%; height: 200px; overflow: hidden; margin: -40px -40px 24px -40px; border-radius: 24px 24px 0 0;">
+                    <img
+                      src={company.featured_image_url}
+                      alt={company.name}
+                      style="width: 100%; height: 100%; object-fit: cover;"
+                    />
+                  </div>
+                )}
                 <div class="company-header">
                   <div>
                     <h3 class="company-name">{company.name}</h3>
@@ -1632,13 +1637,13 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       ) : (
         <div class="empty-state">
           <h3>Coming Soon</h3>
-          <p>We're currently curating the finest placement agents. Check back soon!</p>
+          <p>We're currently curating the finest top private equity placement agents. Check back soon!</p>
         </div>
       )}
 
       {companies.length > 0 && (
         <div style="text-align: center; margin-top: 48px;">
-          <a href="/private-equity-placement-agents" class="btn btn-primary">Explore All Placement Agents</a>
+          <a href="/private-equity-placement-agents" class="btn btn-primary">Explore All Top Private Equity Placement Agents</a>
         </div>
       )}
     </div>
