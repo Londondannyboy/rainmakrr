@@ -2,6 +2,7 @@
 import { sql } from '../lib/db';
 import SEO from '../components/SEO.astro';
 import Schema from '../components/Schema.astro';
+import ZepGraphVisualization from '../components/ZepGraphVisualization.astro';
 import '../styles/cookieconsent-custom.css';
 
 // Fetch homepage content
@@ -2100,6 +2101,17 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
                 {company.description && (
                   <p class="company-description">{company.description}</p>
                 )}
+
+                <!-- Mini Knowledge Graph -->
+                <div style="margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px;">
+                  <div style="font-size: 12px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+                    🌐 Knowledge Graph Preview
+                  </div>
+                  <div style="height: 200px; overflow: hidden; border-radius: 8px;">
+                    <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
+                  </div>
+                </div>
+
                 {company.specializations && company.specializations.length > 0 && (
                   <div class="company-tags">
                     {company.specializations.slice(0, 3).map((spec: string) => (
