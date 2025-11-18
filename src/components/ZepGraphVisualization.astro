@@ -12,12 +12,17 @@ interface Props {
 }
 
 const { companyId, companyName } = Astro.props;
+// Generate unique IDs to support multiple graph instances on same page
+const uniqueId = `graph-${companyId}-${Math.random().toString(36).substr(2, 9)}`;
+const loadingId = `${uniqueId}-loading`;
+const errorId = `${uniqueId}-error`;
+const networkId = `${uniqueId}-network`;
 ---
 
 <div class="zep-graph-container">
-  <div id="zep-graph" class="w-full h-96 bg-slate-900/50 rounded-xl border border-slate-700/30 relative">
+  <div id={uniqueId} class="w-full h-96 bg-slate-900/50 rounded-xl border border-slate-700/30 relative">
     <!-- Loading state -->
-    <div id="graph-loading" class="absolute inset-0 flex items-center justify-center">
+    <div id={loadingId} class="absolute inset-0 flex items-center justify-center">
       <div class="text-center">
         <div class="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
         <p class="text-slate-400 text-sm">Loading knowledge graph...</p>
@@ -25,7 +30,7 @@ const { companyId, companyName } = Astro.props;
     </div>
 
     <!-- Error state -->
-    <div id="graph-error" class="absolute inset-0 hidden flex-col items-center justify-center p-6 text-center">
+    <div id={errorId} class="absolute inset-0 hidden flex-col items-center justify-center p-6 text-center">
       <svg class="w-12 h-12 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
@@ -34,7 +39,7 @@ const { companyId, companyName } = Astro.props;
     </div>
 
     <!-- Graph canvas -->
-    <div id="graph-network" class="w-full h-full"></div>
+    <div id={networkId} class="w-full h-full"></div>
   </div>
 
   <!-- Graph legend -->
@@ -57,12 +62,12 @@ const { companyId, companyName } = Astro.props;
 <!-- vis-network library from CDN -->
 <script is:inline src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
 
-<script define:vars={{ companyId, companyName }}>
+<script define:vars={{ companyId, companyName, loadingId, errorId, networkId }}>
   // Wait for vis-network to load
   window.addEventListener('DOMContentLoaded', async () => {
-    const loadingEl = document.getElementById('graph-loading');
-    const errorEl = document.getElementById('graph-error');
-    const networkEl = document.getElementById('graph-network');
+    const loadingEl = document.getElementById(loadingId);
+    const errorEl = document.getElementById(errorId);
+    const networkEl = document.getElementById(networkId);
 
     try {
       // Fetch graph data from API endpoint
