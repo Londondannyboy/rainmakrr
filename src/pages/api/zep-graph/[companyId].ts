@@ -3,8 +3,113 @@
  * Returns graph nodes and edges for interactive visualization
  */
 
+import { sql } from '../../../lib/db';
+
 export async function GET({ params }: { params: { companyId: string } }) {
   const { companyId } = params;
+
+  // Try to fetch real data from database
+  try {
+    const companies = await sql`
+      SELECT
+        name,
+        slug,
+        payload
+      FROM companies
+      WHERE slug = ${companyId}
+      LIMIT 1
+    `;
+
+    if (companies.length > 0) {
+      const company = companies[0];
+      const payload = company.payload || {};
+      const sections = payload.profile_sections || {};
+
+      // Build graph from real profile data
+      const nodes = [];
+      const edges = [];
+      let nodeId = 1;
+
+      // Add company as central node
+      nodes.push({
+        id: String(nodeId++),
+        label: company.name,
+        group: 'company',
+        size: 40
+      });
+
+      // Extract deals from profile sections
+      if (sections.deals && sections.deals.content) {
+        const dealsContent = sections.deals.content;
+        // Parse deals from markdown (simple extraction)
+        const dealMatches = dealsContent.match(/\*\*([^*]+)\*\*/g) || [];
+        dealMatches.slice(0, 5).forEach(deal => {
+          const dealLabel = deal.replace(/\*\*/g, '').substring(0, 50);
+          if (dealLabel.includes('billion') || dealLabel.includes('million')) {
+            nodes.push({
+              id: String(nodeId),
+              label: dealLabel,
+              group: 'deal'
+            });
+            edges.push({
+              from: '1',
+              to: String(nodeId),
+              label: 'Advised On'
+            });
+            nodeId++;
+          }
+        });
+      }
+
+      // Extract other entities from sections
+      if (sections.overview && sections.overview.content) {
+        const overview = sections.overview.content;
+
+        // Extract headquarters
+        if (payload.headquarters_city && payload.headquarters_country) {
+          nodes.push({
+            id: String(nodeId),
+            label: `${payload.headquarters_city}, ${payload.headquarters_country}`,
+            group: 'entity'
+          });
+          edges.push({
+            from: '1',
+            to: String(nodeId),
+            label: 'Headquartered'
+          });
+          nodeId++;
+        }
+
+        // Add industry if available
+        if (payload.industry) {
+          nodes.push({
+            id: String(nodeId),
+            label: payload.industry,
+            group: 'entity'
+          });
+          edges.push({
+            from: '1',
+            to: String(nodeId),
+            label: 'Industry'
+          });
+          nodeId++;
+        }
+      }
+
+      // Return real graph data
+      return new Response(JSON.stringify({
+        type: 'data',
+        nodes,
+        edges
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching real graph data:', error);
+    // Fall through to sample data
+  }
 
   // Sample graph data for Evercore (will be replaced with real Zep API call)
   const evercoreGraph = {
