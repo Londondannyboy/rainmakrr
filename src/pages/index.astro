@@ -142,6 +142,32 @@ function generateUnsplashSrcSet(url: string) {
   const widths = [400, 800, 1200];
   return widths.map(w => `${optimizeUnsplashImage(url, w, 40)} ${w}w`).join(', ');
 }
+
+// Generate varied descriptions to avoid duplicate content
+function generateVariedDescription(company: any, context: 'primary' | 'secondary' = 'primary'): string {
+  if (context === 'primary') {
+    // Use original description for primary display
+    return company.description || '';
+  }
+
+  // Generate unique secondary descriptions focusing on different aspects
+  const specs = company.specializations || [];
+  const region = company.primary_region || company.primary_country || '';
+  const rank = company.global_rank;
+
+  // Create varied taglines based on company data
+  const templates = [
+    `Specialized ${specs[0] || 'private markets'} advisory with ${region ? region + ' ' : ''}expertise in capital formation and fundraising`,
+    `Independent advisory firm serving ${specs.slice(0, 2).join(' and ') || 'private markets'} fund managers globally`,
+    `Leading placement services for ${specs[0] || 'alternative asset'} managers seeking institutional capital`,
+    `Global network connecting ${specs[0] || 'private equity'} funds with institutional investors worldwide`,
+    `Expert fundraising solutions for ${specs.join(', ') || 'alternative investment'} strategies`,
+  ];
+
+  // Select template based on company name hash for consistency
+  const hash = company.name.length % templates.length;
+  return templates[hash];
+}
 ---
 
 <!DOCTYPE html>
@@ -1935,9 +1961,7 @@ function generateUnsplashSrcSet(url: string) {
                     )}
                   </div>
                 </div>
-                {company.description && (
-                  <p class="company-description">{company.description}</p>
-                )}
+                <p class="company-description">{generateVariedDescription(company, 'secondary')}</p>
 
                 {company.specializations && company.specializations.length > 0 && (
                   <div class="company-tags">
