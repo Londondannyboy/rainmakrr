@@ -1657,12 +1657,9 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       )}
 
       {companies.length > 0 && companies.length > 10 && (
-        <div id="load-buttons" style="text-align: center; margin-top: 48px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-          <button id="load-more-agents" class="btn btn-secondary">
-            Load More Agents
-          </button>
+        <div id="load-buttons" style="text-align: center; margin-top: 48px;">
           <button id="load-all-agents" class="btn btn-primary">
-            Load All Agents
+            Load All Placement Agencies
           </button>
         </div>
       )}
@@ -2229,29 +2226,12 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       initVideo('hero-video', '.hero');
       initVideo('companies-video', '.companies-section');
 
-      // Progressive Load More functionality for placement agents
-      const loadMoreBtn = document.getElementById('load-more-agents');
+      // Load All functionality for placement agencies
       const loadAllBtn = document.getElementById('load-all-agents');
       const loadButtons = document.getElementById('load-buttons');
 
-      if (loadMoreBtn && loadAllBtn) {
-        // Load More: Show next 10 agents
-        loadMoreBtn.addEventListener('click', function() {
-          const hiddenCards = document.querySelectorAll('.company-card.hidden-card');
-          const cardsToShow = Array.from(hiddenCards).slice(0, 10);
-
-          cardsToShow.forEach(card => {
-            card.classList.remove('hidden-card');
-          });
-
-          // Hide buttons if no more hidden cards
-          const remainingHidden = document.querySelectorAll('.company-card.hidden-card');
-          if (remainingHidden.length === 0) {
-            loadButtons.style.display = 'none';
-          }
-        });
-
-        // Load All: Show all remaining agents
+      if (loadAllBtn) {
+        // Load All: Show all placement agencies
         loadAllBtn.addEventListener('click', function() {
           const hiddenCards = document.querySelectorAll('.company-card.hidden-card');
           hiddenCards.forEach(card => {
