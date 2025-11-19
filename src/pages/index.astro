@@ -13,7 +13,7 @@ const homepageContent = await sql`
   ORDER BY section_order ASC
 `;
 
-// Fetch companies - filter for placement agents (increased limit to show more on homepage)
+// Fetch companies - filter for placement agents (fetch all for progressive loading)
 const companies = await sql`
   SELECT
     name,
@@ -32,7 +32,6 @@ const companies = await sql`
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
     name ASC
-  LIMIT 20
 `;
 
 // Fetch articles
