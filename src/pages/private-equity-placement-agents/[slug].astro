@@ -18,6 +18,7 @@ const companies = await sql`
   SELECT
     id,
     name,
+    COALESCE(display_name, name) as display_name,
     slug,
     logo_url,
     featured_image_url,
@@ -49,6 +50,7 @@ console.log('[PLACEMENT] Payload has profile_sections:', !!payload.profile_secti
 const company = {
   id: companyRow.id,
   name: companyRow.name,
+  display_name: companyRow.display_name,
   slug: companyRow.slug,
   logo_url: companyRow.logo_url || payload.logo_url,
   featured_image_url: companyRow.featured_image_url || payload.featured_image_url,
@@ -72,7 +74,7 @@ const lastUpdated = company.updated_at ? new Date(company.updated_at).toLocaleDa
 
 // Get overview for description
 const overviewSection = company.profile_sections.overview;
-const description = overviewSection?.content?.substring(0, 200) || `${company.name} - Leading placement agent`;
+const description = overviewSection?.content?.substring(0, 200) || `${company.display_name} - Leading placement agent`;
 const metaDescription = overviewSection?.content?.substring(0, 160) || description;
 
 // Extract tags from content
@@ -118,13 +120,38 @@ if (company.headquarters_country && company.headquarters_country !== company.hea
 
 console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_sections).length);
 console.log('[PLACEMENT] Extracted tags:', tags);
+
+// Internal linking variations for SEO - all include "private equity placement agents" with prefix/suffix variations
+const contextualLinks = [
+  "Explore our comprehensive guide to <strong>top private equity placement agents</strong>",
+  "Learn more about the <strong>best private equity placement agents</strong> in the industry",
+  "See our complete <strong>top private equity placement agents list</strong>",
+  "Discover the <strong>leading private equity placement agents</strong> in the market",
+  "View our <strong>best private equity placement agents list</strong>",
+  "Browse the <strong>premier private equity placement agents</strong> we cover",
+  "Compare <strong>top private equity placement agents</strong> side-by-side",
+  "Find <strong>elite private equity placement agents</strong> for your needs"
+];
+
+const sidebarLinks = [
+  "Top Private Equity Placement Agents",
+  "Best Private Equity Placement Agents",
+  "Top Private Equity Placement Agents List",
+  "Leading Private Equity Placement Agents",
+  "Best Private Equity Placement Agents List",
+  "Premier Private Equity Placement Agents"
+];
+
+// Create rotation index based on slug for consistent variation per agent
+const rotationIndex = company.slug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % contextualLinks.length;
+const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % sidebarLinks.length;
 ---
 
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <SEO
-    title={`${company.name} - Placement Agent Profile | Placement`}
+    title={`${company.display_name} - Placement Agent Profile | Placement`}
     description={metaDescription}
   />
   <Schema type="company" />
@@ -153,7 +180,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
     <div class="w-full h-96 overflow-hidden">
       <img
         src={company.hero_image_url}
-        alt={company.name}
+        alt={company.display_name}
         class="w-full h-full object-cover"
       />
     </div>
@@ -165,7 +192,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
       <div class="absolute inset-0 z-0">
         <img
           src={company.featured_image_url}
-          alt={company.name}
+          alt={company.display_name}
           class="w-full h-full object-cover opacity-10 blur-sm"
         />
         <div class="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-900/80 to-slate-950"></div>
@@ -181,7 +208,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
           </span>
 
           <h1 class="text-4xl lg:text-6xl font-black mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent leading-tight">
-            {company.name}
+            {company.display_name}
           </h1>
 
           {overviewSection && (
@@ -370,6 +397,24 @@ console.log('[PLACEMENT] Extracted tags:', tags);
               </div>
             );
           })}
+
+        <!-- Internal Link Section -->
+        <div class="bg-gradient-to-br from-blue-900/10 to-purple-900/10 backdrop-blur-sm rounded-xl p-6 border border-blue-700/20">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 mt-1">
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-slate-300 leading-relaxed">
+                <a href="/" class="text-blue-400 hover:text-blue-300 transition-colors border-b border-blue-400/30 hover:border-blue-400">
+                  <span set:html={contextualLinks[rotationIndex]}></span>
+                </a> to compare services, expertise, and market positioning across the industry.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Sidebar (1/3) -->
@@ -426,6 +471,29 @@ console.log('[PLACEMENT] Extracted tags:', tags);
             )}
           </div>
         )}
+
+        <!-- Related Resources Card -->
+        <div class="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-700/30">
+          <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+            More Resources
+          </h3>
+          <div class="space-y-3">
+            <a href="/" class="group block p-4 bg-gradient-to-br from-slate-800/30 to-slate-900/30 rounded-lg border border-slate-700/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
+              <div class="flex items-center gap-3 mb-2">
+                <svg class="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="text-white font-semibold text-sm group-hover:text-blue-300 transition-colors">
+                  {sidebarLinks[sidebarRotationIndex]}
+                </span>
+              </div>
+              <p class="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
+                Compare private equity placement agents
+              </p>
+            </a>
+          </div>
+        </div>
 
         <!-- Knowledge Graph Card (Sidebar) -->
         <div class="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 backdrop-blur-sm rounded-2xl p-6 border border-emerald-700/30">
@@ -501,7 +569,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
       </div>
 
       <p class="text-slate-300 mb-6">
-        Connections and relationships discovered through our knowledge graph showing how {company.name} relates to other entities in our coverage.
+        Connections and relationships discovered through our knowledge graph showing how {company.display_name} relates to other entities in our coverage.
       </p>
 
       <!-- Zep Knowledge Graph Visualization -->
@@ -525,7 +593,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
       </div>
 
       <p class="text-slate-300 mb-6">
-        Unlike PE News and other paywalled sources, all our coverage is freely accessible. Here's what we've written about {company.name}:
+        Unlike PE News and other paywalled sources, all our coverage is freely accessible. Here's what we've written about {company.display_name}:
       </p>
 
       <!-- Article Grid -->
@@ -534,11 +602,11 @@ console.log('[PLACEMENT] Extracted tags:', tags);
         <a href={`/private-equity-placement-agents/${company.slug}`} class="group bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
           <div class="flex items-start gap-4 mb-4">
             <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-              {company.name.charAt(0)}
+              {company.display_name.charAt(0)}
             </div>
             <div class="flex-1 min-w-0">
               <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-300 transition-colors line-clamp-2">
-                {company.name} - Placement Agent Profile
+                {company.display_name} - Placement Agent Profile
               </h3>
               <div class="flex items-center gap-2 text-xs text-slate-400">
                 <span>Company Profile</span>
@@ -548,7 +616,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
             </div>
           </div>
           <p class="text-slate-300 text-sm line-clamp-3 mb-4">
-            Comprehensive profile covering {company.name}'s services, team, recent deals, and market position in the private equity placement agent industry.
+            Comprehensive profile covering {company.display_name}'s services, team, recent deals, and market position in the private equity placement agent industry.
           </p>
           <div class="flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors">
             Read Full Profile →
@@ -565,7 +633,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
             </div>
             <h4 class="text-slate-400 font-semibold mb-2">More Coverage Coming</h4>
             <p class="text-slate-500 text-sm">
-              Stay tuned for in-depth articles, deal analysis, and industry insights about {company.name}.
+              Stay tuned for in-depth articles, deal analysis, and industry insights about {company.display_name}.
             </p>
           </div>
         </div>
@@ -574,7 +642,7 @@ console.log('[PLACEMENT] Extracted tags:', tags);
       <!-- CTA -->
       <div class="mt-6 pt-6 border-t border-slate-700/30 text-center">
         <p class="text-slate-400 text-sm">
-          Want to stay updated on {company.name}?
+          Want to stay updated on {company.display_name}?
           <a href="/articles" class="text-blue-400 hover:text-blue-300 transition-colors font-medium ml-1">
             Browse all articles →
           </a>

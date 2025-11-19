@@ -13,10 +13,11 @@ const homepageContent = await sql`
   ORDER BY section_order ASC
 `;
 
-// Fetch companies - filter for placement agents
+// Fetch companies - filter for placement agents (increased limit to show more on homepage)
 const companies = await sql`
   SELECT
     name,
+    COALESCE(display_name, name) as display_name,
     slug,
     description,
     headquarters,
@@ -31,7 +32,7 @@ const companies = await sql`
     CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
     global_rank ASC NULLS LAST,
     name ASC
-  LIMIT 6
+  LIMIT 20
 `;
 
 // Fetch articles
@@ -482,6 +483,10 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-8px);
+    }
+
+    .company-card.hidden-card {
+      display: none;
     }
 
     .company-header {
@@ -1583,21 +1588,21 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
 
       {companies.length > 0 ? (
         <div class="companies-grid">
-          {companies.map((company: any) => (
+          {companies.map((company: any, index: number) => (
             <a href={`/private-equity-placement-agents/${company.slug}`} style="text-decoration: none; color: inherit;">
-              <div class="company-card">
+              <div class={`company-card${index >= 10 ? ' hidden-card' : ''}`}>
                 {company.featured_image_url && (
                   <div style="width: 100%; height: 200px; overflow: hidden; margin: -40px -40px 24px -40px; border-radius: 24px 24px 0 0;">
                     <img
                       src={company.featured_image_url}
-                      alt={company.name}
+                      alt={company.display_name}
                       style="width: 100%; height: 100%; object-fit: cover;"
                     />
                   </div>
                 )}
                 <div class="company-header">
                   <div>
-                    <h3 class="company-name">{company.name}</h3>
+                    <h3 class="company-name">{company.display_name}</h3>
                     {company.headquarters && (
                       <div class="company-location">📍 {company.headquarters}</div>
                     )}
@@ -1643,6 +1648,11 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
 
       {companies.length > 0 && (
         <div style="text-align: center; margin-top: 48px;">
+          {companies.length > 10 && (
+            <button id="load-more-agents" class="btn btn-secondary" style="margin-bottom: 16px;">
+              Load More Placement Agents
+            </button>
+          )}
           <a href="/private-equity-placement-agents" class="btn btn-primary">Explore All Top Private Equity Placement Agents</a>
         </div>
       )}
@@ -2188,6 +2198,18 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
     window.addEventListener('DOMContentLoaded', function() {
       initVideo('hero-video', '.hero');
       initVideo('companies-video', '.companies-section');
+
+      // Load More functionality for placement agents
+      const loadMoreBtn = document.getElementById('load-more-agents');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+          const hiddenCards = document.querySelectorAll('.company-card.hidden-card');
+          hiddenCards.forEach(card => {
+            card.classList.remove('hidden-card');
+          });
+          loadMoreBtn.style.display = 'none';
+        });
+      }
     });
   </script>
 </body>
