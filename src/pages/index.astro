@@ -1600,6 +1600,20 @@ function generateSrcSet(url: string) {
       }
     }
   </style>
+
+  <!-- Performance: Defer non-critical CSS (company detail page CSS) -->
+  <script>
+    // Defer _slug_ CSS (company detail pages) - not needed on homepage
+    (function() {
+      const links = document.querySelectorAll('link[rel="stylesheet"]');
+      links.forEach(link => {
+        if (link.href.includes('_slug_')) {
+          link.media = 'print';
+          link.onload = function() { this.media = 'all'; };
+        }
+      });
+    })();
+  </script>
 </head>
 <body>
   <!-- Navigation -->
@@ -2384,14 +2398,21 @@ function generateSrcSet(url: string) {
         const videoIndex = parseInt(nextItem.getAttribute('data-carousel-index'));
         const videoSrc = `https://stream.mux.com/${heroCarouselItems[videoIndex].src}.m3u8`;
 
-        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-          const hls = new Hls({ maxBufferLength: 10 });
-          hls.loadSource(videoSrc);
-          hls.attachMedia(nextItem);
-          hls.on(Hls.Events.MANIFEST_PARSED, () => nextItem.play().catch(() => {}));
-        } else if (nextItem.canPlayType('application/vnd.apple.mpegurl')) {
+        // Lazy load hls.js for carousel videos
+        if (nextItem.canPlayType('application/vnd.apple.mpegurl')) {
+          // Native HLS support (Safari)
           nextItem.src = videoSrc;
           nextItem.play().catch(() => {});
+        } else {
+          // Load hls.js only when needed
+          loadHLS(() => {
+            if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+              const hls = new Hls({ maxBufferLength: 10 });
+              hls.loadSource(videoSrc);
+              hls.attachMedia(nextItem);
+              hls.on(Hls.Events.MANIFEST_PARSED, () => nextItem.play().catch(() => {}));
+            }
+          });
         }
       }
     }
