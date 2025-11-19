@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: 'Placement Quest',
   title: 'Placement Quest | Private Equity Placement Agents List',
-  description: 'Comprehensive private equity placement agents list featuring expert rankings, fee structures, capital raising insights, and market intelligence for PE fundraising success.',
+  description: 'Expert private equity placement agents list with rankings, fee structures, capital raising insights, and market intelligence for PE fundraising.',
   url: 'https://placement.quest',
   ogImage: 'https://placement.quest/og-image.jpg', // TODO: Add actual OG image
   links: {
@@ -21,5 +21,5 @@ export const siteConfig = {
     'private equity capital raising',
   ],
   author: 'Placement Editorial Team',
-  language: 'en-US',
+  language: 'en',
 };
