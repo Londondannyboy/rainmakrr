@@ -1,0 +1,254 @@
+---
+import { sql } from '../../lib/db';
+import SEO from '../../components/SEO.astro';
+import Schema from '../../components/Schema.astro';
+
+// Fetch North America placement agents
+const companies = await sql`
+  SELECT
+    id,
+    name,
+    COALESCE(display_name, name) as display_name,
+    slug,
+    description,
+    featured_image_url,
+    headquarters,
+    logo_url,
+    specializations,
+    global_rank,
+    primary_country,
+    primary_region
+  FROM companies
+  WHERE company_type = 'placement_agent'
+    AND status = 'published'
+    AND primary_region = 'North America'
+  ORDER BY
+    CASE WHEN global_rank IS NOT NULL THEN 0 ELSE 1 END,
+    global_rank ASC NULLS LAST,
+    name ASC
+`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <SEO
+    title="Top Private Equity Placement Agents North America | Placement Quest"
+    description="Leading private equity placement agents in North America. Expert US-based PE fundraising agencies specializing in capital raising, LP networks, and institutional investor connections."
+  />
+  <Schema type="company_list" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    nav {
+      padding: 24px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .hero {
+      padding: 120px 60px 80px;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 56px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 48px;
+      line-height: 1.8;
+    }
+
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 60px;
+    }
+
+    h2 {
+      font-size: 36px;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    h3 {
+      font-size: 24px;
+      margin: 40px 0 16px 0;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 24px;
+    }
+
+    .companies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .company-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .company-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-4px);
+    }
+
+    .company-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .company-location {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+    }
+
+    .company-description {
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: transform 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">Placement Quest</a>
+    <ul class="nav-links">
+      <li><a href="/articles">Articles</a></li>
+      <li><a href="/private-equity-placement-agents-list">Private Equity Placement Agents</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <h1>Top Private Equity Placement Agents North America</h1>
+    <p class="subtitle">
+      Leading North American private equity placement agents specializing in institutional capital raising. Connect with premier US-based PE fundraising experts with extensive LP networks across pension funds, endowments, and family offices.
+    </p>
+  </div>
+
+  <div class="content">
+    <h2>North America Private Equity Placement Market</h2>
+    <p>
+      North America represents the world's largest private equity market, with the United States leading global PE fundraising activity. The region's top private equity placement agents maintain unparalleled access to institutional limited partners, including the largest pension funds, university endowments, and sovereign wealth funds.
+    </p>
+
+    <h3>Why Choose North American Placement Agents</h3>
+    <p>
+      US-based placement agents offer distinct advantages for fund managers targeting North American institutional investors. These firms combine deep LP relationships, regulatory expertise in SEC and FINRA compliance, and sophisticated understanding of US investor preferences and fund structures.
+    </p>
+    <p>
+      Leading North American placement agencies typically maintain relationships with 200-500+ institutional investors across the region, providing critical access to capital allocators managing trillions in assets.
+    </p>
+
+    <h3>Top Private Equity Placement Agents in North America ({companies.length})</h3>
+
+    <div class="companies-grid">
+      {companies.map((company: any) => (
+        <a href={`/private-equity-placement-agents-list/${company.slug}`} style="text-decoration: none; color: inherit;">
+          <div class="company-card">
+            <h4 class="company-name">{company.display_name}</h4>
+            {company.primary_country && (
+              <div class="company-location">🌍 {company.primary_country} · {company.primary_region}</div>
+            )}
+            {company.global_rank && (
+              <div class="company-location">🏆 Rank #{company.global_rank}</div>
+            )}
+            {company.description && (
+              <p class="company-description">{company.description}</p>
+            )}
+            <div style="margin-top: 16px; color: #667eea; font-weight: 600;">
+              View Profile →
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div style="text-align: center; margin-top: 64px;">
+      <a href="/private-equity-placement-agents-list" class="btn">View All Regions</a>
+    </div>
+  </div>
+</body>
+</html>
