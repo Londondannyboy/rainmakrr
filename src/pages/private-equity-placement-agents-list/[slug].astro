@@ -24,7 +24,9 @@ const companies = await sql`
     featured_image_url,
     hero_image_url,
     payload,
-    updated_at
+    updated_at,
+    primary_country,
+    primary_region
   FROM companies
   WHERE slug = ${slug}
     AND company_type = 'placement_agent'
@@ -63,6 +65,8 @@ const company = {
   employee_range: payload.employee_range,
   profile_sections: payload.profile_sections || {},
   updated_at: companyRow.updated_at,
+  primary_country: companyRow.primary_country,
+  primary_region: companyRow.primary_region,
 };
 
 // Format last updated date
@@ -121,6 +125,74 @@ if (company.headquarters_country && company.headquarters_country !== company.hea
 console.log('[PLACEMENT] Profile sections count:', Object.keys(company.profile_sections).length);
 console.log('[PLACEMENT] Extracted tags:', tags);
 
+// Generate geography and asset class internal links for SEO
+function generateInternalLinks() {
+  const links = [];
+
+  // Geography-based links
+  const regionMap = {
+    'North America': { url: '/top-private-equity-placement-agents-north-america', text: 'North American placement agents' },
+    'Europe': { url: '/top-private-equity-placement-agents-europe', text: 'European placement agents' },
+    'Asia Pacific': { url: '/top-private-equity-placement-agents-asia-pacific', text: 'Asia Pacific placement agents' },
+    'Latin America': { url: '/top-private-equity-placement-agents-latin-america', text: 'Latin American placement agents' },
+  };
+
+  const countryMap = {
+    'United States': { url: '/top-private-equity-placement-agents-us', text: 'US placement agents', cities: {
+      'San Antonio': '#san-antonio',
+      'New York': '#new-york',
+      'San Francisco': '#san-francisco',
+      'Boston': '#boston',
+      'Chicago': '#chicago'
+    }},
+    'United Kingdom': { url: '/top-private-equity-placement-agents-uk', text: 'UK placement agents', cities: {
+      'London': '#london'
+    }},
+    'Singapore': { url: '/top-private-equity-placement-agents-singapore', text: 'Singapore placement agents', cities: {} },
+  };
+
+  // Add region link
+  if (company.primary_region && regionMap[company.primary_region]) {
+    const region = regionMap[company.primary_region];
+    links.push({ url: region.url, text: region.text, type: 'region' });
+  }
+
+  // Add country link
+  if (company.primary_country && countryMap[company.primary_country]) {
+    const country = countryMap[company.primary_country];
+    links.push({ url: country.url, text: country.text, type: 'country' });
+
+    // Add city link if applicable
+    if (company.headquarters_city && country.cities[company.headquarters_city]) {
+      const cityAnchor = country.cities[company.headquarters_city];
+      links.push({
+        url: country.url + cityAnchor,
+        text: `${company.headquarters_city} placement agents`,
+        type: 'city'
+      });
+    }
+  }
+
+  // Asset class links based on content analysis
+  const assetClassKeywords = {
+    'venture capital': { url: '/venture-capital-placement-agents', text: 'venture capital placement agents' },
+    'private credit': { url: '/private-credit-placement-agents', text: 'private credit placement agents' },
+    'real estate': { url: '/real-estate-private-equity-placement-agents', text: 'real estate PE placement agents' },
+  };
+
+  const contentLower = allContent.toLowerCase();
+  Object.entries(assetClassKeywords).forEach(([keyword, link]) => {
+    if (contentLower.includes(keyword)) {
+      links.push({ url: link.url, text: link.text, type: 'asset-class' });
+    }
+  });
+
+  return links;
+}
+
+const internalLinks = generateInternalLinks();
+console.log('[PLACEMENT] Generated internal links:', internalLinks);
+
 // Internal linking variations for SEO - all include "private equity placement agents" with prefix/suffix variations
 const contextualLinks = [
   "Explore our comprehensive guide to <strong>top private equity placement agents</strong>",
@@ -175,7 +247,25 @@ const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + 
         </a>
         <div class="flex items-center space-x-8">
           <a href="/articles" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Articles</a>
-          <a href="/private-equity-placement-agents-list" class="text-blue-400 text-sm font-medium">Placement Agents</a>
+          <div class="relative group">
+            <a href="/private-equity-placement-agents-list" class="text-blue-400 text-sm font-medium cursor-pointer">Placement Agents</a>
+            <div class="absolute top-full left-0 mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-800/50 rounded-lg py-2 min-w-[280px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 -translate-y-2">
+              <a href="/private-equity-placement-agents-list" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">All Regions & Countries</a>
+              <div class="h-px bg-slate-800/50 my-2"></div>
+              <a href="/top-private-equity-placement-agents-north-america" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">North America</a>
+              <a href="/top-private-equity-placement-agents-europe" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Europe</a>
+              <a href="/top-private-equity-placement-agents-asia-pacific" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Asia Pacific</a>
+              <a href="/top-private-equity-placement-agents-latin-america" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Latin America</a>
+              <div class="h-px bg-slate-800/50 my-2"></div>
+              <a href="/top-private-equity-placement-agents-us" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">United States</a>
+              <a href="/top-private-equity-placement-agents-uk" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">United Kingdom</a>
+              <a href="/top-private-equity-placement-agents-singapore" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Singapore</a>
+              <div class="h-px bg-slate-800/50 my-2"></div>
+              <a href="/venture-capital-placement-agents" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Venture Capital Placement Agents</a>
+              <a href="/private-credit-placement-agents" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Private Credit Placement Agents</a>
+              <a href="/real-estate-private-equity-placement-agents" class="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 text-sm">Real Estate PE Placement Agents</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -485,6 +575,7 @@ const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + 
             More Resources
           </h3>
           <div class="space-y-3">
+            {/* Main directory link */}
             <a href="/" class="group block p-4 bg-gradient-to-br from-slate-800/30 to-slate-900/30 rounded-lg border border-slate-700/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
               <div class="flex items-center gap-3 mb-2">
                 <svg class="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -498,6 +589,27 @@ const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + 
                 Compare private equity placement agents
               </p>
             </a>
+
+            {/* Geography and asset class internal links */}
+            {internalLinks.map((link) => (
+              <a href={link.url} class="group block p-3 bg-gradient-to-br from-slate-800/20 to-slate-900/20 rounded-lg border border-slate-700/10 hover:border-blue-500/30 transition-all duration-300">
+                <div class="flex items-center gap-2">
+                  {link.type === 'city' || link.type === 'country' || link.type === 'region' ? (
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                  ) : (
+                    <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                  )}
+                  <span class="text-slate-300 text-sm group-hover:text-white transition-colors capitalize">
+                    {link.text}
+                  </span>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
 
