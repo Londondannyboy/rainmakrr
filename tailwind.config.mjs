@@ -5,6 +5,7 @@ export default {
 		extend: {},
 	},
 	plugins: [
-		require('@tailwindcss/typography'),
+		// Removed @tailwindcss/typography to reduce bundle size from 91KB to ~10KB
+		// Custom prose styles added inline in slug pages where needed
 	],
 }
