@@ -12,6 +12,19 @@ export default defineConfig({
     mode: 'standalone'
   }),
   compressHTML: true,
+  build: {
+    inlineStylesheets: 'auto', // Inline critical CSS
+  },
+  vite: {
+    build: {
+      cssCodeSplit: true, // Split CSS per page
+      rollupOptions: {
+        output: {
+          manualChunks: undefined, // Prevent unnecessary chunking
+        }
+      }
+    }
+  },
   integrations: [
     tailwind(),
     cookieconsent({

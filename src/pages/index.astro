@@ -118,8 +118,8 @@ const muxPlaybackId = heroCarouselItems[0].src;
 // Image optimization helpers for mobile performance
 function optimizeCloudinaryImage(url: string, width: number = 800) {
   if (!url || !url.includes('cloudinary.com')) return url;
-  // f_auto = WebP/AVIF, q_auto:good = quality optimization, w_X = max width, c_limit = don't upscale
-  const transformations = `f_auto,q_auto:good,w_${width},c_limit`;
+  // f_auto = WebP/AVIF, q_60 = 60% quality (aggressive compression), w_X = max width, c_limit = don't upscale
+  const transformations = `f_auto,q_60,w_${width},c_limit`;
   return url.replace('/upload/', `/upload/${transformations}/`);
 }
 
@@ -127,6 +127,20 @@ function generateSrcSet(url: string) {
   if (!url || !url.includes('cloudinary.com')) return '';
   const widths = [400, 600, 800];
   return widths.map(w => `${optimizeCloudinaryImage(url, w)} ${w}w`).join(', ');
+}
+
+// Optimize Unsplash images
+function optimizeUnsplashImage(url: string, width: number = 1200, quality: number = 40) {
+  if (!url || !url.includes('unsplash.com')) return url;
+  // Add WebP format, compression, and proper sizing
+  const params = `w=${width}&q=${quality}&auto=format&fit=crop&fm=webp`;
+  return url.includes('?') ? `${url.split('?')[0]}?${params}` : `${url}?${params}`;
+}
+
+function generateUnsplashSrcSet(url: string) {
+  if (!url || !url.includes('unsplash.com')) return '';
+  const widths = [400, 800, 1200];
+  return widths.map(w => `${optimizeUnsplashImage(url, w, 40)} ${w}w`).join(', ');
 }
 ---
 
@@ -2011,14 +2025,26 @@ function generateSrcSet(url: string) {
     </div>
     <div class="portfolio-grid">
       <div class="portfolio-item">
-        <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=1200&q=50&auto=format" alt="Top private equity placement agents - Capital Raising" title="Connect with top private equity placement agents for capital raising" width="1200" height="800" loading="lazy" decoding="async">
+        <img
+          src={optimizeUnsplashImage("https://images.unsplash.com/photo-1560179707-f14e90ef3623", 1200, 40)}
+          srcset={generateUnsplashSrcSet("https://images.unsplash.com/photo-1560179707-f14e90ef3623")}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+          alt="Top private equity placement agents - Capital Raising"
+          title="Connect with top private equity placement agents for capital raising"
+          width="1200" height="800" loading="lazy" decoding="async">
         <div class="portfolio-overlay">
           <div class="portfolio-title">Capital Raising</div>
           <div class="portfolio-desc">Connect with premier <strong>private equity placement agents</strong> specializing in PE fundraising</div>
         </div>
       </div>
       <div class="portfolio-item">
-        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=50&auto=format" alt="Leading PE fundraising experts and top placement agents" title="Top private equity placement agents for fund marketing" width="1200" height="800" loading="lazy" decoding="async">
+        <img
+          src={optimizeUnsplashImage("https://images.unsplash.com/photo-1552664730-d307ca884978", 1200, 40)}
+          srcset={generateUnsplashSrcSet("https://images.unsplash.com/photo-1552664730-d307ca884978")}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+          alt="Leading PE fundraising experts and top placement agents"
+          title="Top private equity placement agents for fund marketing"
+          width="1200" height="800" loading="lazy" decoding="async">
         <div class="portfolio-overlay">
           <div class="portfolio-title">Fund Marketing</div>
           <div class="portfolio-desc">Access leading <strong>PE fundraising experts</strong> for top-tier administrative talent</div>
@@ -2172,14 +2198,24 @@ function generateSrcSet(url: string) {
     </div>
     <div class="portfolio-grid">
       <div class="portfolio-item">
-        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&q=50&auto=format" alt="Career Development" width="1200" height="800" loading="lazy" decoding="async">
+        <img
+          src={optimizeUnsplashImage("https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e", 1200, 40)}
+          srcset={generateUnsplashSrcSet("https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e")}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+          alt="Career Development"
+          width="1200" height="800" loading="lazy" decoding="async">
         <div class="portfolio-overlay">
           <div class="portfolio-title">Career Development</div>
           <div class="portfolio-desc">Expert guidance from top placement agents to advance your executive career</div>
         </div>
       </div>
       <div class="portfolio-item">
-        <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=50&auto=format" alt="Global Reach" width="1200" height="800" loading="lazy" decoding="async">
+        <img
+          src={optimizeUnsplashImage("https://images.unsplash.com/photo-1521737711867-e3b97375f902", 1200, 40)}
+          srcset={generateUnsplashSrcSet("https://images.unsplash.com/photo-1521737711867-e3b97375f902")}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+          alt="Global Reach"
+          width="1200" height="800" loading="lazy" decoding="async">
         <div class="portfolio-overlay">
           <div class="portfolio-title">Global Network</div>
           <div class="portfolio-desc">International PE fundraising experts connecting talent worldwide</div>
