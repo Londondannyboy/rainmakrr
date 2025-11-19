@@ -103,12 +103,17 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
 
   <!-- Performance: Critical resource hints -->
   <link rel="preconnect" href="https://stream.mux.com" crossorigin>
-  <link rel="dns-prefetch" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
   <!-- Load vis-network library once globally (instead of 83 times in each component) -->
   <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" defer></script>
+
+  <!-- Performance: Font preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Performance: Preload critical assets -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap">
@@ -1607,13 +1612,15 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       {companies.length > 0 ? (
         <div class="companies-grid">
           {companies.map((company: any, index: number) => (
-            <a href={`/private-equity-placement-agents/${company.slug}`} style="text-decoration: none; color: inherit;">
+            <a href={`/private-equity-placement-agents/${company.slug}`} aria-label={`View ${company.display_name} profile - Private equity placement agent`} style="text-decoration: none; color: inherit;">
               <div class={`company-card${index >= 10 ? ' hidden-card' : ''}`}>
                 {company.featured_image_url && (
                   <div style="width: 100%; height: 200px; overflow: hidden; margin: -40px -40px 24px -40px; border-radius: 24px 24px 0 0;">
                     <img
                       src={company.featured_image_url}
                       alt={company.display_name}
+                      loading={index < 10 ? 'eager' : 'lazy'}
+                      decoding="async"
                       style="width: 100%; height: 100%; object-fit: cover;"
                     />
                   </div>
