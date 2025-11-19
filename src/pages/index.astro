@@ -24,7 +24,9 @@ const companies = await sql`
     featured_image_url,
     specializations,
     global_rank,
-    tags
+    tags,
+    primary_country,
+    primary_region
   FROM companies
   WHERE status = 'published'
     AND company_type = 'placement_agent'
@@ -1627,8 +1629,8 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
                 <div class="company-header">
                   <div>
                     <h3 class="company-name">{company.display_name}</h3>
-                    {company.headquarters && (
-                      <div class="company-location">📍 {company.headquarters}</div>
+                    {company.primary_country && (
+                      <div class="company-location">🌍 {company.primary_country} · {company.primary_region}</div>
                     )}
                     {company.global_rank && (
                       <div class="company-location">🏆 Rank #{company.global_rank}</div>
@@ -1699,8 +1701,8 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
                 <div class="company-header">
                   <div>
                     <h3 class="company-name">{company.display_name}</h3>
-                    {company.headquarters && (
-                      <div class="company-location">📍 {company.headquarters}</div>
+                    {company.primary_country && (
+                      <div class="company-location">🌍 {company.primary_country} · {company.primary_region}</div>
                     )}
                     {company.global_rank && (
                       <div class="company-location">🏆 Rank #{company.global_rank}</div>

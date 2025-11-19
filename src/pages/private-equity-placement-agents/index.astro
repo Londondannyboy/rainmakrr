@@ -18,7 +18,8 @@ const companies = await sql`
     logo_url,
     specializations,
     global_rank,
-    primary_country
+    primary_country,
+    primary_region
   FROM companies
   WHERE company_type = 'placement_agent'
   ORDER BY
