@@ -2,7 +2,6 @@
 import { sql } from '../lib/db';
 import SEO from '../components/SEO.astro';
 import Schema from '../components/Schema.astro';
-import ZepGraphVisualization from '../components/ZepGraphVisualization.astro';
 import '../styles/cookieconsent-custom.css';
 
 // Fetch homepage content
@@ -24,7 +23,8 @@ const companies = await sql`
     logo_url,
     featured_image_url,
     specializations,
-    global_rank
+    global_rank,
+    tags
   FROM companies
   WHERE status = 'published'
     AND company_type = 'placement_agent'
@@ -33,6 +33,10 @@ const companies = await sql`
     global_rank ASC NULLS LAST,
     name ASC
 `;
+
+// Split companies into top tier and others based on tags
+const topCompanies = companies.filter((c: any) => c.tags && c.tags.includes('top'));
+const otherCompanies = companies.filter((c: any) => !c.tags || !c.tags.includes('top'));
 
 // Fetch articles
 const articles = await sql`
@@ -1415,6 +1419,12 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       }
 
       .companies-grid { grid-template-columns: 1fr; gap: 30px; }
+
+      /* Center company card images on mobile */
+      .company-card img {
+        object-position: center center !important;
+      }
+
       .portfolio-grid { grid-template-columns: 1fr; }
       .portfolio-item { height: 50vh; min-height: 300px; }
       .services-grid { grid-template-columns: 1fr; }
@@ -1590,28 +1600,22 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       </div>
     </div>
   </section>
-  <!-- Companies Section -->
+  <!-- Top Companies Section -->
   <section class="companies-section">
     <div class="companies-content">
       <div class="section-header">
-        <h2>Top Private Equity Placement Agencies Directory</h2>
+        <h2>Top Private Equity Placement Agents</h2>
         <p style="font-size: 18px; line-height: 1.8; margin-bottom: 16px;">
-          Top private equity placement agencies serve as the vital bridge between General Partners (GPs) seeking capital and Limited Partners (LPs) with investment capacity.
-        </p>
-        <p style="font-size: 18px; line-height: 1.8; margin-bottom: 32px;">
-          These specialized intermediaries leverage extensive LP networks, market intelligence, and fundraising expertise to facilitate successful capital raises.
-        </p>
-        <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8); margin-bottom: 12px;">
-          Our curated directory features leading top private equity placement agencies across all major PE strategies—buyout, growth equity, venture capital, real estate, and infrastructure.
+          Leading private equity placement agencies with proven track records in raising capital for PE funds. These top-tier agencies serve as the vital bridge between General Partners (GPs) seeking capital and institutional Limited Partners (LPs).
         </p>
         <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8);">
-          Whether you're a first-time fund manager or an established GP looking to expand your LP base, connect with the right placement agencies to accelerate your fundraising success.
+          The elite placement agents below leverage extensive LP networks, market intelligence, and fundraising expertise to facilitate successful capital raises across all major PE strategies.
         </p>
       </div>
 
-      {companies.length > 0 ? (
+      {topCompanies.length > 0 ? (
         <div class="companies-grid">
-          {companies.map((company: any, index: number) => (
+          {topCompanies.map((company: any, index: number) => (
             <a href={`/private-equity-placement-agents/${company.slug}`} aria-label={`View ${company.display_name} profile - Private equity placement agent`} style="text-decoration: none; color: inherit;">
               <div class={`company-card${index >= 10 ? ' hidden-card' : ''}`}>
                 {company.featured_image_url && (
@@ -1640,16 +1644,6 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
                   <p class="company-description">{company.description}</p>
                 )}
 
-                <!-- Mini Deal Graph -->
-                <div style="margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px;">
-                  <div style="font-size: 12px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
-                    🤝 Deal Graph Preview
-                  </div>
-                  <div style="height: 200px; overflow: hidden; border-radius: 8px;">
-                    <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
-                  </div>
-                </div>
-
                 {company.specializations && company.specializations.length > 0 && (
                   <div class="company-tags">
                     {company.specializations.slice(0, 3).map((spec: string) => (
@@ -1671,15 +1665,82 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
         </div>
       )}
 
-      {companies.length > 0 && companies.length > 10 && (
-        <div id="load-buttons" style="text-align: center; margin-top: 48px;">
-          <button id="load-all-agents" class="btn btn-primary">
-            Load All Placement Agencies
+      {topCompanies.length > 10 && (
+        <div id="load-buttons-top" style="text-align: center; margin-top: 48px;">
+          <button id="load-all-top-agents" class="btn btn-primary">
+            Load All Top Placement Agents
           </button>
         </div>
       )}
     </div>
   </section>
+
+  <!-- Other Companies Section -->
+  {otherCompanies.length > 0 && (
+    <section class="companies-section" style="margin-top: 80px;">
+      <div class="companies-content">
+        <div class="section-header">
+          <h2>Other Private Equity Placement Agents</h2>
+          <p style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.8);">
+            Additional placement agencies serving the private equity fundraising market across various strategies and regions.
+          </p>
+        </div>
+
+        <div class="companies-grid">
+          {otherCompanies.map((company: any, index: number) => (
+            <a href={`/private-equity-placement-agents/${company.slug}`} aria-label={`View ${company.display_name} profile - Private equity placement agent`} style="text-decoration: none; color: inherit;">
+              <div class={`company-card${index >= 10 ? ' hidden-card' : ''}`}>
+                {company.featured_image_url && (
+                  <div style="width: 100%; height: 200px; overflow: hidden; margin: -40px -40px 24px -40px; border-radius: 24px 24px 0 0;">
+                    <img
+                      src={company.featured_image_url}
+                      alt={company.display_name}
+                      loading={index < 10 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      style="width: 100%; height: 100%; object-fit: cover;"
+                    />
+                  </div>
+                )}
+                <div class="company-header">
+                  <div>
+                    <h3 class="company-name">{company.display_name}</h3>
+                    {company.headquarters && (
+                      <div class="company-location">📍 {company.headquarters}</div>
+                    )}
+                    {company.global_rank && (
+                      <div class="company-location">🏆 Rank #{company.global_rank}</div>
+                    )}
+                  </div>
+                </div>
+                {company.description && (
+                  <p class="company-description">{company.description}</p>
+                )}
+
+                {company.specializations && company.specializations.length > 0 && (
+                  <div class="company-tags">
+                    {company.specializations.slice(0, 3).map((spec: string) => (
+                      <span class="tag">{spec}</span>
+                    ))}
+                  </div>
+                )}
+                <div style="margin-top: 16px; color: #667eea; font-weight: 600; font-size: 14px;">
+                  View Profile →
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {otherCompanies.length > 10 && (
+          <div id="load-buttons-other" style="text-align: center; margin-top: 48px;">
+            <button id="load-all-other-agents" class="btn btn-primary">
+              Load All Other Placement Agents
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  )}
 
   <!-- Latest News & Insights -->
   {articles && articles.length > 0 && (
@@ -2241,18 +2302,33 @@ const muxPlaybackId = 'ZdBjAaWzf4UvDAa9bvBikfP00btysIpiwHq016LSwYZeg';
       initVideo('hero-video', '.hero');
       initVideo('companies-video', '.companies-section');
 
-      // Load All functionality for placement agencies
-      const loadAllBtn = document.getElementById('load-all-agents');
-      const loadButtons = document.getElementById('load-buttons');
+      // Load All functionality for top placement agencies
+      const loadAllTopBtn = document.getElementById('load-all-top-agents');
+      const loadTopButtons = document.getElementById('load-buttons-top');
 
-      if (loadAllBtn) {
-        // Load All: Show all placement agencies
-        loadAllBtn.addEventListener('click', function() {
-          const hiddenCards = document.querySelectorAll('.company-card.hidden-card');
+      if (loadAllTopBtn) {
+        loadAllTopBtn.addEventListener('click', function() {
+          const section = loadTopButtons.closest('.companies-section');
+          const hiddenCards = section.querySelectorAll('.company-card.hidden-card');
           hiddenCards.forEach(card => {
             card.classList.remove('hidden-card');
           });
-          loadButtons.style.display = 'none';
+          loadTopButtons.style.display = 'none';
+        });
+      }
+
+      // Load All functionality for other placement agencies
+      const loadAllOtherBtn = document.getElementById('load-all-other-agents');
+      const loadOtherButtons = document.getElementById('load-buttons-other');
+
+      if (loadAllOtherBtn) {
+        loadAllOtherBtn.addEventListener('click', function() {
+          const section = loadOtherButtons.closest('.companies-section');
+          const hiddenCards = section.querySelectorAll('.company-card.hidden-card');
+          hiddenCards.forEach(card => {
+            card.classList.remove('hidden-card');
+          });
+          loadOtherButtons.style.display = 'none';
         });
       }
     });
