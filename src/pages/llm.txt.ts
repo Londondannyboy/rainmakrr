@@ -34,6 +34,23 @@ Our articles cover:
 ## Site Structure
 - Homepage: \${siteUrl}/
 - Articles: \${siteUrl}/articles
+- Placement Agents Directory: \${siteUrl}/private-equity-placement-agents-list
+- Resources:
+  - Placement Agents Guide: \${siteUrl}/resources/placement-agents-guide
+  - Placement Agent Software: \${siteUrl}/resources/placement-agent-software
+- Specialized Directories:
+  - Venture Capital Placement Agents: \${siteUrl}/venture-capital-placement-agents
+  - Private Credit Placement Agents: \${siteUrl}/private-credit-placement-agents
+  - Real Estate PE Placement Agents: \${siteUrl}/real-estate-private-equity-placement-agents
+  - Boutique Placement Agents: \${siteUrl}/boutique-private-equity-placement-agents
+- Regional Pages:
+  - North America: \${siteUrl}/top-private-equity-placement-agents-north-america
+  - Europe: \${siteUrl}/top-private-equity-placement-agents-europe
+  - Asia Pacific: \${siteUrl}/top-private-equity-placement-agents-asia-pacific
+  - Latin America: \${siteUrl}/top-private-equity-placement-agents-latin-america
+  - United States: \${siteUrl}/top-private-equity-placement-agents-us
+  - United Kingdom: \${siteUrl}/top-private-equity-placement-agents-uk
+  - Singapore: \${siteUrl}/top-private-equity-placement-agents-singapore
 - Sitemap: \${siteUrl}/sitemap.xml
 
 ## Content Guidelines for LLMs
