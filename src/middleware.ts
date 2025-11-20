@@ -18,16 +18,23 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Continue to the next middleware/page
   const response = await next();
 
-  // Add SEO-friendly headers
-  const headers = new Headers(response.headers);
-  headers.set('Content-Type', 'text/html; charset=UTF-8');
+  // Only modify headers for HTML responses, preserve Content-Type for API routes
+  const originalContentType = response.headers.get('Content-Type');
+  const isHtmlResponse = !originalContentType ||
+    originalContentType.includes('text/html') ||
+    (!originalContentType.includes('application/') && !originalContentType.includes('text/plain') && !originalContentType.includes('text/xml'));
 
-  // Note: GZip/Brotli compression should be handled by Railway/reverse proxy
-  // If not, consider installing 'compression' middleware package
+  if (isHtmlResponse) {
+    const headers = new Headers(response.headers);
+    headers.set('Content-Type', 'text/html; charset=UTF-8');
 
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers
-  });
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    });
+  }
+
+  // Return response as-is for non-HTML content (XML, JSON, plain text, etc.)
+  return response;
 });
