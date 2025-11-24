@@ -50,6 +50,8 @@ const articlesRaw = await sql`
     published_at,
     hero_image_url,
     hero_video_url,
+    video_gif_url,
+    video_thumbnail_url,
     featured_video_gif
   FROM articles
   WHERE app = 'placement'
@@ -66,14 +68,17 @@ function getMuxPlaybackId(videoUrl: string | null): string | null {
   return videoUrl;
 }
 
-// Process articles to extract Mux playback IDs and generate GIF URLs
+// Process articles with image/video priority
 const articles = articlesRaw.map((article: any) => {
   const muxId = getMuxPlaybackId(article.hero_video_url);
+  // Priority: video_gif_url > featured_video_gif > auto-generated > video_thumbnail_url > hero_image_url
+  const gifUrl = article.video_gif_url ||
+                 article.featured_video_gif ||
+                 (muxId ? `https://image.mux.com/${muxId}/animated.gif?width=400` : null);
   return {
     ...article,
     mux_playback_id: muxId,
-    // Use featured_video_gif if set, otherwise generate from Mux ID
-    gif_url: article.featured_video_gif || (muxId ? `https://image.mux.com/${muxId}/animated.gif?width=400` : null)
+    gif_url: gifUrl || article.video_thumbnail_url || article.hero_image_url
   };
 });
 
