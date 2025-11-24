@@ -121,6 +121,29 @@ const tableData = topAgents.map((agent: any) => {
     preqinRank: estimates.preqinRank
   };
 });
+
+// Generate unique table descriptions to avoid duplicate content with company cards
+function generateTableDescription(agent: any): string {
+  const specs = agent.specializations || [];
+  const region = agent.primary_region || agent.primary_country || 'global';
+  const rank = agent.preqinRank;
+
+  // Create unique descriptions based on agent characteristics
+  const templates = [
+    `${rank ? `Preqin #${rank} ranked ` : ''}${specs[0] || 'Private markets'} fundraising specialist with extensive ${region} investor network`,
+    `Premier ${specs.slice(0, 2).join(' and ') || 'alternative investment'} advisory firm serving institutional LPs globally`,
+    `Established ${specs[0] || 'PE'} capital formation expert with deep relationships across ${region} pension funds and endowments`,
+    `Full-service fundraising advisor specializing in ${specs[0] || 'private equity'} with proven track record in ${region}`,
+    `Independent placement firm focused on ${specs.join(', ') || 'alternative assets'} with global distribution capabilities`,
+    `Strategic fundraising partner for ${specs[0] || 'private capital'} managers seeking institutional allocations`,
+    `Boutique advisory combining ${specs[0] || 'PE'} expertise with targeted ${region} LP introductions`,
+    `Leading placement agent serving ${specs[0] || 'alternative'} fund managers across multiple strategies and vintage years`
+  ];
+
+  // Select template based on name hash for consistency
+  const hash = agent.name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+  return templates[hash % templates.length];
+}
 ---
 
 <section id="best-private-equity-placement-agents" class="comparison-table-section" style="padding: 80px 60px; background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(15, 15, 30, 0.98) 100%); border-top: 2px solid rgba(102, 126, 234, 0.3);">
@@ -205,7 +228,7 @@ const tableData = topAgents.map((agent: any) => {
                 </div>
               </td>
               <td style="padding: 20px; font-size: 14px; color: rgba(255, 255, 255, 0.75); line-height: 1.6; max-width: 300px;">
-                {agent.description || <span style="color: rgba(255, 255, 255, 0.4);">—</span>}
+                {generateTableDescription(agent)}
               </td>
               <td style="padding: 20px; font-size: 14px; color: rgba(255, 255, 255, 0.8);">
                 {agent.headquarters_city ? `${agent.headquarters_city}, ${agent.primary_country}` : agent.primary_country}

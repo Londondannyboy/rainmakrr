@@ -155,18 +155,25 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
   const region = company.primary_region || company.primary_country || '';
   const rank = company.global_rank;
 
-  // Create varied taglines based on company data
+  // Create varied taglines based on company data - expanded for better uniqueness
   const templates = [
     `Specialized ${specs[0] || 'private markets'} advisory with ${region ? region + ' ' : ''}expertise in capital formation and fundraising`,
     `Independent advisory firm serving ${specs.slice(0, 2).join(' and ') || 'private markets'} fund managers globally`,
     `Leading placement services for ${specs[0] || 'alternative asset'} managers seeking institutional capital`,
     `Global network connecting ${specs[0] || 'private equity'} funds with institutional investors worldwide`,
     `Expert fundraising solutions for ${specs.join(', ') || 'alternative investment'} strategies`,
+    `Trusted ${region ? region + ' ' : ''}partner for ${specs[0] || 'PE'} fund managers navigating institutional allocations`,
+    `Specialized advisor bridging ${specs[0] || 'private equity'} managers with pension funds and endowments`,
+    `${region ? region + '-based ' : ''}placement firm with deep expertise in ${specs.slice(0, 2).join(' and ') || 'alternative assets'}`,
+    `Strategic fundraising counsel for ${specs[0] || 'alternative'} managers targeting sophisticated LP relationships`,
+    `Boutique advisory delivering tailored ${specs[0] || 'private markets'} capital raising across ${region || 'global'} networks`,
+    `Experienced ${specs[0] || 'PE'} fundraising team with proven institutional investor access`,
+    `Full-service placement agent offering ${specs.join(', ') || 'private equity'} distribution capabilities`,
   ];
 
   // Select template based on company name hash for consistency
-  const hash = company.name.length % templates.length;
-  return templates[hash];
+  const hash = company.name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+  return templates[hash % templates.length];
 }
 ---
 
@@ -1661,9 +1668,8 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
     <a href="/" class="logo">Placement Quest</a>
     <ul class="nav-links">
       <li><a href="/articles">Articles</a></li>
-      <li><a href="/search" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px;">🔍 Search</a></li>
       <li class="nav-item">
-        <a href="/private-equity-placement-agents-list">Private Equity Placement Agents</a>
+        <a href="/private-equity-placement-agents-list">Agents</a>
         <div class="dropdown">
           <a href="/private-equity-placement-agents-list">All Regions & Countries</a>
           <div class="dropdown-divider"></div>
@@ -2036,17 +2042,17 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
   <section class="portfolio-section">
     <div style="max-width: 1400px; margin: 0 auto; padding: 80px 60px 40px;">
       <h2 style="font-size: clamp(36px, 5vw, 56px); font-weight: 900; margin-bottom: 24px; text-align: center; line-height: 1.2;">
-        The Role of Private Equity Placement Agents
+        How Placement Agents Drive Fundraising Success
       </h2>
       <div style="max-width: 900px; margin: 0 auto; text-align: center;">
         <p style="font-size: 18px; line-height: 1.8; color: rgba(255, 255, 255, 0.85); margin-bottom: 20px;">
-          Private equity placement agents are specialized investment banking firms that act as intermediaries between general partners (GPs) seeking to raise capital and institutional limited partners (LPs) with capital to deploy.
+          Placement agents serve as strategic partners in the fundraising process, leveraging deep LP relationships and market intelligence to position funds for success.
         </p>
         <p style="font-size: 18px; line-height: 1.8; color: rgba(255, 255, 255, 0.85); margin-bottom: 20px;">
-          These firms provide critical fundraising support to private equity funds, venture capital funds, infrastructure funds, and other alternative investment vehicles.
+          From crafting compelling investment narratives to orchestrating targeted LP outreach, these advisors streamline capital formation across private equity, venture capital, infrastructure, and credit strategies.
         </p>
         <p style="font-size: 17px; line-height: 1.8; color: rgba(255, 255, 255, 0.75);">
-          The placement agent market has evolved significantly since the 1980s. What began as a niche service has transformed into a sophisticated, multi-billion dollar industry essential to the private capital markets ecosystem. Today's top placement agents combine deep institutional relationships, market intelligence, regulatory expertise, and strategic positioning to help fund managers successfully close on their target fundraise amounts.
+          The modern placement agent brings sophisticated market positioning, regulatory navigation expertise, and data-driven investor targeting. With the global alternatives market exceeding $20 trillion in AUM, selecting the right placement partner has become essential for fund managers seeking to differentiate their offering and achieve optimal terms.
         </p>
       </div>
     </div>
@@ -2130,12 +2136,12 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
 
       {sections.fee_structures.content.retainer_models && (
         <div class="fee-section">
-          <h3>Retainer Models</h3>
-          {sections.fee_structures.content.retainer_models.map((model: any) => (
+          <h3>Common Retainer Arrangements</h3>
+          {sections.fee_structures.content.retainer_models.map((model: any, index: number) => (
             <div class="item-card">
-              <h3>{model.type}</h3>
-              {model.monthly_retainer && <p><strong>Monthly Retainer:</strong> {model.monthly_retainer}</p>}
-              {model.success_fee && <p><strong>Success Fee:</strong> {model.success_fee}</p>}
+              <div style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #667eea;">{model.type}</div>
+              {model.monthly_retainer && <p><strong>{index === 0 ? 'Monthly Fee:' : index === 1 ? 'Retainer Amount:' : 'Periodic Fee:'}</strong> {model.monthly_retainer}</p>}
+              {model.success_fee && <p><strong>{index === 0 ? 'Performance Fee:' : index === 1 ? 'Success-Based Fee:' : 'Completion Bonus:'}</strong> {model.success_fee}</p>}
               {model.note && <p style="font-style: italic; color: rgba(255, 255, 255, 0.7);">{model.note}</p>}
             </div>
           ))}
