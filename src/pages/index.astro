@@ -1,5 +1,6 @@
 ---
 import { sql } from '../lib/db';
+import { marked } from 'marked';
 import SEO from '../components/SEO.astro';
 import Schema from '../components/Schema.astro';
 import PlacementAgentsComparisonTable from '../components/PlacementAgentsComparisonTable.astro';
@@ -41,11 +42,12 @@ const companies = await sql`
 const topCompanies = companies.filter((c: any) => c.tags && c.tags.includes('top'));
 const otherCompanies = companies.filter((c: any) => !c.tags || !c.tags.includes('top'));
 
-// Fetch articles with video/image support
+// Fetch articles with video/image support and content for full sections
 const articlesRaw = await sql`
   SELECT
     title,
     excerpt,
+    content,
     slug,
     published_at,
     hero_image_url,
@@ -1927,7 +1929,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       <p class="section-subtitle">Stay informed with the latest insights, trends, and analysis from the private equity fundraising world</p>
 
       <div class="news-grid">
-        {articles.map((article: any) => (
+        {articles.slice(0, 3).map((article: any) => (
           <div class="news-card">
             {/* Video GIF or Image - GIF/Video supersedes image */}
             {(article.gif_url || article.hero_image_url) && (
@@ -1959,10 +1961,40 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       </div>
 
       <div style="text-align: center; margin-top: 48px;">
-        <a href="/articles" class="btn btn-secondary">View All Articles</a>
+        <a href="/articles" class="btn btn-secondary">View All News</a>
       </div>
     </section>
   )}
+
+  <!-- Full Article Sections for SEO -->
+  {articles && articles.length > 3 && articles.slice(3, 5).map((article: any) => (
+    <section class="content-section animated" style="background: rgba(0, 0, 0, 0.95);">
+      <div style="max-width: 900px; margin: 0 auto;">
+        <div class="news-date" style="margin-bottom: 16px;">
+          {new Date(article.published_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </div>
+        <h2 class="section-title" style="text-align: left; margin-bottom: 24px;">
+          <a href={`/${article.slug}`} style="color: inherit; text-decoration: none;">
+            {article.title}
+          </a>
+        </h2>
+        <div
+          class="article-content"
+          style="color: rgba(255, 255, 255, 0.85); line-height: 1.8; font-size: 16px;"
+          set:html={marked(article.content || '')}
+        />
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+          <a href={`/${article.slug}`} class="news-link" style="font-size: 16px;">
+            Read Full Article →
+          </a>
+        </div>
+      </div>
+    </section>
+  ))}
 
   <!-- PDF Guide CTA Section -->
   <section class="pdf-guide-cta animated">
