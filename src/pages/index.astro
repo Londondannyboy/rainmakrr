@@ -42,7 +42,7 @@ const topCompanies = companies.filter((c: any) => c.tags && c.tags.includes('top
 const otherCompanies = companies.filter((c: any) => !c.tags || !c.tags.includes('top'));
 
 // Fetch articles with video/image support
-const articles = await sql`
+const articlesRaw = await sql`
   SELECT
     title,
     excerpt,
@@ -56,6 +56,20 @@ const articles = await sql`
   ORDER BY published_at DESC NULLS LAST
   LIMIT 3
 `;
+
+// Extract Mux playback ID from URL or use as-is if already just the ID
+function getMuxPlaybackId(videoUrl: string | null): string | null {
+  if (!videoUrl) return null;
+  const match = videoUrl.match(/mux\.com\/([a-zA-Z0-9]+)/);
+  if (match) return match[1];
+  return videoUrl;
+}
+
+// Process articles to extract Mux playback IDs
+const articles = articlesRaw.map((article: any) => ({
+  ...article,
+  mux_playback_id: getMuxPlaybackId(article.hero_video_url)
+}));
 
 const sections = {
   hero: homepageContent.find((s: any) => s.section_type === 'hero'),
@@ -1905,11 +1919,11 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
         {articles.map((article: any) => (
           <div class="news-card">
             {/* Video (as animated GIF) or Image - Video supersedes image */}
-            {(article.hero_video_url || article.hero_image_url) && (
+            {(article.mux_playback_id || article.hero_image_url) && (
               <div style="width: 100%; height: 180px; overflow: hidden; margin-bottom: 16px; border-radius: 8px;">
-                {article.hero_video_url ? (
+                {article.mux_playback_id ? (
                   <img
-                    src={`https://image.mux.com/${article.hero_video_url}/animated.gif?width=400`}
+                    src={`https://image.mux.com/${article.mux_playback_id}/animated.gif?width=400`}
                     alt={article.title}
                     style="width: 100%; height: 100%; object-fit: cover;"
                     loading="lazy"

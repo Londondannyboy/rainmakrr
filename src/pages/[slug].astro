@@ -48,6 +48,18 @@ if (!article) {
   return Astro.redirect('/');
 }
 
+// Extract Mux playback ID from URL or use as-is if already just the ID
+function getMuxPlaybackId(videoUrl: string | null): string | null {
+  if (!videoUrl) return null;
+  // If it's a full URL, extract the playback ID
+  const match = videoUrl.match(/mux\.com\/([a-zA-Z0-9]+)/);
+  if (match) return match[1];
+  // Otherwise assume it's already just the ID
+  return videoUrl;
+}
+
+const muxPlaybackId = getMuxPlaybackId(article.hero_video_url);
+
 // Parse markdown to HTML
 const baseHtml = marked(article.content);
 
@@ -117,7 +129,7 @@ const html = insertImagesIntoHTML(baseHtml, null, {
         </div>
 
         <!-- Hero Video/Image - Video supersedes image if available -->
-        {article.hero_video_url ? (
+        {muxPlaybackId ? (
           <div class="mb-8 relative rounded-lg overflow-hidden shadow-lg">
             <video
               autoplay
@@ -127,8 +139,8 @@ const html = insertImagesIntoHTML(baseHtml, null, {
               class="w-full h-auto"
               poster={article.hero_image_url || ''}
             >
-              <source src={`https://stream.mux.com/${article.hero_video_url}.m3u8`} type="application/x-mpegURL" />
-              <source src={`https://stream.mux.com/${article.hero_video_url}/high.mp4`} type="video/mp4" />
+              <source src={`https://stream.mux.com/${muxPlaybackId}.m3u8`} type="application/x-mpegURL" />
+              <source src={`https://stream.mux.com/${muxPlaybackId}/high.mp4`} type="video/mp4" />
             </video>
           </div>
         ) : article.hero_image_url && (
