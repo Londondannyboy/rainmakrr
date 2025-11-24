@@ -4,7 +4,7 @@ import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
 
 // Fetch all published articles with featured images - using Quest schema
-const articles = await sql`
+const articlesRaw = await sql`
   SELECT
     id,
     title,
@@ -13,7 +13,6 @@ const articles = await sql`
     published_at,
     created_at,
     article_angle,
-    word_count,
     featured_image_url,
     payload->>'featured_image_alt' as featured_image_alt
   FROM articles
@@ -21,6 +20,18 @@ const articles = await sql`
     AND status = 'published'
   ORDER BY published_at DESC NULLS LAST, created_at DESC
 `;
+
+// Filter out articles with incomplete/truncated excerpts
+// (those ending with apostrophes, quotes, or truncated text)
+const articles = articlesRaw.filter((article: any) => {
+  if (!article.excerpt) return false;
+  const trimmed = article.excerpt.trim();
+  // Skip if excerpt ends with incomplete indicators
+  if (trimmed.endsWith("'") || trimmed.endsWith('"') || trimmed.endsWith('with') || trimmed.length < 50) {
+    return false;
+  }
+  return true;
+});
 ---
 
 <!DOCTYPE html>

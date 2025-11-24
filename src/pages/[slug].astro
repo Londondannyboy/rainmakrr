@@ -26,7 +26,6 @@ const articleResult = await sql`
     published_at,
     created_at,
     article_angle,
-    word_count,
     hero_image_url,
     hero_image_alt,
     hero_video_url,
@@ -124,8 +123,6 @@ const html = insertImagesIntoHTML(baseHtml, null, {
               day: 'numeric'
             })}
           </time>
-          <span>•</span>
-          <span>{article.word_count} words</span>
         </div>
 
         <!-- Hero Video/Image - Video supersedes image if available -->
