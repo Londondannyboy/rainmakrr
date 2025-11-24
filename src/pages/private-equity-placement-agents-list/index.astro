@@ -100,6 +100,9 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
   <!-- Load vis-network library for deal graphs -->
   <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" defer></script>
 
+  <!-- Mux Video -->
+  <link rel="preconnect" href="https://stream.mux.com" crossorigin>
+
   <style is:inline>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -213,7 +216,20 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
       padding: 160px 40px 100px;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(240, 147, 251, 0.15), rgba(0, 0, 0, 0.95));
+      background: #000;
+    }
+
+    .hero-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: cover;
+      z-index: 1;
     }
 
     .hero::before {
@@ -223,7 +239,8 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
       left: 0;
       right: 0;
       bottom: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.2), transparent 70%);
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 2;
       pointer-events: none;
     }
 
@@ -540,6 +557,7 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
 
   <!-- Hero Section -->
   <section class="hero">
+    <video id="hero-video" class="hero-video" autoplay muted loop playsinline></video>
     <div class="hero-content">
       <div class="hero-badge">Curated Directory</div>
       <h1>Private Equity Placement Agents List - Top, Largest & Best Agencies</h1>
@@ -764,6 +782,39 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
         });
       }
     });
+
+    // Initialize Mux HLS video for hero
+    const heroVideo = document.getElementById('hero-video');
+    const heroVideoSrc = 'https://stream.mux.com/mOMmHitiSizSxgTqzF1Y7tcryugkc700QL65SMOC2WEU.m3u8';
+
+    function loadHLS(callback) {
+      if (typeof Hls !== 'undefined') {
+        callback();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+      script.onload = callback;
+      document.head.appendChild(script);
+    }
+
+    if (heroVideo) {
+      if (heroVideo.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support (Safari)
+        heroVideo.src = heroVideoSrc;
+        heroVideo.play().catch(() => {});
+      } else {
+        // Load HLS.js for other browsers
+        loadHLS(function() {
+          if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            const hls = new Hls({ maxBufferLength: 10 });
+            hls.loadSource(heroVideoSrc);
+            hls.attachMedia(heroVideo);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => heroVideo.play().catch(() => {}));
+          }
+        });
+      }
+    }
   </script>
 </body>
 </html>

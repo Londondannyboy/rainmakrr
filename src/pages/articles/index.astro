@@ -41,6 +41,9 @@ const articles = await sql`
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
+  <!-- Mux Video -->
+  <link rel="preconnect" href="https://stream.mux.com" crossorigin>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -106,7 +109,20 @@ const articles = await sql`
       padding: 160px 40px 100px;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(240, 147, 251, 0.15), rgba(0, 0, 0, 0.95));
+      background: #000;
+    }
+
+    .hero-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: cover;
+      z-index: 1;
     }
 
     .hero::before {
@@ -116,7 +132,8 @@ const articles = await sql`
       left: 0;
       right: 0;
       bottom: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.2), transparent 70%);
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 2;
       pointer-events: none;
     }
 
@@ -391,6 +408,7 @@ const articles = await sql`
 
   <!-- Hero Section -->
   <section class="hero">
+    <video id="hero-video" class="hero-video" autoplay muted loop playsinline></video>
     <div class="hero-content">
       <div class="hero-badge">Expert Insights & Analysis</div>
       <h1>Articles & Insights</h1>
@@ -520,6 +538,39 @@ const articles = await sql`
         });
       }
     });
+
+    // Initialize Mux HLS video for hero
+    const heroVideo = document.getElementById('hero-video');
+    const heroVideoSrc = 'https://stream.mux.com/D1xxBnkq00yob8i65Q6OXj0173zxoRZFmwyczFUUtmQUY.m3u8';
+
+    function loadHLS(callback) {
+      if (typeof Hls !== 'undefined') {
+        callback();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+      script.onload = callback;
+      document.head.appendChild(script);
+    }
+
+    if (heroVideo) {
+      if (heroVideo.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support (Safari)
+        heroVideo.src = heroVideoSrc;
+        heroVideo.play().catch(() => {});
+      } else {
+        // Load HLS.js for other browsers
+        loadHLS(function() {
+          if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            const hls = new Hls({ maxBufferLength: 10 });
+            hls.loadSource(heroVideoSrc);
+            hls.attachMedia(heroVideo);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => heroVideo.play().catch(() => {}));
+          }
+        });
+      }
+    }
   </script>
 </body>
 </html>
