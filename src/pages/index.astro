@@ -57,7 +57,7 @@ const articlesRaw = await sql`
   WHERE app = 'placement'
     AND status = 'published'
   ORDER BY published_at DESC NULLS LAST
-  LIMIT 3
+  LIMIT 5
 `;
 
 // Extract Mux playback ID from URL or use as-is if already just the ID
