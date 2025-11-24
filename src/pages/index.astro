@@ -394,6 +394,37 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       margin: 8px 0;
     }
 
+    /* Hamburger Menu */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      gap: 6px;
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2.5px;
+      background: #fff;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(10px, 10px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+
     /* Hero with Mux Video */
     .hero {
       height: 100vh;
@@ -1644,7 +1675,72 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
     }
 
     @media (max-width: 768px) {
-      nav { padding: 20px; }
+      nav { padding: 16px 20px; }
+
+      /* Show hamburger menu on mobile */
+      .hamburger {
+        display: flex;
+      }
+
+      /* Mobile nav menu */
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0 !important;
+        background: rgba(0, 0, 0, 0.98);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        display: flex !important;
+      }
+
+      .nav-links.active {
+        max-height: 500px;
+      }
+
+      .nav-links a {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .nav-links li:last-child a {
+        border-bottom: none;
+      }
+
+      /* Hide dropdown on mobile */
+      .dropdown {
+        position: static;
+        background: rgba(255, 255, 255, 0.05);
+        opacity: 0;
+        visibility: hidden;
+        max-height: 0;
+        overflow: hidden;
+        transform: none;
+        margin: 0;
+        padding: 0;
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .nav-item:hover .dropdown {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .nav-item.active .dropdown {
+        opacity: 1;
+        visibility: visible;
+        max-height: 400px;
+        padding: 12px 0;
+        margin-top: 0;
+      }
+
       .hero h1 { font-size: 42px; }
       .hero-subtitle { font-size: 16px; }
 
@@ -1700,6 +1796,29 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
 
       .cta-section p {
         font-size: 18px;
+      }
+
+      /* News section responsive */
+      .content-section.gradient > div > div:nth-child(2) {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+      }
+
+      .content-section.gradient > div > div:nth-child(3) {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+      }
+
+      .featured-news-panel {
+        min-height: auto;
+      }
+
+      .featured-news-panel img {
+        height: 240px !important;
+      }
+
+      .news-panel-small img {
+        height: 160px !important;
       }
     }
 
@@ -1780,13 +1899,55 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
         }
       });
     })();
+
+    // Hamburger Menu Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.getElementById('hamburger-menu');
+      const navMenu = document.getElementById('nav-menu');
+      const navItems = navMenu.querySelectorAll('.nav-item');
+
+      if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+          hamburger.classList.toggle('active');
+          navMenu.classList.toggle('active');
+        });
+
+        // Close menu when link is clicked
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            // Don't close if clicking on Agents dropdown toggle
+            if (!this.parentElement.classList.contains('nav-item')) {
+              hamburger.classList.remove('active');
+              navMenu.classList.remove('active');
+            }
+          });
+        });
+
+        // Toggle dropdown on mobile
+        navItems.forEach(item => {
+          const link = item.querySelector('a');
+          link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+              e.preventDefault();
+              item.classList.toggle('active');
+            }
+          });
+        });
+      }
+    });
   </script>
 </head>
 <body>
   <!-- Navigation -->
   <nav>
-    <a href="/" class="logo">Placement</a>
-    <ul class="nav-links">
+    <a href="/" class="logo">Placement Quest</a>
+    <button class="hamburger" id="hamburger-menu" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-menu">
       <li><a href="/articles">News</a></li>
       <li class="nav-item">
         <a href="/private-equity-placement-agents-list">Agents</a>
