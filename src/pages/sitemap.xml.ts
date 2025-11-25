@@ -62,7 +62,7 @@ async function generateSitemapXML(): Promise<string> {
   </url>`;
   });
 
-  // Add all published articles from database with news detection
+  // Add all published articles from database with news detection (video-first schema)
   try {
     const articles = await sql`
       SELECT
@@ -71,12 +71,13 @@ async function generateSitemapXML(): Promise<string> {
         updated_at,
         published_at,
         created_at,
-        featured_image_url,
-        featured_image_title,
-        featured_image_alt,
-        hero_image_url,
-        hero_image_title,
-        hero_image_alt
+        featured_asset_url,
+        featured_asset_title,
+        featured_asset_alt,
+        hero_asset_url,
+        hero_asset_title,
+        hero_asset_alt,
+        video_playback_id
       FROM articles
       WHERE app = 'placement'
         AND status = 'published'
@@ -108,10 +109,12 @@ async function generateSitemapXML(): Promise<string> {
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>`;
 
-      // Add image tags if article has featured or hero image
-      const imageUrl = article.featured_image_url || article.hero_image_url;
-      const imageTitle = article.featured_image_title || article.hero_image_title || article.title;
-      const imageAlt = article.featured_image_alt || article.hero_image_alt || article.title;
+      // Add image tags - use video thumbnail or featured/hero asset
+      const imageUrl = article.video_playback_id
+        ? `https://image.mux.com/${article.video_playback_id}/thumbnail.jpg?time=1`
+        : (article.featured_asset_url || article.hero_asset_url);
+      const imageTitle = article.featured_asset_title || article.hero_asset_title || article.title;
+      const imageAlt = article.featured_asset_alt || article.hero_asset_alt || article.title;
 
       if (imageUrl) {
         xml += `

@@ -3,7 +3,7 @@ import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
 
-// Fetch all published articles with featured images - using Quest schema
+// Fetch all published articles with featured assets - using Quest schema (video-first)
 const articlesRaw = await sql`
   SELECT
     id,
@@ -13,8 +13,9 @@ const articlesRaw = await sql`
     published_at,
     created_at,
     article_angle,
-    featured_image_url,
-    payload->>'featured_image_alt' as featured_image_alt
+    featured_asset_url,
+    featured_asset_alt,
+    video_playback_id
   FROM articles
   WHERE app = 'placement'
     AND status = 'published'
@@ -435,10 +436,10 @@ const articles = articlesRaw.filter((article: any) => {
       <div class="articles-grid">
         {articles.map((article: any) => (
           <article class="article-card">
-            {article.featured_image_url && (
+            {article.featured_asset_url && (
               <img
-                src={article.featured_image_url}
-                alt={article.featured_image_alt || article.title}
+                src={article.featured_asset_url}
+                alt={article.featured_asset_alt || article.title}
                 class="article-image"
                 loading="lazy"
                 decoding="async"

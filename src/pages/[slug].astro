@@ -15,7 +15,7 @@ marked.setOptions({
   gfm: true,      // GitHub Flavored Markdown
 });
 
-// Fetch the article with images and video - using Quest schema
+// Fetch the article with images and video - using Quest schema (video-first)
 const articleResult = await sql`
   SELECT
     id,
@@ -26,9 +26,10 @@ const articleResult = await sql`
     published_at,
     created_at,
     article_angle,
-    hero_image_url,
-    hero_image_alt,
-    hero_video_url,
+    hero_asset_url,
+    hero_asset_alt,
+    video_url,
+    video_playback_id,
     content_image_1_url,
     content_image_1_alt,
     content_image_2_url,
@@ -47,17 +48,18 @@ if (!article) {
   return Astro.redirect('/');
 }
 
-// Extract Mux playback ID from URL or use as-is if already just the ID
-function getMuxPlaybackId(videoUrl: string | null): string | null {
+// Use video_playback_id directly, or extract from video_url as fallback
+function getMuxPlaybackId(playbackId: string | null, videoUrl: string | null): string | null {
+  // Prefer direct playback_id if available
+  if (playbackId) return playbackId;
   if (!videoUrl) return null;
-  // If it's a full URL, extract the playback ID
+  // Extract from URL if needed
   const match = videoUrl.match(/mux\.com\/([a-zA-Z0-9]+)/);
   if (match) return match[1];
-  // Otherwise assume it's already just the ID
-  return videoUrl;
+  return null;
 }
 
-const muxPlaybackId = getMuxPlaybackId(article.hero_video_url);
+const muxPlaybackId = getMuxPlaybackId(article.video_playback_id, article.video_url);
 
 // Parse markdown to HTML
 const baseHtml = marked(article.content);
@@ -134,17 +136,17 @@ const html = insertImagesIntoHTML(baseHtml, null, {
               muted
               playsinline
               class="w-full h-auto"
-              poster={article.hero_image_url || ''}
+              poster={article.hero_asset_url || `https://image.mux.com/${muxPlaybackId}/thumbnail.jpg?time=1`}
             >
               <source src={`https://stream.mux.com/${muxPlaybackId}.m3u8`} type="application/x-mpegURL" />
               <source src={`https://stream.mux.com/${muxPlaybackId}/high.mp4`} type="video/mp4" />
             </video>
           </div>
-        ) : article.hero_image_url && (
+        ) : article.hero_asset_url && (
           <div class="mb-8">
             <img
-              src={article.hero_image_url}
-              alt={article.hero_image_alt || article.title}
+              src={article.hero_asset_url}
+              alt={article.hero_asset_alt || article.title}
               class="w-full h-auto rounded-lg shadow-lg"
             />
           </div>
