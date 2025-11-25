@@ -23,7 +23,7 @@ const companies = await sql`
     description,
     headquarters,
     logo_url,
-    featured_image_url,
+    featured_asset_url,
     specializations,
     global_rank,
     tags,
@@ -53,7 +53,7 @@ const articlesRaw = await sql`
     content,
     slug,
     published_at,
-    hero_image_url,
+    hero_asset_url,
     hero_video_url,
     video_gif_url,
     video_thumbnail_url,
@@ -76,14 +76,14 @@ function getMuxPlaybackId(videoUrl: string | null): string | null {
 // Process articles with image/video priority
 const articles = articlesRaw.map((article: any) => {
   const muxId = getMuxPlaybackId(article.hero_video_url);
-  // Priority: video_gif_url > featured_video_gif > auto-generated > video_thumbnail_url > hero_image_url
+  // Priority: video_gif_url > featured_video_gif > auto-generated > video_thumbnail_url > hero_asset_url
   const gifUrl = article.video_gif_url ||
                  article.featured_video_gif ||
                  (muxId ? `https://image.mux.com/${muxId}/animated.gif?width=400` : null);
   return {
     ...article,
     mux_playback_id: muxId,
-    gif_url: gifUrl || article.video_thumbnail_url || article.hero_image_url
+    gif_url: gifUrl || article.video_thumbnail_url || article.hero_asset_url
   };
 });
 
@@ -2082,10 +2082,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             {articles.slice(0, 2).map((article: any, index: number) => (
               <a href={`/${article.slug}`} style="text-decoration: none; display: block;">
                 <div style={`background: ${index === 0 ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%)' : 'linear-gradient(135deg, rgba(240, 147, 251, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)'}; border: 2px solid ${index === 0 ? 'rgba(102, 126, 234, 0.5)' : 'rgba(240, 147, 251, 0.4)'}; border-radius: 24px; padding: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); height: 100%; display: flex; flex-direction: column;`} class="featured-news-panel">
-                  {(article.gif_url || article.hero_image_url) && (
+                  {(article.gif_url || article.hero_asset_url) && (
                     <div style="width: 100%; height: 340px; overflow: hidden; flex-shrink: 0;">
                       <img
-                        src={article.gif_url || article.hero_image_url}
+                        src={article.gif_url || article.hero_asset_url}
                         alt={article.title}
                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"
                         loading="lazy"
@@ -2120,10 +2120,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             {articles.slice(2, 8).map((article: any, index: number) => (
               <a href={`/${article.slug}`} style="text-decoration: none; display: block;">
                 <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 0; overflow: hidden; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column;" class="news-panel-small">
-                  {(article.gif_url || article.hero_image_url) && (
+                  {(article.gif_url || article.hero_asset_url) && (
                     <div style="width: 100%; height: 200px; overflow: hidden; flex-shrink: 0;">
                       <img
-                        src={article.gif_url || article.hero_image_url}
+                        src={article.gif_url || article.hero_asset_url}
                         alt={article.title}
                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
                         loading="lazy"
@@ -2274,11 +2274,11 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
           {allAgents.map((company: any, index: number) => (
             <a href={`/private-equity-placement-agents-list/${company.slug}`} aria-label={`View ${company.display_name} profile - Private equity placement agent`} style="text-decoration: none; color: inherit;">
               <div class={`company-card${index >= 20 ? ' hidden-card' : ''}`}>
-                {company.featured_image_url && (
+                {company.featured_asset_url && (
                   <div style="width: 100%; height: 200px; overflow: hidden; margin: -40px -40px 24px -40px; border-radius: 24px 24px 0 0;">
                     <img
-                      src={optimizeCloudinaryImage(company.featured_image_url, 800)}
-                      srcset={generateSrcSet(company.featured_image_url)}
+                      src={optimizeCloudinaryImage(company.featured_asset_url, 800)}
+                      srcset={generateSrcSet(company.featured_asset_url)}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                       alt={company.display_name}
                       loading={index < 4 ? 'eager' : 'lazy'}

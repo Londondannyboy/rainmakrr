@@ -12,7 +12,7 @@ const companies = await sql`
     COALESCE(display_name, name) as display_name,
     slug,
     description,
-    featured_image_url,
+    featured_asset_url,
     payload->>'short_description' as short_description,
     headquarters,
     logo_url,
@@ -651,10 +651,10 @@ const sortedCountries = Object.keys(companiesByCountry).sort((a, b) => {
             <div class="companies-grid">
               {companiesByCountry[country].map((company: any) => (
                 <a href={`/private-equity-placement-agents-list/${company.slug}`} class="company-card">
-                  {company.featured_image_url && (
+                  {company.featured_asset_url && (
                     <div style="width: 100%; height: 200px; overflow: hidden; margin-bottom: 20px; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;">
                       <img
-                        src={company.featured_image_url}
+                        src={company.featured_asset_url}
                         alt={company.display_name}
                         style="width: 100%; height: 100%; object-fit: cover;"
                       />

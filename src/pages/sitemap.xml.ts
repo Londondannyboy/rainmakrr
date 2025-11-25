@@ -141,8 +141,8 @@ async function generateSitemapXML(): Promise<string> {
         name,
         updated_at,
         created_at,
-        featured_image_url,
-        hero_image_url,
+        featured_asset_url,
+        hero_asset_url,
         logo_url
       FROM companies
       WHERE status = 'published'
@@ -164,7 +164,7 @@ async function generateSitemapXML(): Promise<string> {
     <priority>0.8</priority>`;
 
       // Add image tags for company images
-      const imageUrl = company.featured_image_url || company.hero_image_url || company.logo_url;
+      const imageUrl = company.featured_asset_url || company.hero_asset_url || company.logo_url;
       if (imageUrl) {
         const imageName = company.name || 'Placement Agent';
         xml += `

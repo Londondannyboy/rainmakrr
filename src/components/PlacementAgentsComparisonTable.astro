@@ -12,7 +12,7 @@ const topAgents = await sql`
     primary_region,
     specializations,
     global_rank,
-    featured_image_url,
+    featured_asset_url,
     logo_url,
     payload->'headquarters_city' as headquarters_city,
     payload->'website' as website,
@@ -202,9 +202,9 @@ function generateTableDescription(agent: any): string {
               </td>
               <td style="padding: 20px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                  {(agent.featured_image_url || agent.logo_url) && (
+                  {(agent.featured_asset_url || agent.logo_url) && (
                     <img
-                      src={optimizeCloudinaryLogo(agent.featured_image_url || agent.logo_url)}
+                      src={optimizeCloudinaryLogo(agent.featured_asset_url || agent.logo_url)}
                       alt={agent.display_name}
                       style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: rgba(255, 255, 255, 0.05);"
                       loading="lazy"

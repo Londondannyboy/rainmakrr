@@ -17,7 +17,7 @@ if (searchQuery && searchQuery.length >= 2) {
       primary_country,
       primary_region,
       logo_url,
-      featured_image_url,
+      featured_asset_url,
       payload
     FROM companies
     WHERE company_type = 'placement_agent'
@@ -283,9 +283,9 @@ function optimizeCloudinaryImage(url: string, width: number = 400): string {
         {companies.map((company: any) => (
           <a href={`/private-equity-placement-agents-list/${company.slug}`} class="company-card">
             <div class="company-header">
-              {(company.logo_url || company.featured_image_url) && (
+              {(company.logo_url || company.featured_asset_url) && (
                 <img
-                  src={optimizeCloudinaryImage(company.logo_url || company.featured_image_url, 120)}
+                  src={optimizeCloudinaryImage(company.logo_url || company.featured_asset_url, 120)}
                   alt={company.display_name}
                   class="company-logo"
                   loading="lazy"

@@ -21,8 +21,8 @@ const companies = await sql`
     COALESCE(display_name, name) as display_name,
     slug,
     logo_url,
-    featured_image_url,
-    hero_image_url,
+    featured_asset_url,
+    hero_asset_url,
     payload,
     updated_at,
     primary_country,
@@ -55,8 +55,8 @@ const company = {
   display_name: companyRow.display_name,
   slug: companyRow.slug,
   logo_url: companyRow.logo_url || payload.logo_url,
-  featured_image_url: companyRow.featured_image_url || payload.featured_image_url,
-  hero_image_url: companyRow.hero_image_url || payload.hero_image_url,
+  featured_asset_url: companyRow.featured_asset_url || payload.featured_asset_url,
+  hero_asset_url: companyRow.hero_asset_url || payload.hero_asset_url,
   website: payload.website,
   industry: payload.industry,
   headquarters_city: payload.headquarters_city,
@@ -274,10 +274,10 @@ const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + 
   </nav>
 
   <!-- Full-Width Hero Image -->
-  {company.hero_image_url && (
+  {company.hero_asset_url && (
     <div class="w-full h-96 overflow-hidden">
       <img
-        src={company.hero_image_url}
+        src={company.hero_asset_url}
         alt={company.display_name}
         class="w-full h-full object-cover"
       />
@@ -286,10 +286,10 @@ const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + 
 
   <!-- Hero Section -->
   <div class="relative pt-24 pb-16 overflow-hidden">
-    {company.featured_image_url && !company.hero_image_url && (
+    {company.featured_asset_url && !company.hero_asset_url && (
       <div class="absolute inset-0 z-0">
         <img
-          src={company.featured_image_url}
+          src={company.featured_asset_url}
           alt={company.display_name}
           class="w-full h-full object-cover opacity-10 blur-sm"
         />
