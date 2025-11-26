@@ -2331,6 +2331,151 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
     <PlacementAgentsComparisonTable />
   </div>
 
+  <!-- Key Criteria Section -->
+  <section class="criteria-section">
+    <div class="criteria-container">
+      <div class="criteria-header">
+        <span class="criteria-badge">Selection Criteria</span>
+        <h2 class="criteria-title">What Defines a Top Placement Agent?</h2>
+        <p class="criteria-subtitle">
+          The world's leading PE placement agents share these essential characteristics that set them apart in the industry.
+        </p>
+      </div>
+      <div class="criteria-grid">
+        <div class="criteria-card">
+          <div class="criteria-number">1</div>
+          <h3>Proven Track Record</h3>
+          <p>Top-ranked firms like <a href="/private-equity-placement-agents-list/campbell-lutyens">Campbell Lutyens</a> (#1 Preqin 2025) and <a href="/private-equity-placement-agents-list/pjt-park-hill">PJT Park Hill</a> have closed billions across multiple fund cycles.</p>
+        </div>
+        <div class="criteria-card">
+          <div class="criteria-number">2</div>
+          <h3>LP Network Depth</h3>
+          <p>Access to 500-1,000+ institutional investors including pension funds, sovereign wealth funds, insurance companies, and family offices globally.</p>
+        </div>
+        <div class="criteria-card">
+          <div class="criteria-number">3</div>
+          <h3>Strategy Expertise</h3>
+          <p>Specialized knowledge across buyout, <a href="/venture-capital-placement-agents">venture capital</a>, <a href="/private-credit-placement-agents">private credit</a>, infrastructure, and <a href="/real-estate-private-equity-placement-agents">real estate</a>.</p>
+        </div>
+        <div class="criteria-card">
+          <div class="criteria-number">4</div>
+          <h3>Geographic Reach</h3>
+          <p>Leading firms maintain offices across <a href="/top-private-equity-placement-agents-north-america">North America</a>, <a href="/top-private-equity-placement-agents-europe">Europe</a>, and <a href="/top-private-equity-placement-agents-asia-pacific">Asia Pacific</a> to access global LP pools.</p>
+        </div>
+        <div class="criteria-card">
+          <div class="criteria-number">5</div>
+          <h3>Regulatory Compliance</h3>
+          <p>Full regulatory registration (SEC, FCA, etc.) and adherence to industry best practices including ILPA guidelines.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .criteria-section {
+      padding: 80px 40px;
+      background: linear-gradient(180deg, rgba(15, 15, 30, 0.98) 0%, rgba(0, 0, 0, 0.95) 100%);
+      border-top: 1px solid rgba(102, 126, 234, 0.2);
+    }
+    .criteria-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .criteria-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .criteria-badge {
+      display: inline-block;
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+    }
+    .criteria-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .criteria-subtitle {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .criteria-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s ease;
+    }
+    .criteria-card:hover {
+      background: rgba(102, 126, 234, 0.08);
+      border-color: rgba(102, 126, 234, 0.3);
+      transform: translateY(-4px);
+    }
+    .criteria-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 16px;
+    }
+    .criteria-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 12px 0;
+    }
+    .criteria-card p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0;
+    }
+    .criteria-card a {
+      color: #667eea;
+      text-decoration: underline;
+    }
+    .criteria-card a:hover {
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .criteria-section {
+        padding: 60px 20px;
+      }
+      .criteria-title {
+        font-size: 28px;
+      }
+      .criteria-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
   <!-- Top Companies Section -->
   <section id="top-agents" class="companies-section">
     <div class="companies-content">
@@ -2348,34 +2493,6 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             </span>
           </div>
         )}
-
-        <div style="background: rgba(102, 126, 234, 0.1); border-left: 4px solid #667eea; padding: 24px; border-radius: 12px; margin-bottom: 32px;">
-          <div class="callout-title" style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: #667eea;">
-            What Defines a Top Placement Agent? Key Criteria
-          </div>
-          <ol style="list-style-position: inside; color: rgba(255, 255, 255, 0.9); line-height: 1.9; font-size: 16px; counter-reset: item; list-style: none; padding-left: 0;">
-            <li style="counter-increment: item; margin-bottom: 12px; padding-left: 32px; position: relative;">
-              <span style="position: absolute; left: 0; font-weight: 700; color: #667eea;">1.</span>
-              <strong>Proven Track Record:</strong> Top-ranked firms like <a href="/private-equity-placement-agents-list/campbell-lutyens" style="color: #fff; text-decoration: underline;">Campbell Lutyens</a> (#1 in Preqin 2025) and <a href="/private-equity-placement-agents-list/pjt-park-hill" style="color: #fff; text-decoration: underline;">PJT Park Hill</a> have closed billions in capital across multiple fund cycles
-            </li>
-            <li style="counter-increment: item; margin-bottom: 12px; padding-left: 32px; position: relative;">
-              <span style="position: absolute; left: 0; font-weight: 700; color: #667eea;">2.</span>
-              <strong>LP Network Depth:</strong> Access to 500-1,000+ institutional investors including pension funds, sovereign wealth funds, insurance companies, and family offices globally
-            </li>
-            <li style="counter-increment: item; margin-bottom: 12px; padding-left: 32px; position: relative;">
-              <span style="position: absolute; left: 0; font-weight: 700; color: #667eea;">3.</span>
-              <strong>Strategy Expertise:</strong> Specialized knowledge across buyout, <a href="/venture-capital-placement-agents" style="color: #fff; text-decoration: underline;">venture capital</a>, <a href="/private-credit-placement-agents" style="color: #fff; text-decoration: underline;">private credit</a>, infrastructure, and <a href="/real-estate-private-equity-placement-agents" style="color: #fff; text-decoration: underline;">real estate</a>
-            </li>
-            <li style="counter-increment: item; margin-bottom: 12px; padding-left: 32px; position: relative;">
-              <span style="position: absolute; left: 0; font-weight: 700; color: #667eea;">4.</span>
-              <strong>Geographic Reach:</strong> Leading firms maintain offices across <a href="/top-private-equity-placement-agents-north-america" style="color: #fff; text-decoration: underline;">North America</a>, <a href="/top-private-equity-placement-agents-europe" style="color: #fff; text-decoration: underline;">Europe</a>, and <a href="/top-private-equity-placement-agents-asia-pacific" style="color: #fff; text-decoration: underline;">Asia Pacific</a> to access global LP pools
-            </li>
-            <li style="counter-increment: item; margin-bottom: 12px; padding-left: 32px; position: relative;">
-              <span style="position: absolute; left: 0; font-weight: 700; color: #667eea;">5.</span>
-              <strong>Regulatory Compliance:</strong> Full regulatory registration (SEC, FCA, etc.) and adherence to industry best practices including ILPA guidelines
-            </li>
-          </ol>
-        </div>
 
         <p style="font-size: 16px; line-height: 1.8; color: rgba(255, 255, 255, 0.85); margin-bottom: 16px;">
           According to Preqin's 2025 rankings, the global placement agent market is dominated by a select group of firms that collectively facilitate over $100 billion in annual fundraising. <a href="/boutique-private-equity-placement-agents" style="color: #667eea; text-decoration: underline;">Boutique placement agents</a> complement larger firms by offering specialized regional or strategy-specific expertise.
