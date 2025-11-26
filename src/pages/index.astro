@@ -360,7 +360,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
-      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1), transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.3s;
       z-index: 1000;
       margin-top: 12px;
     }
@@ -375,7 +375,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       display: block;
       padding: 10px 20px;
       color: rgba(255, 255, 255, 0.8);
-      transition: all 0.2s;
+      transition: background-color 0.2s, color 0.2s;
     }
 
     .dropdown a:hover {
@@ -406,7 +406,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       height: 2.5px;
       background: #fff;
       border-radius: 2px;
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
     .hamburger.active span:nth-child(1) {
@@ -560,8 +560,9 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       letter-spacing: 0.5px;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.3s, box-shadow 0.3s;
       display: inline-block;
+      will-change: transform;
     }
 
     .btn-primary {
@@ -770,8 +771,9 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 24px;
       padding: 40px;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.4s, border-color 0.4s;
       opacity: 1;
+      will-change: transform;
     }
 
     .company-card:hover {
@@ -1226,6 +1228,28 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       transform: translateY(0);
     }
 
+    /* Accessibility: High contrast links on dark backgrounds (WCAG AAA) */
+    .content-section a.text-blue-600,
+    .content-section .text-blue-600,
+    section[style*="background: rgba(0"] a.text-blue-600,
+    section[style*="background: rgba(0"] .text-blue-600 {
+      color: #93c5fd !important; /* blue-300 - 7:1 contrast on dark */
+    }
+    .content-section a.text-blue-600:hover,
+    .content-section a.hover\:text-blue-800:hover,
+    section[style*="background: rgba(0"] a:hover {
+      color: #bfdbfe !important; /* blue-200 - even higher contrast */
+    }
+    /* All links in dark content sections */
+    .content-section a:not(.btn):not(.news-link),
+    section[style*="background: rgba(0"] a:not(.btn):not(.news-link) {
+      color: #93c5fd !important;
+    }
+    .content-section a:not(.btn):not(.news-link):hover,
+    section[style*="background: rgba(0"] a:not(.btn):not(.news-link):hover {
+      color: #bfdbfe !important;
+    }
+
     /* Temporarily disable animation to debug content visibility */
     /* Will re-enable once content is confirmed visible */
 
@@ -1284,9 +1308,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 32px;
-      transition: all 0.3s;
+      transition: transform 0.3s, background-color 0.3s, border-color 0.3s;
       opacity: 1;
       transform: translateY(0);
+      will-change: transform;
     }
 
     .item-card:hover {
@@ -1337,9 +1362,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 28px;
-      transition: all 0.3s;
+      transition: transform 0.3s, background-color 0.3s, border-color 0.3s;
       opacity: 1;
       transform: translateY(0);
+      will-change: transform;
     }
 
     .agent-card:hover {
@@ -1392,9 +1418,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 32px;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.4s, border-color 0.4s;
       opacity: 1;
       transform: translateY(0);
+      will-change: transform;
     }
 
     .news-card:hover {
@@ -1435,7 +1462,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.3s;
+      transition: color 0.3s, gap 0.3s;
     }
 
     .news-link:hover {
@@ -1456,7 +1483,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border-left: 4px solid #667eea;
       border-radius: 12px;
       padding: 28px;
-      transition: all 0.3s;
+      transition: background-color 0.3s, border-color 0.3s;
       opacity: 1;
       transform: translateY(0);
     }
@@ -1554,7 +1581,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 32px;
-      transition: all 0.3s;
+      transition: background-color 0.3s, border-color 0.3s;
       opacity: 1;
       transform: translateY(0);
     }
@@ -1601,9 +1628,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
       padding: 24px;
-      transition: all 0.3s;
+      transition: transform 0.3s, background-color 0.3s, border-color 0.3s;
       opacity: 1;
       transform: translateY(0);
+      will-change: transform;
     }
 
     .reference-item:hover {
@@ -2019,7 +2047,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             playsinline
             preload="none"
             data-carousel-index={index}
-          ></video>
+            aria-label="Decorative background video showing financial district"
+          >
+            <track kind="captions" src="" label="No captions (decorative video)" default />
+          </video>
         ) : (
           <div
             id={`hero-carousel-${index}`}
