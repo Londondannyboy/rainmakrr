@@ -1,5 +1,42 @@
 import { defineMiddleware } from 'astro:middleware';
 
+// Check if client accepts gzip encoding
+function acceptsGzip(request: Request): boolean {
+  const acceptEncoding = request.headers.get('accept-encoding') || '';
+  return acceptEncoding.includes('gzip');
+}
+
+// Compress response body with gzip
+async function compressResponse(response: Response, headers: Headers): Promise<Response> {
+  // Only compress if body exists and CompressionStream is available
+  if (!response.body || typeof CompressionStream === 'undefined') {
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    });
+  }
+
+  try {
+    const compressedStream = response.body.pipeThrough(new CompressionStream('gzip'));
+    headers.set('Content-Encoding', 'gzip');
+    headers.delete('Content-Length'); // Length changes after compression
+
+    return new Response(compressedStream, {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    });
+  } catch {
+    // Fallback to uncompressed if compression fails
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    });
+  }
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
 
@@ -15,6 +52,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return Response.redirect(redirectUrl, 301);
   }
 
+  // Check if client supports gzip
+  const clientAcceptsGzip = acceptsGzip(context.request);
+
   // Continue to the next middleware/page
   const response = await next();
 
@@ -27,6 +67,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (isHtmlResponse) {
     const headers = new Headers(response.headers);
     headers.set('Content-Type', 'text/html; charset=UTF-8');
+    headers.set('Vary', 'Accept-Encoding'); // Important for caching
 
     // Security Headers (Best Practices - improves Lighthouse score)
     // HSTS - enforce HTTPS for 1 year, include subdomains
@@ -50,10 +91,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // Cross-Origin-Resource-Policy
     headers.set('Cross-Origin-Resource-Policy', 'same-origin');
 
-    // Content-Security-Policy - XSS protection (permissive for now, can tighten later)
+    // Content-Security-Policy - XSS protection
+    // Note: 'unsafe-inline' required for Astro's hydration scripts and inline styles
+    // Note: 'unsafe-eval' required for GSAP animations
+    // Future improvement: Implement nonces for stricter CSP
     headers.set('Content-Security-Policy',
       "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.mux.com; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.mux.com; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
       "img-src 'self' data: https: blob:; " +
       "media-src 'self' https://*.mux.com https://stream.mux.com blob:; " +
@@ -61,8 +105,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
       "connect-src 'self' https://*.mux.com https://*.neon.tech wss://*.neon.tech; " +
       "frame-ancestors 'self'; " +
       "base-uri 'self'; " +
-      "form-action 'self';"
+      "form-action 'self'; " +
+      "worker-src 'self' blob:; " +
+      "object-src 'none';"
     );
+
+    // Apply gzip compression if client supports it (improves Seobility/Lighthouse scores)
+    if (clientAcceptsGzip) {
+      return compressResponse(response, headers);
+    }
 
     return new Response(response.body, {
       status: response.status,

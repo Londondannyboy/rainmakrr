@@ -29,6 +29,9 @@ importers:
       astro:
         specifier: ^5.15.4
         version: 5.15.5(@types/node@24.10.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.928.0))(jiti@1.21.7)(rollup@4.53.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+      astro-font:
+        specifier: ^1.1.0
+        version: 1.1.0
       marked:
         specifier: ^17.0.0
         version: 17.0.0
@@ -1801,6 +1804,9 @@ packages:
 
   array-iterate@2.0.1:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
+
+  astro-font@1.1.0:
+    resolution: {integrity: sha512-hj1A0MkaJTeaArBpf1m9s4Nxu1Bn9h0QiEPeR9Dfjle25pT4CH4higzuadWzCRSvhGO2SzbM11YwZEF+cmLDxg==}
 
   astro@5.15.5:
     resolution: {integrity: sha512-A56u4H6gFHEb0yRHcGTOADBb7jmEwfDjQpkqVV/Z+ZWlu6mYuwCrIcOUtZjNno0chrRKmOeZWDofW23ql18y3w==}
@@ -5446,6 +5452,8 @@ snapshots:
   aria-query@5.3.2: {}
 
   array-iterate@2.0.1: {}
+
+  astro-font@1.1.0: {}
 
   astro@5.15.5(@types/node@24.10.0)(@vercel/functions@2.2.13(@aws-sdk/credential-provider-web-identity@3.928.0))(jiti@1.21.7)(rollup@4.53.2)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1):
     dependencies:

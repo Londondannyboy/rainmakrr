@@ -2,6 +2,7 @@
 import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import Schema from '../../components/Schema.astro';
+import OptimizedFonts from '../../components/OptimizedFonts.astro';
 
 // Fetch all published articles with featured assets - using Quest schema (video-first)
 const articlesRaw = await sql`
@@ -45,9 +46,9 @@ const articles = articlesRaw.filter((article: any) => {
   <Schema type="article_list" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+  <!-- Optimized Font Loading (astro-font) -->
+  <OptimizedFonts />
 
   <!-- GSAP Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

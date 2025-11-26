@@ -127,21 +127,30 @@ function generateTableDescription(agent: any): string {
   const specs = agent.specializations || [];
   const region = agent.primary_region || agent.primary_country || 'global';
   const rank = agent.preqinRank;
+  const name = agent.display_name || agent.name;
 
-  // Create unique descriptions based on agent characteristics
+  // Create highly varied descriptions using multiple data points for uniqueness
   const templates = [
     `${rank ? `Preqin #${rank} ranked ` : ''}${specs[0] || 'Private markets'} fundraising specialist with extensive ${region} investor network`,
-    `Premier ${specs.slice(0, 2).join(' and ') || 'alternative investment'} advisory firm serving institutional LPs globally`,
-    `Established ${specs[0] || 'PE'} capital formation expert with deep relationships across ${region} pension funds and endowments`,
-    `Full-service fundraising advisor specializing in ${specs[0] || 'private equity'} with proven track record in ${region}`,
-    `Independent placement firm focused on ${specs.join(', ') || 'alternative assets'} with global distribution capabilities`,
-    `Strategic fundraising partner for ${specs[0] || 'private capital'} managers seeking institutional allocations`,
-    `Boutique advisory combining ${specs[0] || 'PE'} expertise with targeted ${region} LP introductions`,
-    `Leading placement agent serving ${specs[0] || 'alternative'} fund managers across multiple strategies and vintage years`
+    `Premier ${specs.slice(0, 2).join(' and ') || 'alternative investment'} advisory serving institutional LPs across ${region}`,
+    `Established ${specs[0] || 'PE'} capital formation expert connecting managers with ${region} pension funds`,
+    `${name} specializes in ${specs[0] || 'private equity'} placement with strong ${region} LP relationships`,
+    `Independent placement firm focused on ${specs.join(', ') || 'alternative assets'} distribution globally`,
+    `Strategic partner for ${specs[0] || 'private capital'} managers targeting institutional allocations`,
+    `Boutique advisory combining ${specs[0] || 'PE'} expertise with ${region} investor introductions`,
+    `Leading agent serving ${specs[0] || 'alternative'} fund managers across multiple strategies`,
+    `${region}-focused ${specs[0] || 'PE'} fundraising advisor with proven institutional access`,
+    `Specialized ${specs.slice(0, 2).join('/') || 'private markets'} placement capabilities for emerging managers`,
+    `Experienced fundraising counsel for ${specs[0] || 'alternative'} strategies targeting global LPs`,
+    `Trusted ${specs[0] || 'PE'} placement partner with established sovereign wealth fund relationships`,
+    `${name} offers targeted ${specs[0] || 'private equity'} distribution across key investor segments`,
+    `Expert ${region} placement services for ${specs.join(' and ') || 'alternative investment'} managers`,
+    `Comprehensive fundraising solutions spanning ${specs[0] || 'PE'}, infrastructure, and credit strategies`,
+    `Dedicated ${specs[0] || 'private markets'} advisory with focus on ${region} institutional investors`
   ];
 
-  // Select template based on name hash for consistency
-  const hash = agent.name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+  // Use name length + char sum for better distribution across 16 templates
+  const hash = name.length + name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
   return templates[hash % templates.length];
 }
 ---
