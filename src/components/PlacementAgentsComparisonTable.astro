@@ -30,8 +30,8 @@ const topAgents = await sql`
 // Image optimization for small logos (48x48px display)
 function optimizeCloudinaryLogo(url: string): string {
   if (!url || !url.includes('cloudinary.com')) return url;
-  // For 48x48px logos: WebP, 60% quality, 96px width (2x for retina)
-  const transformations = 'f_auto,q_60,w_96,h_96,c_fill';
+  // For 48x48px logos: WebP, 50% quality, 96px width (2x for retina)
+  const transformations = 'f_webp,q_50,w_96,h_96,c_fill';
   return url.replace('/upload/', `/upload/${transformations}/`);
 }
 
