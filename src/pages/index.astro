@@ -163,6 +163,13 @@ function generateUnsplashSrcSet(url: string) {
   return widths.map(w => `${optimizeUnsplashImage(url, w, 40)} ${w}w`).join(', ');
 }
 
+// Clean duplicate consecutive headings from HTML content (SEO fix)
+function cleanDuplicateHeadings(html: string): string {
+  if (!html) return '';
+  // Remove duplicate consecutive H2/H3 headings with same text
+  return html.replace(/(<h[23][^>]*>([^<]+)<\/h[23]>)\s*\1/gi, '$1');
+}
+
 // Generate varied descriptions to avoid duplicate content
 function generateVariedDescription(company: any, context: 'primary' | 'secondary' = 'primary'): string {
   if (context === 'primary') {
@@ -2381,7 +2388,7 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
         <div
           class="article-content"
           style="line-height: 1.8; font-size: 16px;"
-          set:html={article.content || ''}
+          set:html={cleanDuplicateHeadings(article.content || '')}
         />
         <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
           <a href={`/${article.slug}`} class="news-link" style="font-size: 16px;">
