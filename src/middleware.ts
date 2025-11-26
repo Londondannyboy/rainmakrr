@@ -54,10 +54,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     headers.set('Content-Security-Policy',
       "default-src 'self'; " +
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.mux.com; " +
-      "style-src 'self' 'unsafe-inline'; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
       "img-src 'self' data: https: blob:; " +
       "media-src 'self' https://*.mux.com https://stream.mux.com blob:; " +
-      "font-src 'self' data:; " +
+      "font-src 'self' data: https://fonts.gstatic.com; " +
       "connect-src 'self' https://*.mux.com https://*.neon.tech wss://*.neon.tech; " +
       "frame-ancestors 'self'; " +
       "base-uri 'self'; " +

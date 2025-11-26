@@ -70,10 +70,15 @@ const articles = articlesRaw.map((article: any) => {
   // Priority: featured_asset_url (GIF when video exists) > generated GIF > hero_asset_url
   const gifUrl = article.featured_asset_url ||
                  (playbackId ? `https://image.mux.com/${playbackId}/animated.gif?width=400` : null);
+  // Static thumbnail for mobile (much lighter than animated GIF)
+  const thumbnailUrl = playbackId
+    ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=1&width=400`
+    : article.hero_asset_url;
   return {
     ...article,
     mux_playback_id: playbackId,
-    gif_url: gifUrl || article.hero_asset_url
+    gif_url: gifUrl || article.hero_asset_url,
+    thumbnail_url: thumbnailUrl || article.hero_asset_url
   };
 });
 
@@ -2118,12 +2123,20 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
                 <div style={`background: ${index === 0 ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%)' : 'linear-gradient(135deg, rgba(240, 147, 251, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)'}; border: 2px solid ${index === 0 ? 'rgba(102, 126, 234, 0.5)' : 'rgba(240, 147, 251, 0.4)'}; border-radius: 24px; padding: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); height: 100%; display: flex; flex-direction: column;`} class="featured-news-panel">
                   {(article.gif_url || article.hero_asset_url) && (
                     <div style="width: 100%; height: 340px; overflow: hidden; flex-shrink: 0;">
-                      <img
-                        src={article.gif_url || article.hero_asset_url}
-                        alt={article.title}
-                        style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"
-                        loading="lazy"
-                      />
+                      <picture>
+                        {/* Mobile: Use static thumbnail (saves ~3MB per image) */}
+                        <source
+                          media="(max-width: 768px)"
+                          srcset={article.thumbnail_url || article.hero_asset_url}
+                        />
+                        {/* Desktop: Use animated GIF */}
+                        <img
+                          src={article.gif_url || article.hero_asset_url}
+                          alt={article.title}
+                          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"
+                          loading="lazy"
+                        />
+                      </picture>
                     </div>
                   )}
                   <div style="padding: 40px 36px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
@@ -2156,12 +2169,20 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
                 <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 0; overflow: hidden; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column;" class="news-panel-small">
                   {(article.gif_url || article.hero_asset_url) && (
                     <div style="width: 100%; height: 200px; overflow: hidden; flex-shrink: 0;">
-                      <img
-                        src={article.gif_url || article.hero_asset_url}
-                        alt={article.title}
-                        style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
-                        loading="lazy"
-                      />
+                      <picture>
+                        {/* Mobile: Use static thumbnail (saves ~1-3MB per image) */}
+                        <source
+                          media="(max-width: 768px)"
+                          srcset={article.thumbnail_url || article.hero_asset_url}
+                        />
+                        {/* Desktop: Use animated GIF */}
+                        <img
+                          src={article.gif_url || article.hero_asset_url}
+                          alt={article.title}
+                          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
+                          loading="lazy"
+                        />
+                      </picture>
                     </div>
                   )}
                   <div style="padding: 28px; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start;">
