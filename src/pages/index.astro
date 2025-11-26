@@ -68,20 +68,14 @@ const articlesRaw = await sql`
 // Process articles with video-first priority
 const articles = articlesRaw.map((article: any) => {
   const playbackId = article.video_playback_id;
-  // Static thumbnail - used as default/mobile (50KB vs 3MB for GIF)
+  // Static thumbnail - shown immediately, video lazy-loads on top
   const thumbnailUrl = playbackId
     ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=1&width=400&fit_mode=preserve`
     : (article.featured_asset_url || article.hero_asset_url);
-  // Animated WebP for desktop only - 80% smaller than GIF (~600KB vs 3MB)
-  // Only generate if we have a Mux playback ID
-  const animatedUrl = playbackId
-    ? `https://image.mux.com/${playbackId}/animated.webp?width=400`
-    : null;
   return {
     ...article,
     mux_playback_id: playbackId,
-    thumbnail_url: thumbnailUrl,
-    animated_url: animatedUrl
+    thumbnail_url: thumbnailUrl
   };
 });
 
@@ -2136,29 +2130,33 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             {articles.slice(0, 2).map((article: any, index: number) => (
               <a href={`/${article.slug}`} style="text-decoration: none; display: block;">
                 <div style={`background: ${index === 0 ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%)' : 'linear-gradient(135deg, rgba(240, 147, 251, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)'}; border: 2px solid ${index === 0 ? 'rgba(102, 126, 234, 0.5)' : 'rgba(240, 147, 251, 0.4)'}; border-radius: 24px; padding: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); height: 100%; display: flex; flex-direction: column;`} class="featured-news-panel">
-                  {article.thumbnail_url && (
-                    <div style="width: 100%; height: 340px; overflow: hidden; flex-shrink: 0;">
-                      <picture>
-                        {/* Desktop only: Animated WebP (~600KB vs 3MB GIF) */}
-                        {article.animated_url && (
-                          <source
-                            media="(min-width: 769px)"
-                            srcset={article.animated_url}
-                            type="image/webp"
-                          />
-                        )}
-                        {/* Default/Mobile: Static JPEG thumbnail (~50KB) */}
-                        <img
-                          src={article.thumbnail_url}
-                          alt={article.title}
-                          width="400"
-                          height="340"
-                          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;"
-                          loading="lazy"
-                          decoding="async"
-                          fetchpriority="low"
-                        />
-                      </picture>
+                  {(article.mux_playback_id || article.thumbnail_url) && (
+                    <div style="width: 100%; height: 340px; overflow: hidden; flex-shrink: 0; position: relative;">
+                      {/* Static thumbnail as placeholder until video loads */}
+                      <img
+                        src={article.thumbnail_url}
+                        alt={article.title}
+                        width="400"
+                        height="340"
+                        class="news-thumbnail"
+                        style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                        loading="lazy"
+                      />
+                      {/* HLS video - lazy loaded, replaces thumbnail when ready */}
+                      {article.mux_playback_id && (
+                        <video
+                          class="news-video"
+                          data-playback-id={article.mux_playback_id}
+                          autoplay
+                          loop
+                          muted
+                          playsinline
+                          preload="none"
+                          style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.3s;"
+                        >
+                          <track kind="captions" src="" label="No captions" default />
+                        </video>
+                      )}
                     </div>
                   )}
                   <div style="padding: 40px 36px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
@@ -2189,29 +2187,33 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             {articles.slice(2, 3).map((article: any, index: number) => (
               <a href={`/${article.slug}`} style="text-decoration: none; display: block;">
                 <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 0; overflow: hidden; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column;" class="news-panel-small">
-                  {article.thumbnail_url && (
-                    <div style="width: 100%; height: 200px; overflow: hidden; flex-shrink: 0;">
-                      <picture>
-                        {/* Desktop only: Animated WebP */}
-                        {article.animated_url && (
-                          <source
-                            media="(min-width: 769px)"
-                            srcset={article.animated_url}
-                            type="image/webp"
-                          />
-                        )}
-                        {/* Default/Mobile: Static JPEG thumbnail */}
-                        <img
-                          src={article.thumbnail_url}
-                          alt={article.title}
-                          width="400"
-                          height="200"
-                          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
-                          loading="lazy"
-                          decoding="async"
-                          fetchpriority="low"
-                        />
-                      </picture>
+                  {(article.mux_playback_id || article.thumbnail_url) && (
+                    <div style="width: 100%; height: 200px; overflow: hidden; flex-shrink: 0; position: relative;">
+                      {/* Static thumbnail as placeholder */}
+                      <img
+                        src={article.thumbnail_url}
+                        alt={article.title}
+                        width="400"
+                        height="200"
+                        class="news-thumbnail"
+                        style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                        loading="lazy"
+                      />
+                      {/* HLS video - lazy loaded */}
+                      {article.mux_playback_id && (
+                        <video
+                          class="news-video"
+                          data-playback-id={article.mux_playback_id}
+                          autoplay
+                          loop
+                          muted
+                          playsinline
+                          preload="none"
+                          style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.3s;"
+                        >
+                          <track kind="captions" src="" label="No captions" default />
+                        </video>
+                      )}
                     </div>
                   )}
                   <div style="padding: 28px; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start;">
@@ -2721,11 +2723,60 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
       observer.observe(section);
     }
 
+    // Initialize news article videos with lazy loading
+    function initNewsVideos() {
+      const newsVideos = document.querySelectorAll('.news-video');
+      if (!newsVideos.length) return;
+
+      const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const video = entry.target;
+            const playbackId = video.getAttribute('data-playback-id');
+            if (!playbackId || video.src) return; // Already loaded
+
+            const videoSrc = `https://stream.mux.com/${playbackId}.m3u8`;
+
+            // Load HLS and play video
+            loadHLS(function() {
+              if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                const hls = new Hls({ maxBufferLength: 5, maxMaxBufferLength: 10 });
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                  video.play().then(() => {
+                    video.style.opacity = '1'; // Fade in video
+                  }).catch(() => {});
+                });
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS (Safari)
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                  video.play().then(() => {
+                    video.style.opacity = '1';
+                  }).catch(() => {});
+                });
+              }
+            });
+
+            videoObserver.unobserve(video);
+          }
+        });
+      }, { rootMargin: '200px' }); // Start loading 200px before visible
+
+      newsVideos.forEach(video => videoObserver.observe(video));
+    }
+
     // Initialize videos when sections are near viewport
     window.addEventListener('DOMContentLoaded', function() {
       // Initialize first carousel item if it's a video
       initVideo('hero-carousel-0', '.hero');
       initVideo('companies-video', '.companies-section');
+
+      // Initialize news article videos (lazy loaded)
+      if (!isSlowConnection) {
+        initNewsVideos();
+      }
 
       // Start carousel rotation after page loads
       setInterval(rotateHeroCarousel, carouselInterval);
