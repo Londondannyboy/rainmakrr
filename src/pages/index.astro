@@ -68,19 +68,20 @@ const articlesRaw = await sql`
 // Process articles with video-first priority
 const articles = articlesRaw.map((article: any) => {
   const playbackId = article.video_playback_id;
-  // Priority: featured_asset_url (GIF when video exists) > generated GIF > hero_asset_url
-  const gifUrl = article.featured_asset_url ||
-                 (playbackId ? `https://image.mux.com/${playbackId}/animated.gif?width=400` : null);
-  // Static thumbnail for mobile (much lighter than animated GIF - ~50KB vs 3MB)
-  // Use width=320 for mobile-optimized size, jpg format for best compression
+  // Static thumbnail - used as default/mobile (50KB vs 3MB for GIF)
   const thumbnailUrl = playbackId
-    ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=1&width=320&fit_mode=preserve`
-    : article.hero_asset_url;
+    ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=1&width=400&fit_mode=preserve`
+    : (article.featured_asset_url || article.hero_asset_url);
+  // Animated WebP for desktop only - 80% smaller than GIF (~600KB vs 3MB)
+  // Only generate if we have a Mux playback ID
+  const animatedUrl = playbackId
+    ? `https://image.mux.com/${playbackId}/animated.webp?width=400`
+    : null;
   return {
     ...article,
     mux_playback_id: playbackId,
-    gif_url: gifUrl || article.hero_asset_url,
-    thumbnail_url: thumbnailUrl || article.hero_asset_url
+    thumbnail_url: thumbnailUrl,
+    animated_url: animatedUrl
   };
 });
 
@@ -226,6 +227,10 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <SEO />
   <Schema type="homepage" />
+
+  <!-- Preconnect to Mux for faster image loading -->
+  <link rel="preconnect" href="https://image.mux.com" crossorigin>
+  <link rel="preconnect" href="https://stream.mux.com" crossorigin>
 
   <!-- Structured Data: Key Criteria List -->
   <script type="application/ld+json">
@@ -2131,18 +2136,20 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             {articles.slice(0, 2).map((article: any, index: number) => (
               <a href={`/${article.slug}`} style="text-decoration: none; display: block;">
                 <div style={`background: ${index === 0 ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%)' : 'linear-gradient(135deg, rgba(240, 147, 251, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)'}; border: 2px solid ${index === 0 ? 'rgba(102, 126, 234, 0.5)' : 'rgba(240, 147, 251, 0.4)'}; border-radius: 24px; padding: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); height: 100%; display: flex; flex-direction: column;`} class="featured-news-panel">
-                  {(article.gif_url || article.hero_asset_url) && (
+                  {article.thumbnail_url && (
                     <div style="width: 100%; height: 340px; overflow: hidden; flex-shrink: 0;">
                       <picture>
-                        {/* Mobile: Use static JPEG thumbnail (saves ~3MB per image - 50KB vs 3MB) */}
-                        <source
-                          media="(max-width: 768px)"
-                          srcset={article.thumbnail_url || article.hero_asset_url}
-                          type="image/jpeg"
-                        />
-                        {/* Desktop: Use animated GIF for visual impact */}
+                        {/* Desktop only: Animated WebP (~600KB vs 3MB GIF) */}
+                        {article.animated_url && (
+                          <source
+                            media="(min-width: 769px)"
+                            srcset={article.animated_url}
+                            type="image/webp"
+                          />
+                        )}
+                        {/* Default/Mobile: Static JPEG thumbnail (~50KB) */}
                         <img
-                          src={article.gif_url || article.hero_asset_url}
+                          src={article.thumbnail_url}
                           alt={article.title}
                           width="400"
                           height="340"
@@ -2182,18 +2189,20 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
             {articles.slice(2, 3).map((article: any, index: number) => (
               <a href={`/${article.slug}`} style="text-decoration: none; display: block;">
                 <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 0; overflow: hidden; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column;" class="news-panel-small">
-                  {(article.gif_url || article.hero_asset_url) && (
+                  {article.thumbnail_url && (
                     <div style="width: 100%; height: 200px; overflow: hidden; flex-shrink: 0;">
                       <picture>
-                        {/* Mobile: Use static JPEG thumbnail (saves ~1-3MB per image) */}
-                        <source
-                          media="(max-width: 768px)"
-                          srcset={article.thumbnail_url || article.hero_asset_url}
-                          type="image/jpeg"
-                        />
-                        {/* Desktop: Use animated GIF */}
+                        {/* Desktop only: Animated WebP */}
+                        {article.animated_url && (
+                          <source
+                            media="(min-width: 769px)"
+                            srcset={article.animated_url}
+                            type="image/webp"
+                          />
+                        )}
+                        {/* Default/Mobile: Static JPEG thumbnail */}
                         <img
-                          src={article.gif_url || article.hero_asset_url}
+                          src={article.thumbnail_url}
                           alt={article.title}
                           width="400"
                           height="200"
