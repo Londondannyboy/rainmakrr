@@ -68,9 +68,9 @@ const articlesRaw = await sql`
 // Process articles with video-first priority
 const articles = articlesRaw.map((article: any) => {
   const playbackId = article.video_playback_id;
-  // Static thumbnail - shown immediately, video lazy-loads on top
+  // Static thumbnail in WebP format - smaller than JPEG (~40% savings)
   const thumbnailUrl = playbackId
-    ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=1&width=400&fit_mode=preserve`
+    ? `https://image.mux.com/${playbackId}/thumbnail.webp?time=1&width=400&fit_mode=preserve`
     : (article.featured_asset_url || article.hero_asset_url);
   return {
     ...article,
@@ -225,6 +225,13 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
   <!-- Preconnect to Mux for faster image loading -->
   <link rel="preconnect" href="https://image.mux.com" crossorigin>
   <link rel="preconnect" href="https://stream.mux.com" crossorigin>
+
+  <!-- Critical CSS inline - renders logo/nav immediately without waiting for external CSS -->
+  <style>
+    .logo{font-size:20px;font-weight:900;background:linear-gradient(135deg,#667eea,#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.5);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1)}
+    body{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:#000;color:#fff;margin:0}
+  </style>
 
   <!-- Structured Data: Key Criteria List -->
   <script type="application/ld+json">
@@ -2666,15 +2673,23 @@ function generateVariedDescription(company: any, context: 'primary' | 'secondary
        navigator.connection.saveData);
 
     // Lazy load HLS.js only when needed and on good connections
+    let hlsLoading = false;
+    let hlsCallbacks = [];
     function loadHLS(callback) {
       if (typeof Hls !== 'undefined') {
         callback();
         return;
       }
+      hlsCallbacks.push(callback);
+      if (hlsLoading) return; // Already loading, callback will be called when ready
+      hlsLoading = true;
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
       script.async = true;
-      script.onload = callback;
+      script.onload = () => {
+        hlsCallbacks.forEach(cb => cb());
+        hlsCallbacks = [];
+      };
       document.head.appendChild(script);
     }
 
