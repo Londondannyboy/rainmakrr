@@ -1,5 +1,6 @@
 ---
 import SEO from '../components/SEO.astro';
+import Navigation from '../components/Navigation.astro';
 ---
 
 <!DOCTYPE html>
@@ -31,49 +32,6 @@ import SEO from '../components/SEO.astro';
       line-height: 1.6;
       overflow-x: hidden;
     }
-
-    /* Navigation */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 24px 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #667eea, #f093fb);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 40px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 14px;
-      transition: opacity 0.3s;
-    }
-
-    .nav-links a:hover { opacity: 0.6; }
 
     /* Hero Section */
     .hero {
@@ -325,14 +283,7 @@ import SEO from '../components/SEO.astro';
 </head>
 
 <body>
-  <!-- Navigation -->
-  <nav>
-    <a href="/" class="logo">Placement</a>
-    <ul class="nav-links">
-      <li><a href="/private-equity-placement-agent-news">News</a></li>
-      <li><a href="/private-equity-placement-agents-list">Placement Agents</a></li>
-    </ul>
-  </nav>
+  <Navigation />
 
   <!-- Hero Section -->
   <section class="hero">
