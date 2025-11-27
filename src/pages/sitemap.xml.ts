@@ -168,7 +168,7 @@ async function generateSitemapXML(): Promise<string> {
 
       xml += `
   <url>
-    <loc>${BASE_URL}/private-equity-placement-agents-list/${company.slug}</loc>
+    <loc>${BASE_URL}/${company.slug}</loc>
     <lastmod>${formattedDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>`;

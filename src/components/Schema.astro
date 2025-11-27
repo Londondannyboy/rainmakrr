@@ -169,7 +169,7 @@ if (type === 'directory' && companies && companies.length > 0) {
         '@type': 'Organization',
         name: company.display_name || company.name,
         description: company.description?.substring(0, 200) || `${company.display_name || company.name} - Private equity placement agent`,
-        url: `${siteConfig.url}/private-equity-placement-agents-list/${company.slug}`,
+        url: `${siteConfig.url}/${company.slug}`,
         logo: company.logo_url,
         address: company.headquarters ? {
           '@type': 'PostalAddress',

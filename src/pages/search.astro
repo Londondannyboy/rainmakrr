@@ -281,7 +281,7 @@ function optimizeCloudinaryImage(url: string, width: number = 400): string {
     {companies.length > 0 ? (
       <div class="results-grid">
         {companies.map((company: any) => (
-          <a href={`/private-equity-placement-agents-list/${company.slug}`} class="company-card">
+          <a href={`/${company.slug}`} class="company-card">
             <div class="company-header">
               {(company.logo_url || company.featured_asset_url) && (
                 <img

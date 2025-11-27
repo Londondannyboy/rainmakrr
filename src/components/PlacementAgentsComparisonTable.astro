@@ -73,7 +73,7 @@ const tableData = topAgents.map((agent: any) => {
     <!-- Card Grid Layout -->
     <div class="agents-grid">
       {tableData.map((agent: any) => (
-        <a href={`/private-equity-placement-agents-list/${agent.slug}`} class="agent-card">
+        <a href={`/${agent.slug}`} class="agent-card">
           <div class="card-header">
             {(agent.featured_asset_url || agent.logo_url) && (
               <img
@@ -341,7 +341,7 @@ const tableData = topAgents.map((agent: any) => {
     "item": {
       "@type": "Organization",
       "name": agent.display_name,
-      "url": `https://placement.quest/private-equity-placement-agents-list/${agent.slug}`
+      "url": `https://placement.quest/${agent.slug}`
     }
   }))
 })} />

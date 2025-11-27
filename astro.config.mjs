@@ -30,6 +30,11 @@ export default defineConfig({
       status: 301,
       destination: '/private-equity-placement-agent-news',
     },
+    // Redirect old company URLs to root level (301 for SEO)
+    '/private-equity-placement-agents-list/[slug]': {
+      status: 301,
+      destination: '/[slug]',
+    },
   },
   build: {
     inlineStylesheets: 'always', // Inline all CSS to avoid render-blocking

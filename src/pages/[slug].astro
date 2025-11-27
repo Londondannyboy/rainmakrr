@@ -9,6 +9,20 @@ if (!slug) {
   return Astro.redirect('/');
 }
 
+// PRIORITY 1: Check if this is a company profile
+const companyCheck = await sql`
+  SELECT slug FROM companies
+  WHERE slug = ${slug}
+    AND company_type = 'placement_agent'
+  LIMIT 1
+`;
+
+// If it's a company, rewrite to company page (keeps URL as /slug)
+if (companyCheck.length > 0) {
+  return Astro.rewrite(`/private-equity-placement-agents-list/${slug}`);
+}
+
+// PRIORITY 2: Check for article
 // Configure marked for better formatting
 marked.setOptions({
   breaks: false,  // Don't convert single \n to <br> (proper paragraph spacing)

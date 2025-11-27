@@ -721,7 +721,7 @@ const sidebarRotationIndex = company.slug.split('').reduce((acc, char) => acc + 
       <!-- Article Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Example Article 1: The company profile itself -->
-        <a href={`/private-equity-placement-agents-list/${company.slug}`} class="group bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
+        <a href={`/${company.slug}`} class="group bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
           <div class="flex items-start gap-4 mb-4">
             <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
               {company.display_name.charAt(0)}
