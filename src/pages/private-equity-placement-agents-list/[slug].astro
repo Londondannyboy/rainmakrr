@@ -10,6 +10,13 @@ if (!slug) {
   return Astro.redirect('/');
 }
 
+// Redirect old URLs to new root URLs (301 for SEO)
+// Only redirect if accessed directly (not via internal rewrite from [slug].astro)
+const url = Astro.url;
+if (url.pathname.startsWith('/private-equity-placement-agents-list/')) {
+  return Astro.redirect(`/${slug}`, 301);
+}
+
 console.log('[PLACEMENT] Looking for company with slug:', slug);
 
 // Fetch company with payload
