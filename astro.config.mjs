@@ -46,10 +46,7 @@ export default defineConfig({
     }
   },
   integrations: [
-    tailwind({
-      // Disable base styles injection - we only want utility classes for company pages
-      applyBaseStyles: false,
-    }),
+    tailwind(),
   ],
   server: {
     host: true // Listen on all network interfaces (0.0.0.0)
