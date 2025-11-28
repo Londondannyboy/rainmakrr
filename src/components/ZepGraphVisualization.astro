@@ -66,16 +66,29 @@ const networkId = `${uniqueId}-network`;
     const errorEl = document.getElementById(errorId);
     const networkEl = document.getElementById(networkId);
 
-    // Wait for vis-network library to be available
+    // Wait for vis-network library to be available (with timeout)
     if (typeof vis === 'undefined') {
-      await new Promise((resolve) => {
+      const visLoaded = await new Promise((resolve) => {
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max
         const checkVis = setInterval(() => {
+          attempts++;
           if (typeof vis !== 'undefined') {
             clearInterval(checkVis);
-            resolve();
+            resolve(true);
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkVis);
+            resolve(false);
           }
         }, 100);
       });
+
+      if (!visLoaded) {
+        console.warn('vis-network library failed to load');
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'flex';
+        return;
+      }
     }
 
     try {
