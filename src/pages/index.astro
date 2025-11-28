@@ -2,12 +2,15 @@
 /**
  * Placement Agent - BBC-style News Homepage
  * =========================================
- * Clean, classic news layout with white background
+ * Clean, classic news layout with white background and video hero
  */
 import { sql } from '../lib/db';
 import SEO from '../components/SEO.astro';
 import Schema from '../components/Schema.astro';
 import Navigation from '../components/Navigation.astro';
+
+// Hero video playback ID (Mux)
+const heroPlaybackId = 'qIS6PGKxIZyzjrDBzxQuqPRBOhHofDnXq1chdsqAY9Y';
 
 // Fetch featured article (1 for hero)
 const featuredArticles = await sql`
@@ -25,7 +28,7 @@ const featuredArticles = await sql`
 
 const featuredArticle = featuredArticles[0] || null;
 
-// Fetch all published articles (excluding featured)
+// Fetch all published articles (excluding featured) - chronological, newest first
 const articles = await sql`
   SELECT
     id, title, excerpt, slug, published_at, created_at,
@@ -57,18 +60,20 @@ function getThumbnail(article: any): string | null {
   return article.featured_asset_url || null;
 }
 
-// Helper: relative time
-function timeAgo(date: string | Date | null): string {
+// Helper: format date
+function formatDate(date: string | Date | null): string {
   if (!date) return '';
-  const now = new Date();
-  const then = new Date(date);
-  const diffHours = Math.floor((now.getTime() - then.getTime()) / (1000 * 60 * 60));
-  if (diffHours < 1) return 'Just now';
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return '1 day ago';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  return then.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  return new Date(date).toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+// Helper: format category/angle
+function formatCategory(angle: string | null): string {
+  if (!angle) return '';
+  return angle.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 ---
 
@@ -85,6 +90,7 @@ function timeAgo(date: string | Date | null): string {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://stream.mux.com" crossorigin>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -97,6 +103,17 @@ function timeAgo(date: string | Date | null): string {
     .news-item:hover .news-title { color: #1d4ed8; }
     .news-item:hover img { opacity: 0.9; }
     .agent-card:hover { background: #f3f4f6; }
+    .category-badge {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #4f46e5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
   </style>
 </head>
 <body>
@@ -104,12 +121,23 @@ function timeAgo(date: string | Date | null): string {
   <!-- Navigation -->
   <Navigation />
 
-  <!-- Hero Banner -->
-  <section style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); color: #fff; padding: 100px 20px 80px; position: relative; overflow: hidden;">
-    <div style="position: absolute; inset: 0; overflow: hidden;">
-      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 400px; background: rgba(99, 102, 241, 0.2); border-radius: 50%; filter: blur(120px);"></div>
-    </div>
-    <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; text-align: center;">
+  <!-- Hero Banner with Video Background -->
+  <section style="position: relative; overflow: hidden; color: #fff; padding: 120px 20px 100px;">
+    <!-- Video Background -->
+    <video
+      id="hero-video"
+      autoplay
+      loop
+      muted
+      playsinline
+      style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%, -50%); object-fit: cover; z-index: 0;"
+    ></video>
+    <!-- Overlay -->
+    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 27, 75, 0.8) 50%, rgba(15, 23, 42, 0.85) 100%); z-index: 1;"></div>
+    <!-- Glow effect -->
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 400px; background: rgba(99, 102, 241, 0.15); border-radius: 50%; filter: blur(120px); z-index: 1;"></div>
+    <!-- Content -->
+    <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; text-align: center;">
       <h1 style="font-size: clamp(40px, 8vw, 80px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; text-shadow: 0 0 60px rgba(99, 102, 241, 0.5);">
         Placement Agent
       </h1>
@@ -131,15 +159,20 @@ function timeAgo(date: string | Date | null): string {
             />
           )}
           <div style="padding-top: 8px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              {featuredArticle.article_angle && (
+                <span class="category-badge">{formatCategory(featuredArticle.article_angle)}</span>
+              )}
+              <span style="font-size: 13px; color: #6b7280;">{formatDate(featuredArticle.published_at || featuredArticle.created_at)}</span>
+            </div>
             <h2 style="font-size: 28px; font-weight: 700; color: #1a1a1a; line-height: 1.3; margin-bottom: 16px;">
               {featuredArticle.title}
             </h2>
             {featuredArticle.excerpt && (
-              <p style="font-size: 16px; color: #6b7280; line-height: 1.7; margin-bottom: 16px;">
+              <p style="font-size: 16px; color: #6b7280; line-height: 1.7;">
                 {featuredArticle.excerpt}
               </p>
             )}
-            <span style="font-size: 14px; color: #9ca3af;">{timeAgo(featuredArticle.published_at || featuredArticle.created_at)}</span>
           </div>
         </a>
       </section>
@@ -168,13 +201,18 @@ function timeAgo(date: string | Date | null): string {
                 </div>
               )}
               <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                  {article.article_angle && (
+                    <span class="category-badge">{formatCategory(article.article_angle)}</span>
+                  )}
+                  <span style="font-size: 12px; color: #9ca3af;">{formatDate(article.published_at || article.created_at)}</span>
+                </div>
                 <h3 class="news-title" style="font-size: 16px; font-weight: 600; color: #1a1a1a; line-height: 1.4; margin-bottom: 6px; transition: color 0.2s;">
                   {article.title}
                 </h3>
-                <p style="font-size: 14px; color: #6b7280; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px;">
+                <p style="font-size: 14px; color: #6b7280; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                   {article.excerpt}
                 </p>
-                <span style="font-size: 12px; color: #9ca3af;">{timeAgo(article.published_at || article.created_at)}</span>
               </div>
             </a>
           ))}
@@ -282,5 +320,36 @@ function timeAgo(date: string | Date | null): string {
       .news-item img, .news-item > div:first-child { width: 100px !important; height: 70px !important; }
     }
   </style>
+
+  <!-- HLS.js for Mux video -->
+  <script define:vars={{ heroPlaybackId }}>
+    document.addEventListener('DOMContentLoaded', function() {
+      const heroVideo = document.getElementById('hero-video');
+      const videoSrc = `https://stream.mux.com/${heroPlaybackId}.m3u8`;
+
+      if (!heroVideo) return;
+
+      // Native HLS support (Safari)
+      if (heroVideo.canPlayType('application/vnd.apple.mpegurl')) {
+        heroVideo.src = videoSrc;
+        heroVideo.play().catch(() => {});
+      } else {
+        // Load HLS.js for other browsers
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+        script.onload = function() {
+          if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            const hls = new Hls({ maxBufferLength: 10 });
+            hls.loadSource(videoSrc);
+            hls.attachMedia(heroVideo);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              heroVideo.play().catch(() => {});
+            });
+          }
+        };
+        document.head.appendChild(script);
+      }
+    });
+  </script>
 </body>
 </html>
