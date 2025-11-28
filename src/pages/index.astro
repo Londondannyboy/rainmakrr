@@ -311,7 +311,7 @@ function renderMarkdown(content: string): string {
       <div style="max-width: 900px; margin: 0 auto;">
         <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 24px;">{sections.intro.title}</h2>
         {sections.intro.subtitle && <p style="font-size: 20px; color: rgba(255,255,255,0.7); margin-bottom: 32px;">{sections.intro.subtitle}</p>}
-        {getSectionContent(sections.intro) && <div style="font-size: 17px; line-height: 1.8; color: rgba(255,255,255,0.9);" set:html={renderMarkdown(getSectionContent(sections.intro))} />}
+        {getTextContent(sections.intro) && <div style="font-size: 17px; line-height: 1.8; color: rgba(255,255,255,0.9);" set:html={renderMarkdown(getTextContent(sections.intro))} />}
       </div>
     </section>
   )}
