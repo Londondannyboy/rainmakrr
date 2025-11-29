@@ -205,7 +205,7 @@ function renderMarkdown(content: string): string {
             <div style="display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 20px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 24px; color: #fff;">
               {leadArticle.article_angle ? formatCategory(leadArticle.article_angle) : 'Featured'}
             </div>
-            <h1 style="font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 4px 30px rgba(0,0,0,0.5); color: #fff;">{leadArticle.title}</h1>
+            <h2 style="font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 4px 30px rgba(0,0,0,0.5); color: #fff;">{leadArticle.title}</h2>
             {leadArticle.excerpt && (
               <p style="font-size: 18px; line-height: 1.6; color: rgba(255,255,255,0.9); margin-bottom: 32px; max-width: 600px;">{leadArticle.excerpt}</p>
             )}
@@ -222,11 +222,19 @@ function renderMarkdown(content: string): string {
       <video id="hero-video" autoplay loop muted playsinline style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; transform: translate(-50%, -50%); object-fit: cover; z-index: 0;"></video>
       <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,27,75,0.8), rgba(15,23,42,0.85)); z-index: 1;"></div>
       <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; text-align: center;">
-        <h1 style="font-size: clamp(32px, 6vw, 56px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; text-shadow: 0 0 60px rgba(99,102,241,0.5);">Top Private Equity Placement Agents News</h1>
+        <p style="font-size: clamp(32px, 6vw, 56px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; text-shadow: 0 0 60px rgba(99,102,241,0.5);">Welcome to Placement Quest</p>
         <p style="font-size: clamp(16px, 2.5vw, 22px); font-weight: 500; color: #a5b4fc;">Fundraising Advisory & Capital Markets Intelligence</p>
       </div>
     </section>
   )}
+
+  <!-- H1 Header Section -->
+  <section style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); padding: 48px 20px; text-align: center;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: clamp(28px, 5vw, 42px); font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-bottom: 8px;">Top Private Equity Placement Agents News</h1>
+      <p style="font-size: clamp(14px, 2vw, 18px); color: #a5b4fc; font-weight: 500;">Fundraising Advisory & Capital Markets Intelligence</p>
+    </div>
+  </section>
 
   <!-- NEWS SECTION - White Background -->
   <main style="max-width: 1200px; margin: 0 auto; padding: 32px 20px;">
@@ -638,6 +646,9 @@ function renderMarkdown(content: string): string {
       // Detect mobile device
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
+      // Track video states
+      const videoStates = new Map();
+
       function initializeVideos() {
         // Lead article hero video (priority)
         const leadVideo = document.getElementById('lead-video');
@@ -651,71 +662,64 @@ function renderMarkdown(content: string): string {
           loadHlsVideo(heroVideo, heroPlaybackId);
         }
 
-        // Thumbnail videos - preload on mobile to avoid flash
+        // Thumbnail videos - preload aggressively for both mobile and desktop
         const newsItems = document.querySelectorAll('.news-item');
 
-        if (isMobile) {
-          // Mobile: preload videos when they're about to enter viewport (larger rootMargin)
-          // This starts loading before they're visible to avoid the flash
-          newsItems.forEach(item => {
-            const video = item.querySelector('.thumb-video');
-            const img = item.querySelector('.thumb-img');
-            if (!video) return;
+        newsItems.forEach(item => {
+          const video = item.querySelector('.thumb-video');
+          const img = item.querySelector('.thumb-img');
+          if (!video) return;
 
-            const playbackId = video.dataset.playbackId;
-            let loaded = false;
-            let preloaded = false;
+          const playbackId = video.dataset.playbackId;
+          if (!playbackId) return;
 
-            // Preload observer - triggers earlier (200px before entering viewport)
-            const preloadObserver = new IntersectionObserver((entries) => {
-              entries.forEach(entry => {
-                if (entry.isIntersecting && !preloaded && playbackId) {
-                  preloaded = true;
-                  // Start loading video in background
-                  loadHlsVideo(video, playbackId, () => {
-                    loaded = true;
-                  });
-                }
-              });
-            }, { rootMargin: '200px 0px' });
-            preloadObserver.observe(item);
+          // Initialize state
+          videoStates.set(video, { loaded: false, ready: false, isVisible: false });
 
-            // Play/pause observer - triggers when actually visible
-            const playObserver = new IntersectionObserver((entries) => {
-              entries.forEach(entry => {
-                if (entry.isIntersecting && loaded) {
-                  video.style.opacity = '1';
-                  if (img) img.style.opacity = '0';
-                  video.play().catch(() => {});
-                } else if (!entry.isIntersecting && loaded) {
-                  video.pause();
-                }
-              });
-            }, { threshold: 0.3 });
-            playObserver.observe(item);
-          });
-        } else {
-          // Desktop: hover behavior
-          newsItems.forEach(item => {
-            const video = item.querySelector('.thumb-video');
-            const img = item.querySelector('.thumb-img');
-            if (!video) return;
-
-            const playbackId = video.dataset.playbackId;
-            let loaded = false;
-
-            item.addEventListener('mouseenter', () => {
-              if (!loaded && playbackId) {
-                loaded = true;
+          // Preload observer - starts loading 400px before viewport
+          const preloadObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              const state = videoStates.get(video);
+              if (entry.isIntersecting && !state.loaded) {
+                state.loaded = true;
                 loadHlsVideo(video, playbackId, () => {
-                  video.style.opacity = '1';
-                  if (img) img.style.opacity = '0';
-                  video.play().catch(() => {});
+                  state.ready = true;
+                  // If already visible, start playing immediately
+                  if (state.isVisible) {
+                    playVideo(video, img);
+                  }
                 });
-              } else if (loaded) {
-                video.style.opacity = '1';
-                if (img) img.style.opacity = '0';
-                video.play().catch(() => {});
+              }
+            });
+          }, { rootMargin: '400px 0px' });
+          preloadObserver.observe(item);
+
+          // Visibility observer - controls play/pause
+          const visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              const state = videoStates.get(video);
+              state.isVisible = entry.isIntersecting;
+
+              if (entry.isIntersecting && state.ready) {
+                playVideo(video, img);
+              } else if (!entry.isIntersecting) {
+                video.pause();
+                // On desktop, hide video when not visible (hover will show it)
+                if (!isMobile) {
+                  video.style.opacity = '0';
+                  if (img) img.style.opacity = '1';
+                }
+              }
+            });
+          }, { threshold: 0.2 });
+          visibilityObserver.observe(item);
+
+          // Desktop: also support hover
+          if (!isMobile) {
+            item.addEventListener('mouseenter', () => {
+              const state = videoStates.get(video);
+              if (state.ready) {
+                playVideo(video, img);
               }
             });
 
@@ -724,26 +728,57 @@ function renderMarkdown(content: string): string {
               if (img) img.style.opacity = '1';
               video.pause();
             });
+          }
+        });
+      }
+
+      function playVideo(video, img) {
+        video.style.opacity = '1';
+        if (img) img.style.opacity = '0';
+
+        // Try to play with retry
+        const tryPlay = (attempts = 0) => {
+          video.play().catch(err => {
+            if (attempts < 3) {
+              setTimeout(() => tryPlay(attempts + 1), 100);
+            }
           });
-        }
+        };
+        tryPlay();
       }
 
       function loadHlsVideo(video, playbackId, onReady) {
         const src = `https://stream.mux.com/${playbackId}.m3u8`;
 
         if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          // Native HLS support (Safari, iOS)
           video.src = src;
-          video.addEventListener('loadeddata', () => {
+          video.addEventListener('canplaythrough', () => {
             if (onReady) onReady();
             else video.play().catch(() => {});
           }, { once: true });
+          // Fallback if canplaythrough doesn't fire
+          video.addEventListener('loadeddata', () => {
+            setTimeout(() => {
+              if (onReady) onReady();
+            }, 100);
+          }, { once: true });
         } else if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-          const hls = new Hls({ maxBufferLength: 10 });
+          const hls = new Hls({
+            maxBufferLength: 15,
+            maxMaxBufferLength: 30,
+            startLevel: -1, // Auto quality
+            capLevelToPlayerSize: true
+          });
           hls.loadSource(src);
           hls.attachMedia(video);
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             if (onReady) onReady();
             else video.play().catch(() => {});
+          });
+          // Also listen for first fragment loaded for faster start
+          hls.on(Hls.Events.FRAG_LOADED, () => {
+            if (onReady) onReady();
           });
         }
       }
