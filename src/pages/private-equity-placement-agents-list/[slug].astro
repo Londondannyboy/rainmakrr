@@ -617,6 +617,39 @@ const sidebarRotationIndex = (company.display_name.length + 1) % sidebarLinks.le
     </div>
   </div>
 
+  <!-- Featured Visualization Section - Full Width at Top -->
+  <div class="full-section" style="padding-top: 2rem; padding-bottom: 2rem;" id="knowledge-graph">
+    <div class="full-section-header">
+      <h2 class="full-section-title">
+        <div class="full-section-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <span>{company.display_name} Network</span>
+      </h2>
+      <span class="full-section-badge">Knowledge Graph</span>
+    </div>
+
+    <!-- 3D Interactive Knowledge Graph - Hero Visualization -->
+    <div style="margin-bottom: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <span style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">3D WebGL</span>
+        <span style="color: #64748b; font-size: 0.8rem;">Interactive • Drag to rotate • Click to explore</span>
+      </div>
+      <ZepGraph3D companyId={company.slug} companyName={company.name} height="450px" />
+    </div>
+
+    <!-- Timeline - Company History -->
+    <div style="margin-bottom: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <span style="background: linear-gradient(135deg, #10b981, #14b8a6); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Timeline</span>
+        <span style="color: #64748b; font-size: 0.8rem;">Company history & deal milestones</span>
+      </div>
+      <CompanyTimeline companyId={company.slug} companyName={company.name} />
+    </div>
+  </div>
+
   <!-- Content Sections -->
   <div class="container">
     <div class="content-grid">
@@ -851,50 +884,25 @@ const sidebarRotationIndex = (company.display_name.length + 1) % sidebarLinks.le
       </div>
     </div>
 
-    <!-- Related in Our Network - Zep Knowledge Graph -->
+    <!-- 2D Network View - Accessibility Alternative -->
     <div class="full-section">
       <div class="full-section-header">
         <h2 class="full-section-title">
           <div class="full-section-icon">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
             </svg>
           </div>
-          <span>Related in Our Network</span>
+          <span>Network View</span>
         </h2>
-        <span class="full-section-badge">Knowledge Graph</span>
+        <span class="full-section-badge full-section-badge-blue">2D • Accessible</span>
       </div>
 
       <p class="full-section-text">
-        Connections and relationships discovered through our knowledge graph showing how {company.display_name} relates to other entities in our coverage.
+        Traditional 2D network diagram showing {company.display_name}'s connections. Better for accessibility and screen readers.
       </p>
 
-      <!-- 3D Interactive Knowledge Graph -->
-      <div style="margin-bottom: 2rem;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-          <span style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">3D WebGL</span>
-          <span style="color: #64748b; font-size: 0.8rem;">Interactive • Drag to rotate • Click to explore</span>
-        </div>
-        <ZepGraph3D companyId={company.slug} companyName={company.name} height="500px" />
-      </div>
-
-      <!-- Timeline Visualization -->
-      <div style="margin-bottom: 2rem;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-          <span style="background: linear-gradient(135deg, #10b981, #14b8a6); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Timeline</span>
-          <span style="color: #64748b; font-size: 0.8rem;">Company history & milestones</span>
-        </div>
-        <CompanyTimeline companyId={company.slug} companyName={company.name} />
-      </div>
-
-      <!-- 2D Network Graph -->
-      <div>
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-          <span style="background: linear-gradient(135deg, #3b82f6, #0ea5e9); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">2D Network</span>
-          <span style="color: #64748b; font-size: 0.8rem;">Classic view • Better for accessibility</span>
-        </div>
-        <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
-      </div>
+      <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
     </div>
 
     <!-- Our Coverage Section -->
