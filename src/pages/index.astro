@@ -33,12 +33,24 @@ const sections = {
   faq: homepageContent.find((s: any) => s.section_type === 'faq'),
 };
 
-// Fetch top 2 featured articles for 2-panel hero
+// Fetch LEAD article (most recent featured) for hero banner
+const leadArticles = await sql`
+  SELECT id, title, excerpt, slug, published_at, created_at,
+    article_angle, featured_asset_url, video_playback_id
+  FROM articles
+  WHERE app = 'placement' AND status = 'published' AND is_featured = true
+  ORDER BY COALESCE(published_at, created_at) DESC
+  LIMIT 1
+`;
+const leadArticle = leadArticles[0] || null;
+
+// Fetch featured articles (excluding lead) for 2-panel section
 const featuredArticles = await sql`
   SELECT id, title, excerpt, slug, published_at, created_at,
     article_angle, featured_asset_url, video_playback_id
   FROM articles
   WHERE app = 'placement' AND status = 'published' AND is_featured = true
+    ${leadArticle ? sql`AND id != ${leadArticle.id}` : sql``}
   ORDER BY COALESCE(published_at, created_at) DESC
   LIMIT 2
 `;
@@ -89,10 +101,14 @@ function hasVideo(article: any): boolean {
 
 // Collect all video playback IDs for client-side HLS initialization
 const allVideoIds = [
+  ...(leadArticle?.video_playback_id ? [leadArticle.video_playback_id] : []),
   ...(featuredArticle1?.video_playback_id ? [featuredArticle1.video_playback_id] : []),
   ...(featuredArticle2?.video_playback_id ? [featuredArticle2.video_playback_id] : []),
   ...articles.filter((a: any) => a.video_playback_id).map((a: any) => a.video_playback_id)
 ];
+
+// Lead article video ID for hero section
+const leadVideoId = leadArticle?.video_playback_id || heroPlaybackId;
 
 // Helper: get company image (logo, featured image, or placeholder)
 function getCompanyImage(company: any): { url: string | null; type: 'logo' | 'image' | 'placeholder' } {
@@ -177,16 +193,39 @@ function renderMarkdown(content: string): string {
 
   <Navigation />
 
-  <!-- Hero with Video Background -->
-  <section style="position: relative; overflow: hidden; color: #fff; padding: 80px 20px 60px;">
-    <video id="hero-video" autoplay loop muted playsinline style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; transform: translate(-50%, -50%); object-fit: cover; z-index: 0;"></video>
-    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,27,75,0.8), rgba(15,23,42,0.85)); z-index: 1;"></div>
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 400px; background: rgba(99,102,241,0.15); border-radius: 50%; filter: blur(120px); z-index: 1;"></div>
-    <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; text-align: center;">
-      <h1 style="font-size: clamp(32px, 6vw, 56px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; text-shadow: 0 0 60px rgba(99,102,241,0.5);">Top Private Equity Placement Agents News</h1>
-      <p style="font-size: clamp(16px, 2.5vw, 22px); font-weight: 500; color: #a5b4fc;">Fundraising Advisory & Capital Markets Intelligence</p>
-    </div>
-  </section>
+  <!-- Lead Article Hero - Condé Nast Style -->
+  {leadArticle ? (
+    <a href={`/${leadArticle.slug}`} style="display: block; text-decoration: none; color: inherit;">
+      <section style="position: relative; height: 85vh; min-height: 600px; overflow: hidden;">
+        <video id="lead-video" autoplay loop muted playsinline style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%, -50%); object-fit: cover; opacity: 0.9;"></video>
+        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.2) 100%);"></div>
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 60px; z-index: 10;">
+          <div style="max-width: 800px;">
+            <div style="display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 20px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 24px; color: #fff;">
+              {leadArticle.article_angle ? formatCategory(leadArticle.article_angle) : 'Featured'}
+            </div>
+            <h1 style="font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 4px 30px rgba(0,0,0,0.5); color: #fff;">{leadArticle.title}</h1>
+            {leadArticle.excerpt && (
+              <p style="font-size: 18px; line-height: 1.6; color: rgba(255,255,255,0.9); margin-bottom: 32px; max-width: 600px;">{leadArticle.excerpt}</p>
+            )}
+            <span style="display: inline-flex; align-items: center; gap: 12px; background: #fff; color: #764ba2; padding: 16px 32px; border-radius: 100px; font-weight: 700; font-size: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s;">
+              <span>Read Article</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </div>
+      </section>
+    </a>
+  ) : (
+    <section style="position: relative; overflow: hidden; color: #fff; padding: 80px 20px 60px;">
+      <video id="hero-video" autoplay loop muted playsinline style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; transform: translate(-50%, -50%); object-fit: cover; z-index: 0;"></video>
+      <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,27,75,0.8), rgba(15,23,42,0.85)); z-index: 1;"></div>
+      <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; text-align: center;">
+        <h1 style="font-size: clamp(32px, 6vw, 56px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; text-shadow: 0 0 60px rgba(99,102,241,0.5);">Top Private Equity Placement Agents News</h1>
+        <p style="font-size: clamp(16px, 2.5vw, 22px); font-weight: 500; color: #a5b4fc;">Fundraising Advisory & Capital Markets Intelligence</p>
+      </div>
+    </section>
+  )}
 
   <!-- NEWS SECTION - White Background -->
   <main style="max-width: 1200px; margin: 0 auto; padding: 32px 20px;">
@@ -242,75 +281,34 @@ function renderMarkdown(content: string): string {
       </section>
     )}
 
-    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 48px;">
-      <!-- Latest Updates -->
-      <div>
-        <h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 4px solid #2563eb; display: inline-block;">Latest Updates</h2>
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-          {articles.map((article: any) => (
-            <a href={`/${article.slug}`} class="news-item" style="display: flex; gap: 16px;">
-              <div style="width: 160px; height: 100px; flex-shrink: 0; position: relative; overflow: hidden; background: #f3f4f6;">
-                {getThumbnail(article) ? (
-                  <img src={getThumbnail(article)} alt="" style="width: 100%; height: 100%; object-fit: cover;" class="thumb-img" />
-                ) : (
-                  <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                    <svg style="width: 32px; height: 32px; color: #d1d5db;" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"/></svg>
-                  </div>
-                )}
-                {article.video_playback_id && (
-                  <video class="thumb-video" data-playback-id={article.video_playback_id} muted loop playsinline style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s;"></video>
-                )}
-              </div>
-              <div style="flex: 1; min-width: 0;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
-                  {article.article_angle && <span class="category-badge">{formatCategory(article.article_angle)}</span>}
-                  <span style="font-size: 12px; color: #9ca3af;">{formatDate(article.published_at || article.created_at)}</span>
+    <!-- Latest News - Full Width Grid -->
+    <section>
+      <h2 style="font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 32px; padding-bottom: 12px; border-bottom: 4px solid #2563eb; display: inline-block;">Latest News</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px;" class="news-grid">
+        {articles.map((article: any) => (
+          <a href={`/${article.slug}`} class="news-item" style="display: block; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position: relative; overflow: hidden; margin-bottom: 16px; height: 200px; background: #f3f4f6; border-radius: 12px;">
+              {getThumbnail(article) ? (
+                <img src={getThumbnail(article)} alt="" style="width: 100%; height: 100%; object-fit: cover;" class="thumb-img" />
+              ) : (
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e0e7ff, #c7d2fe);">
+                  <svg style="width: 40px; height: 40px; color: #6366f1;" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"/></svg>
                 </div>
-                <h3 class="news-title" style="font-size: 16px; font-weight: 600; color: #1a1a1a; line-height: 1.4; margin-bottom: 6px; transition: color 0.2s;">{article.title}</h3>
-                <p style="font-size: 14px; color: #6b7280; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{article.excerpt}</p>
-              </div>
-            </a>
-          ))}
-        </div>
+              )}
+              {article.video_playback_id && (
+                <video class="thumb-video" data-playback-id={article.video_playback_id} muted loop playsinline style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s; border-radius: 12px;"></video>
+              )}
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+              {article.article_angle && <span class="category-badge">{formatCategory(article.article_angle)}</span>}
+              <span style="font-size: 12px; color: #9ca3af;">{formatDate(article.published_at || article.created_at)}</span>
+            </div>
+            <h3 class="news-title" style="font-size: 18px; font-weight: 700; color: #1a1a1a; line-height: 1.35; margin-bottom: 10px; transition: color 0.2s;">{article.title}</h3>
+            <p style="font-size: 14px; color: #6b7280; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{article.excerpt}</p>
+          </a>
+        ))}
       </div>
-
-      <!-- Sidebar: Top Private Equity Placement Agents -->
-      <aside>
-        <h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 4px solid #6366f1; display: inline-block;">Top Private Equity Placement Agents</h2>
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-          {topAgents.map((agent: any) => {
-            const img = getCompanyImage(agent);
-            return (
-              <a href={`/private-equity-placement-agents-list/${agent.slug}`} class="agent-sidebar-card" style="display: flex; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 10px; transition: background 0.2s; overflow: hidden;">
-                {/* Always show image - logo, featured, or gradient placeholder */}
-                <div style="width: 56px; height: 56px; border-radius: 8px; flex-shrink: 0; overflow: hidden; background: linear-gradient(135deg, #e0e7ff, #c7d2fe);">
-                  {img.url ? (
-                    <img src={img.url} alt={`${agent.name} - Top Private Equity Placement Agent`} style={`width: 100%; height: 100%; object-fit: ${img.type === 'logo' ? 'contain' : 'cover'};`} />
-                  ) : (
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                      <span style="color: #4f46e5; font-weight: 700; font-size: 18px;">{agent.name?.charAt(0)}</span>
-                    </div>
-                  )}
-                </div>
-                <div style="flex: 1; min-width: 0;">
-                  <h3 style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px;">{agent.name}</h3>
-                  {agent.headquarters && <p style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">{agent.headquarters}</p>}
-                  {agent.description && <p style="font-size: 12px; color: #6b7280; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{agent.description.slice(0, 100)}...</p>}
-                </div>
-              </a>
-            );
-          })}
-        </div>
-        <a href="/private-equity-placement-agents-list" style="display: block; margin-top: 16px; text-align: center; color: #2563eb; font-size: 14px; font-weight: 500;">View all agents →</a>
-
-        <!-- CTA Box -->
-        <div style="margin-top: 32px; background: #0f172a; color: #fff; border-radius: 12px; padding: 24px;">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Find Top Private Equity Placement Agents</h3>
-          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 16px;">Get matched with top private equity placement agents for your fund.</p>
-          <a href="/contact" style="display: block; background: #fff; color: #0f172a; text-align: center; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;">Contact Us</a>
-        </div>
-      </aside>
-    </div>
+    </section>
   </main>
 
   <!-- SEO CONTENT SECTIONS -->
@@ -617,23 +615,18 @@ function renderMarkdown(content: string): string {
   </footer>
 
   <style>
-    @media (max-width: 1024px) {
-      main > div { grid-template-columns: 1fr !important; }
-      aside { order: -1; }
-    }
     @media (max-width: 768px) {
       .featured-grid { grid-template-columns: 1fr !important; }
+      .news-grid { grid-template-columns: 1fr !important; }
       footer > div { grid-template-columns: 1fr 1fr !important; }
     }
     @media (max-width: 480px) {
       footer > div { grid-template-columns: 1fr !important; }
-      .news-item { flex-direction: column; }
-      .news-item > div:first-child { width: 100% !important; height: 180px !important; }
     }
   </style>
 
   <!-- HLS.js for Mux videos -->
-  <script define:vars={{ heroPlaybackId }}>
+  <script define:vars={{ heroPlaybackId, leadVideoId }}>
     document.addEventListener('DOMContentLoaded', function() {
       // Load HLS.js first
       const hlsScript = document.createElement('script');
@@ -645,47 +638,71 @@ function renderMarkdown(content: string): string {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
       function initializeVideos() {
-        // Hero video
+        // Lead article hero video (priority)
+        const leadVideo = document.getElementById('lead-video');
+        if (leadVideo && leadVideoId) {
+          loadHlsVideo(leadVideo, leadVideoId);
+        }
+
+        // Fallback hero video
         const heroVideo = document.getElementById('hero-video');
         if (heroVideo) {
           loadHlsVideo(heroVideo, heroPlaybackId);
         }
 
-        // Thumbnail videos - auto-play on mobile, hover on desktop
+        // Thumbnail videos - preload on mobile to avoid flash
         const newsItems = document.querySelectorAll('.news-item');
-        newsItems.forEach(item => {
-          const video = item.querySelector('.thumb-video');
-          const img = item.querySelector('.thumb-img');
-          if (!video) return;
 
-          const playbackId = video.dataset.playbackId;
-          let loaded = false;
+        if (isMobile) {
+          // Mobile: preload videos when they're about to enter viewport (larger rootMargin)
+          // This starts loading before they're visible to avoid the flash
+          newsItems.forEach(item => {
+            const video = item.querySelector('.thumb-video');
+            const img = item.querySelector('.thumb-img');
+            if (!video) return;
 
-          if (isMobile) {
-            // Mobile: auto-play videos when visible using IntersectionObserver
-            const observer = new IntersectionObserver((entries) => {
+            const playbackId = video.dataset.playbackId;
+            let loaded = false;
+            let preloaded = false;
+
+            // Preload observer - triggers earlier (200px before entering viewport)
+            const preloadObserver = new IntersectionObserver((entries) => {
               entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                  if (!loaded && playbackId) {
+                if (entry.isIntersecting && !preloaded && playbackId) {
+                  preloaded = true;
+                  // Start loading video in background
+                  loadHlsVideo(video, playbackId, () => {
                     loaded = true;
-                    loadHlsVideo(video, playbackId, () => {
-                      video.style.opacity = '1';
-                      if (img) img.style.opacity = '0';
-                      video.play().catch(() => {});
-                    });
-                  } else if (loaded) {
-                    video.style.opacity = '1';
-                    if (img) img.style.opacity = '0';
-                    video.play().catch(() => {});
-                  }
-                } else if (loaded) {
+                  });
+                }
+              });
+            }, { rootMargin: '200px 0px' });
+            preloadObserver.observe(item);
+
+            // Play/pause observer - triggers when actually visible
+            const playObserver = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting && loaded) {
+                  video.style.opacity = '1';
+                  if (img) img.style.opacity = '0';
+                  video.play().catch(() => {});
+                } else if (!entry.isIntersecting && loaded) {
                   video.pause();
                 }
               });
-            }, { threshold: 0.5 });
-            observer.observe(item);
-          } else {
-            // Desktop: hover behavior
+            }, { threshold: 0.3 });
+            playObserver.observe(item);
+          });
+        } else {
+          // Desktop: hover behavior
+          newsItems.forEach(item => {
+            const video = item.querySelector('.thumb-video');
+            const img = item.querySelector('.thumb-img');
+            if (!video) return;
+
+            const playbackId = video.dataset.playbackId;
+            let loaded = false;
+
             item.addEventListener('mouseenter', () => {
               if (!loaded && playbackId) {
                 loaded = true;
@@ -706,8 +723,8 @@ function renderMarkdown(content: string): string {
               if (img) img.style.opacity = '1';
               video.pause();
             });
-          }
-        });
+          });
+        }
       }
 
       function loadHlsVideo(video, playbackId, onReady) {
@@ -720,7 +737,7 @@ function renderMarkdown(content: string): string {
             else video.play().catch(() => {});
           }, { once: true });
         } else if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-          const hls = new Hls({ maxBufferLength: 5 });
+          const hls = new Hls({ maxBufferLength: 10 });
           hls.loadSource(src);
           hls.attachMedia(video);
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
