@@ -12,6 +12,7 @@ import Navigation from '../components/Navigation.astro';
 import DealTimeline3D from '../components/DealTimeline3D.astro';
 import ZepGraph3D from '../components/ZepGraph3D.astro';
 import CompanyTimeline from '../components/CompanyTimeline.astro';
+import MiniTimeline from '../components/MiniTimeline.astro';
 
 // Hero video playback ID (Mux)
 const heroPlaybackId = 'qIS6PGKxIZyzjrDBzxQuqPRBOhHofDnXq1chdsqAY9Y';
@@ -62,15 +63,27 @@ const featuredArticle1 = featuredArticles[0] || null;
 const featuredArticle2 = featuredArticles[1] || null;
 
 // Fetch all articles (newest first - strict chronological by published_at then created_at)
-const articles = await sql`
+const articlesRaw = await sql`
   SELECT id, title, excerpt, slug, published_at, created_at,
-    article_angle, featured_asset_url, video_playback_id
+    article_angle, featured_asset_url, video_playback_id,
+    payload->>'timeline' as timeline_json
   FROM articles
   WHERE app = 'placement' AND status = 'published'
     AND (is_featured = false OR is_featured IS NULL)
   ORDER BY COALESCE(published_at, created_at) DESC
   LIMIT 30
 `;
+
+// Parse timeline JSON for each article
+const articles = articlesRaw.map((a: any) => {
+  let timeline = [];
+  try {
+    if (a.timeline_json) {
+      timeline = JSON.parse(a.timeline_json);
+    }
+  } catch (e) {}
+  return { ...a, timeline };
+});
 
 // Fetch all placement agents for sidebar AND full listing
 const allAgents = await sql`
@@ -324,6 +337,9 @@ function renderMarkdown(content: string): string {
             </div>
             <h3 class="news-title" style="font-size: 18px; font-weight: 700; color: #1a1a1a; line-height: 1.35; margin-bottom: 10px; transition: color 0.2s;">{article.title}</h3>
             <p style="font-size: 14px; color: #6b7280; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{article.excerpt}</p>
+            {article.timeline && article.timeline.length > 0 && (
+              <MiniTimeline timeline={article.timeline} maxEvents={4} />
+            )}
           </a>
         ))}
       </div>
