@@ -35,11 +35,14 @@ const company = {
   display_name: companyRaw.display_name || companyRaw.payload?.display_name || companyRaw.name,
 };
 
+// For SEO, use the full company name (name field) which is what users search for
+const seoName = companyRaw.name;
+
 // Extract overview from profile sections for meta description
 const overviewSection = company.profile_sections?.overview || company.profile_sections?.about;
 const metaDescription = overviewSection
   ? overviewSection.content.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1').substring(0, 160) + '...'
-  : `${company.display_name} placement agent profile - services, team, deals, and market positioning.`;
+  : `${seoName} placement agent profile - services, team, deals, and market positioning.`;
 
 // Parse tags from content for visual display
 const parseTagsFromContent = (sections: any) => {

@@ -43,10 +43,10 @@ const networkId = `${uniqueId}-network`;
   </div>
 
   <!-- Graph legend -->
-  <div style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 0.75rem;">
+  <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem; font-size: 0.75rem;">
     <div style="display: flex; align-items: center; gap: 0.5rem;">
       <div style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #3b82f6;"></div>
-      <span style="color: #94a3b8;">Companies</span>
+      <span style="color: #94a3b8;">Company</span>
     </div>
     <div style="display: flex; align-items: center; gap: 0.5rem;">
       <div style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #a855f7;"></div>
@@ -55,6 +55,10 @@ const networkId = `${uniqueId}-network`;
     <div style="display: flex; align-items: center; gap: 0.5rem;">
       <div style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #10b981;"></div>
       <span style="color: #94a3b8;">People</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <div style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #64748b;"></div>
+      <span style="color: #94a3b8;">Info</span>
     </div>
   </div>
 </div>
@@ -239,6 +243,9 @@ const networkId = `${uniqueId}-network`;
           },
           article: {
             color: { background: '#f59e0b', border: '#d97706' }
+          },
+          entity: {
+            color: { background: '#64748b', border: '#475569' }
           }
         }
       };

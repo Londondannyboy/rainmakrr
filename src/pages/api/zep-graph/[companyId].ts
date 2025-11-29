@@ -41,20 +41,40 @@ export async function GET({ params }: { params: { companyId: string } }) {
       // Extract deals from profile sections
       if (sections.deals && sections.deals.content) {
         const dealsContent = sections.deals.content;
-        // Parse deals from markdown (simple extraction)
-        const dealMatches = dealsContent.match(/\*\*([^*]+)\*\*/g) || [];
-        dealMatches.slice(0, 5).forEach(deal => {
-          const dealLabel = deal.replace(/\*\*/g, '').substring(0, 50);
-          if (dealLabel.includes('billion') || dealLabel.includes('million')) {
+        // Parse deals from bullet points (• or -)
+        const dealLines = dealsContent.split('\n').filter((line: string) =>
+          line.trim().startsWith('•') || line.trim().startsWith('-')
+        );
+
+        dealLines.slice(0, 6).forEach((line: string) => {
+          // Extract the main deal text - look for bold text or the whole line
+          let dealText = line.trim().replace(/^[•-]\s*/, '');
+
+          // Extract bold text if present
+          const boldMatch = dealText.match(/\*\*\[?([^\]*]+)/);
+          if (boldMatch) {
+            dealText = boldMatch[1].replace(/\]\(.*$/, ''); // Remove markdown link
+          }
+
+          // Extract fund value if present ($XXM, $XXB, etc.)
+          const valueMatch = line.match(/\$[\d,.]+\s*[BMK](?:illion)?/i);
+          const value = valueMatch ? valueMatch[0] : null;
+
+          // Clean up deal text
+          dealText = dealText.substring(0, 45);
+          if (dealText.length === 45) dealText += '...';
+
+          if (dealText) {
             nodes.push({
               id: String(nodeId),
-              label: dealLabel,
-              group: 'deal'
+              label: dealText,
+              group: 'deal',
+              title: value ? `Deal Size: ${value}` : 'Deal'
             });
             edges.push({
               from: '1',
               to: String(nodeId),
-              label: 'Advised On'
+              label: value || 'Advised'
             });
             nodeId++;
           }
@@ -94,6 +114,51 @@ export async function GET({ params }: { params: { companyId: string } }) {
           });
           nodeId++;
         }
+      }
+
+      // Extract key team members from team section
+      if (sections.team && sections.team.content) {
+        const teamContent = sections.team.content;
+        // Look for bold names with titles (e.g., **John Smith, Managing Partner**)
+        const personMatches = teamContent.match(/\*\*([^*,]+(?:,\s*[^*]+)?)\*\*/g) || [];
+
+        personMatches.slice(0, 4).forEach((match: string) => {
+          const personText = match.replace(/\*\*/g, '');
+          // Extract just the name (before any title)
+          const nameParts = personText.split(',');
+          const name = nameParts[0].trim();
+          const title = nameParts[1] ? nameParts[1].trim() : null;
+
+          if (name && name.length > 2 && name.length < 40) {
+            nodes.push({
+              id: String(nodeId),
+              label: name,
+              group: 'person',
+              title: title || 'Team Member'
+            });
+            edges.push({
+              from: '1',
+              to: String(nodeId),
+              label: title ? title.substring(0, 20) : 'Team'
+            });
+            nodeId++;
+          }
+        });
+      }
+
+      // Add founded year if available
+      if (payload.founded_year) {
+        nodes.push({
+          id: String(nodeId),
+          label: `Founded ${payload.founded_year}`,
+          group: 'entity'
+        });
+        edges.push({
+          from: '1',
+          to: String(nodeId),
+          label: 'Established'
+        });
+        nodeId++;
       }
 
       // Return real graph data
