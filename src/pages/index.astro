@@ -191,6 +191,12 @@ function renderMarkdown(content: string): string {
   <!-- NEWS SECTION - White Background -->
   <main style="max-width: 1200px; margin: 0 auto; padding: 32px 20px;">
 
+    <!-- SEO Intro Text -->
+    <p style="font-size: 16px; color: #4b5563; line-height: 1.7; margin-bottom: 32px; max-width: 800px;">
+      Welcome to Placement Quest, your comprehensive resource for top private equity placement agents.
+      Our directory features the leading fundraising advisors helping PE fund managers connect with institutional investors worldwide.
+    </p>
+
     <!-- Featured Articles - 2 Panel Grid -->
     {(featuredArticle1 || featuredArticle2) && (
       <section style="margin-bottom: 40px; padding-bottom: 40px; border-bottom: 1px solid #e5e7eb;">
@@ -268,9 +274,9 @@ function renderMarkdown(content: string): string {
         </div>
       </div>
 
-      <!-- Sidebar: Top Placement Agents -->
+      <!-- Sidebar: Top Private Equity Placement Agents -->
       <aside>
-        <h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 4px solid #6366f1; display: inline-block;">Top Placement Agents</h2>
+        <h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 4px solid #6366f1; display: inline-block;">Top Private Equity Placement Agents</h2>
         <div style="display: flex; flex-direction: column; gap: 16px;">
           {topAgents.map((agent: any) => {
             const img = getCompanyImage(agent);
@@ -279,7 +285,7 @@ function renderMarkdown(content: string): string {
                 {/* Always show image - logo, featured, or gradient placeholder */}
                 <div style="width: 56px; height: 56px; border-radius: 8px; flex-shrink: 0; overflow: hidden; background: linear-gradient(135deg, #e0e7ff, #c7d2fe);">
                   {img.url ? (
-                    <img src={img.url} alt={agent.name} style={`width: 100%; height: 100%; object-fit: ${img.type === 'logo' ? 'contain' : 'cover'};`} />
+                    <img src={img.url} alt={`${agent.name} - Top Private Equity Placement Agent`} style={`width: 100%; height: 100%; object-fit: ${img.type === 'logo' ? 'contain' : 'cover'};`} />
                   ) : (
                     <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                       <span style="color: #4f46e5; font-weight: 700; font-size: 18px;">{agent.name?.charAt(0)}</span>
@@ -299,8 +305,8 @@ function renderMarkdown(content: string): string {
 
         <!-- CTA Box -->
         <div style="margin-top: 32px; background: #0f172a; color: #fff; border-radius: 12px; padding: 24px;">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Need a Placement Agent?</h3>
-          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 16px;">Get matched with the right fundraising advisor for your fund.</p>
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Find Top Private Equity Placement Agents</h3>
+          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 16px;">Get matched with top private equity placement agents for your fund.</p>
           <a href="/contact" style="display: block; background: #fff; color: #0f172a; text-align: center; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;">Contact Us</a>
         </div>
       </aside>
@@ -355,7 +361,7 @@ function renderMarkdown(content: string): string {
               {/* Company Image Banner */}
               <div style="height: 120px; background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3)); position: relative; overflow: hidden;">
                 {img.url && img.type === 'image' ? (
-                  <img src={img.url} alt={agent.name} style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;" />
+                  <img src={img.url} alt={`${agent.name} - Top Private Equity Placement Agent`} style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;" />
                 ) : (
                   <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                     <span style="font-size: 48px; font-weight: 900; color: rgba(255,255,255,0.2);">{agent.name?.charAt(0)}</span>
@@ -364,7 +370,7 @@ function renderMarkdown(content: string): string {
                 {/* Logo overlay if available */}
                 {img.type === 'logo' && img.url && (
                   <div style="position: absolute; bottom: -20px; left: 20px; width: 56px; height: 56px; background: #fff; border-radius: 8px; padding: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                    <img src={img.url} alt={agent.name} style="width: 100%; height: 100%; object-fit: contain;" />
+                    <img src={img.url} alt={`${agent.name} - Top Private Equity Placement Agent`} style="width: 100%; height: 100%; object-fit: contain;" />
                   </div>
                 )}
               </div>
