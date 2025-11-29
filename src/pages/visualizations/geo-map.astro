@@ -1,0 +1,754 @@
+---
+/**
+ * Global Deal Map Visualization
+ *
+ * Interactive 3D globe showing deal flow, placement agent locations,
+ * and capital movement arcs between regions
+ */
+import SEO from '../../components/SEO.astro';
+import Navigation from '../../components/Navigation.astro';
+import { sql } from '../../lib/db';
+
+// Fetch placement agents with headquarters
+const agents = await sql`
+  SELECT
+    id, name, slug,
+    COALESCE(display_name, name) as display_name,
+    headquarters,
+    payload->>'aum' as aum,
+    payload->>'industry' as industry,
+    global_rank
+  FROM companies
+  WHERE company_type = 'placement_agent'
+    AND status = 'published'
+    AND headquarters IS NOT NULL
+  ORDER BY global_rank ASC NULLS LAST
+  LIMIT 100
+`;
+
+// Fetch recent deals/articles with location context
+const deals = await sql`
+  SELECT
+    id, title, slug,
+    payload->>'deal_value' as deal_value,
+    payload->>'location' as location
+  FROM articles
+  WHERE app = 'placement'
+    AND status = 'published'
+  ORDER BY COALESCE(published_at, created_at) DESC
+  LIMIT 50
+`;
+
+// City coordinates mapping
+const cityCoords: Record<string, [number, number]> = {
+  'london': [-0.1276, 51.5074],
+  'new york': [-74.006, 40.7128],
+  'hong kong': [114.1694, 22.3193],
+  'singapore': [103.8198, 1.3521],
+  'tokyo': [139.6917, 35.6895],
+  'paris': [2.3522, 48.8566],
+  'frankfurt': [8.6821, 50.1109],
+  'sydney': [151.2093, -33.8688],
+  'dubai': [55.2708, 25.2048],
+  'mumbai': [72.8777, 19.0760],
+  'shanghai': [121.4737, 31.2304],
+  'boston': [-71.0589, 42.3601],
+  'chicago': [-87.6298, 41.8781],
+  'los angeles': [-118.2437, 34.0522],
+  'san francisco': [-122.4194, 37.7749],
+  'toronto': [-79.3832, 43.6532],
+  'zurich': [8.5417, 47.3769],
+  'amsterdam': [4.9041, 52.3676],
+  'edinburgh': [-3.1883, 55.9533],
+  'manchester': [-2.2426, 53.4808],
+  'birmingham': [-1.8904, 52.4862],
+  'seoul': [126.9780, 37.5665],
+  'beijing': [116.4074, 39.9042],
+  'melbourne': [144.9631, -37.8136],
+  'cape town': [18.4241, -33.9249],
+  'sao paulo': [-46.6333, -23.5505]
+};
+
+// Process agents into map points
+const agentPoints = agents.map((agent: any) => {
+  const hq = (agent.headquarters || '').toLowerCase();
+  let coords: [number, number] = [0, 51.5]; // Default London
+
+  for (const [city, coord] of Object.entries(cityCoords)) {
+    if (hq.includes(city)) {
+      coords = coord;
+      break;
+    }
+  }
+
+  // Add small random offset to prevent overlap
+  coords = [
+    coords[0] + (Math.random() - 0.5) * 0.5,
+    coords[1] + (Math.random() - 0.5) * 0.5
+  ];
+
+  return {
+    id: agent.id,
+    name: agent.display_name,
+    slug: agent.slug,
+    headquarters: agent.headquarters,
+    coordinates: coords,
+    aum: agent.aum,
+    rank: agent.global_rank
+  };
+});
+
+// Create flow arcs between major financial centers
+const flowArcs = [
+  { source: cityCoords['london'], target: cityCoords['new york'], value: 45 },
+  { source: cityCoords['new york'], target: cityCoords['london'], value: 38 },
+  { source: cityCoords['london'], target: cityCoords['hong kong'], value: 22 },
+  { source: cityCoords['hong kong'], target: cityCoords['singapore'], value: 18 },
+  { source: cityCoords['new york'], target: cityCoords['san francisco'], value: 25 },
+  { source: cityCoords['zurich'], target: cityCoords['london'], value: 15 },
+  { source: cityCoords['frankfurt'], target: cityCoords['london'], value: 12 },
+  { source: cityCoords['tokyo'], target: cityCoords['hong kong'], value: 20 },
+  { source: cityCoords['singapore'], target: cityCoords['sydney'], value: 14 },
+  { source: cityCoords['dubai'], target: cityCoords['london'], value: 16 },
+  { source: cityCoords['mumbai'], target: cityCoords['singapore'], value: 10 },
+  { source: cityCoords['boston'], target: cityCoords['new york'], value: 18 },
+  { source: cityCoords['toronto'], target: cityCoords['new york'], value: 12 }
+];
+
+// Regional stats
+const regionStats = {
+  'North America': agents.filter((a: any) => {
+    const hq = (a.headquarters || '').toLowerCase();
+    return hq.includes('us') || hq.includes('new york') || hq.includes('boston') ||
+           hq.includes('chicago') || hq.includes('canada') || hq.includes('toronto');
+  }).length,
+  'Europe': agents.filter((a: any) => {
+    const hq = (a.headquarters || '').toLowerCase();
+    return hq.includes('uk') || hq.includes('london') || hq.includes('paris') ||
+           hq.includes('frankfurt') || hq.includes('zurich') || hq.includes('amsterdam');
+  }).length,
+  'Asia Pacific': agents.filter((a: any) => {
+    const hq = (a.headquarters || '').toLowerCase();
+    return hq.includes('hong kong') || hq.includes('singapore') || hq.includes('tokyo') ||
+           hq.includes('sydney') || hq.includes('mumbai') || hq.includes('shanghai');
+  }).length
+};
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <SEO
+    title="Global Deal Map | Private Equity Capital Flows"
+    description="Visualize global private equity deal flows. Interactive 3D map showing placement agent locations, capital movement, and regional market activity."
+  />
+
+  <!-- Deck.gl and dependencies -->
+  <script src="https://unpkg.com/deck.gl@8.9/dist.min.js" defer></script>
+  <script src="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.js" defer></script>
+  <link href="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <style is:inline>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #f1f5f9;
+      overflow: hidden;
+    }
+
+    #map-container {
+      position: fixed;
+      inset: 0;
+      top: 80px;
+    }
+
+    #deck-canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Overlays */
+    .overlay {
+      position: fixed;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .overlay > * {
+      pointer-events: auto;
+    }
+
+    /* Header */
+    .header-section {
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 12px;
+      color: #93c5fd;
+      margin-bottom: 12px;
+    }
+
+    .header-badge .beta {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #fff, #93c5fd, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    /* Legend Panel */
+    .legend-panel {
+      top: 110px;
+      left: 20px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 12px;
+      padding: 16px;
+      max-width: 180px;
+    }
+
+    .legend-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-arc {
+      width: 20px;
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #3b82f6, #ef4444);
+    }
+
+    /* Stats Panel */
+    .stats-panel {
+      top: 110px;
+      right: 20px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 12px;
+      padding: 16px;
+      min-width: 160px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    /* Controls */
+    .controls-panel {
+      bottom: 30px;
+      left: 20px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .control-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #cbd5e1;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-btn:hover {
+      border-color: rgba(59, 130, 246, 0.5);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .control-btn.active {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.2);
+      color: #fff;
+    }
+
+    .control-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Export buttons */
+    .export-panel {
+      bottom: 30px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .export-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #94a3b8;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .export-btn:hover {
+      border-color: #6366f1;
+      color: #a5b4fc;
+    }
+
+    /* Tooltip */
+    .map-tooltip {
+      position: fixed;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(59, 130, 246, 0.5);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      max-width: 280px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 200;
+    }
+
+    .map-tooltip.visible {
+      opacity: 1;
+    }
+
+    .tooltip-title {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-subtitle {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .tooltip-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #3b82f6;
+    }
+
+    /* Provenance */
+    .provenance {
+      bottom: 80px;
+      right: 20px;
+      font-size: 10px;
+      color: #475569;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Loading */
+    .loading {
+      position: fixed;
+      inset: 0;
+      background: #0a0a0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      h1 { font-size: 1.5rem; }
+      .legend-panel { display: none; }
+      .stats-panel { top: auto; bottom: 100px; right: 10px; }
+      .controls-panel { bottom: 10px; left: 10px; }
+      .export-panel { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <Navigation currentPage="visualizations" />
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="map-container">
+    <div id="deck-canvas"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="overlay header-section">
+    <div class="header-badge">
+      <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"></path>
+      </svg>
+      Global Deal Intelligence
+      <span class="beta">BETA</span>
+    </div>
+    <h1>Global Deal Flow Map</h1>
+    <p class="subtitle">Capital movement across financial centers</p>
+  </div>
+
+  <!-- Legend -->
+  <div class="overlay legend-panel">
+    <div class="legend-title">Map Legend</div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #3b82f6;"></div>
+      <span>Placement Agents</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #10b981;"></div>
+      <span>Top 10 Ranked</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #f59e0b;"></div>
+      <span>Recent Deals</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-arc"></div>
+      <span>Capital Flow</span>
+    </div>
+  </div>
+
+  <!-- Regional Stats -->
+  <div class="overlay stats-panel">
+    <div class="legend-title">Regional Distribution</div>
+    <div class="stat-row">
+      <span class="stat-label">North America</span>
+      <span class="stat-value">{regionStats['North America']}</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Europe</span>
+      <span class="stat-value">{regionStats['Europe']}</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Asia Pacific</span>
+      <span class="stat-value">{regionStats['Asia Pacific']}</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Total Agents</span>
+      <span class="stat-value" style="color: #10b981;">{agents.length}</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="overlay controls-panel">
+    <button class="control-btn active" id="view-globe">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+      </svg>
+      Globe
+    </button>
+    <button class="control-btn" id="view-flat">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+      </svg>
+      Flat
+    </button>
+    <button class="control-btn" id="toggle-arcs">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+      </svg>
+      Flows
+    </button>
+    <a href="/visualizations/capital-flow" class="control-btn">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Sankey
+    </a>
+  </div>
+
+  <!-- Export -->
+  <div class="overlay export-panel">
+    <button class="export-btn" id="export-png">Export PNG</button>
+    <button class="export-btn" id="export-csv">Export CSV</button>
+  </div>
+
+  <!-- Provenance -->
+  <div class="overlay provenance">
+    Source: Placement Quest Directory | Updated: {new Date().toLocaleDateString()}
+  </div>
+
+  <!-- Tooltip -->
+  <div class="map-tooltip" id="tooltip">
+    <div class="tooltip-title" id="tooltip-title"></div>
+    <div class="tooltip-subtitle" id="tooltip-subtitle"></div>
+    <div class="tooltip-link">Click to view profile</div>
+  </div>
+
+  <script define:vars={{ agentPoints, flowArcs, cityCoords }}>
+    const initMap = () => {
+      if (typeof deck === 'undefined') {
+        setTimeout(initMap, 100);
+        return;
+      }
+
+      const container = document.getElementById('deck-canvas');
+      const tooltip = document.getElementById('tooltip');
+      const loading = document.getElementById('loading');
+
+      let showArcs = true;
+      let isGlobe = true;
+
+      // Color helpers
+      const hexToRgb = (hex) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+          parseInt(result[1], 16),
+          parseInt(result[2], 16),
+          parseInt(result[3], 16)
+        ] : [59, 130, 246];
+      };
+
+      // Create layers
+      const createLayers = () => {
+        const layers = [];
+
+        // Agent scatter layer
+        layers.push(new deck.ScatterplotLayer({
+          id: 'agents',
+          data: agentPoints,
+          getPosition: d => d.coordinates,
+          getRadius: d => d.rank && d.rank <= 10 ? 80000 : 50000,
+          getFillColor: d => d.rank && d.rank <= 10 ? [16, 185, 129, 200] : [59, 130, 246, 180],
+          pickable: true,
+          onClick: ({ object }) => {
+            if (object?.slug) {
+              window.location.href = `/private-equity-placement-agents-list/${object.slug}`;
+            }
+          },
+          onHover: ({ object, x, y }) => {
+            if (object) {
+              tooltip.style.left = (x + 15) + 'px';
+              tooltip.style.top = (y - 15) + 'px';
+              document.getElementById('tooltip-title').textContent = object.name;
+              document.getElementById('tooltip-subtitle').textContent = object.headquarters || 'Global';
+              tooltip.classList.add('visible');
+            } else {
+              tooltip.classList.remove('visible');
+            }
+          }
+        }));
+
+        // Arc layer for capital flows
+        if (showArcs) {
+          layers.push(new deck.ArcLayer({
+            id: 'arcs',
+            data: flowArcs,
+            getSourcePosition: d => d.source,
+            getTargetPosition: d => d.target,
+            getSourceColor: [59, 130, 246, 180],
+            getTargetColor: [239, 68, 68, 180],
+            getWidth: d => Math.max(1, d.value / 10),
+            greatCircle: true
+          }));
+        }
+
+        return layers;
+      };
+
+      // Initial view state
+      const INITIAL_VIEW_STATE = {
+        longitude: 0,
+        latitude: 30,
+        zoom: 1.5,
+        pitch: 0,
+        bearing: 0
+      };
+
+      // Create deck instance
+      const deckgl = new deck.DeckGL({
+        container,
+        initialViewState: INITIAL_VIEW_STATE,
+        controller: true,
+        layers: createLayers(),
+        views: new deck.GlobeView(),
+        parameters: {
+          clearColor: [10/255, 10/255, 15/255, 1]
+        }
+      });
+
+      // Hide loading
+      setTimeout(() => {
+        loading.classList.add('hidden');
+      }, 1000);
+
+      // View toggle handlers
+      document.getElementById('view-globe')?.addEventListener('click', function() {
+        if (!isGlobe) {
+          isGlobe = true;
+          this.classList.add('active');
+          document.getElementById('view-flat')?.classList.remove('active');
+          deckgl.setProps({
+            views: new deck.GlobeView()
+          });
+        }
+      });
+
+      document.getElementById('view-flat')?.addEventListener('click', function() {
+        if (isGlobe) {
+          isGlobe = false;
+          this.classList.add('active');
+          document.getElementById('view-globe')?.classList.remove('active');
+          deckgl.setProps({
+            views: new deck.MapView()
+          });
+        }
+      });
+
+      document.getElementById('toggle-arcs')?.addEventListener('click', function() {
+        showArcs = !showArcs;
+        this.classList.toggle('active', showArcs);
+        deckgl.setProps({ layers: createLayers() });
+      });
+
+      // Export PNG
+      document.getElementById('export-png')?.addEventListener('click', () => {
+        const canvas = container.querySelector('canvas');
+        if (canvas) {
+          const link = document.createElement('a');
+          link.download = 'global-deal-map.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }
+      });
+
+      // Export CSV
+      document.getElementById('export-csv')?.addEventListener('click', () => {
+        let csv = 'Name,Headquarters,Coordinates\n';
+        agentPoints.forEach(p => {
+          csv += `"${p.name}","${p.headquarters || ''}","${p.coordinates.join(', ')}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.download = 'placement-agents-locations.csv';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      });
+
+      // Auto-rotate
+      let rotation = 0;
+      let rotating = true;
+
+      const animate = () => {
+        if (rotating && isGlobe) {
+          rotation += 0.1;
+          deckgl.setProps({
+            initialViewState: {
+              ...INITIAL_VIEW_STATE,
+              longitude: rotation
+            }
+          });
+        }
+        requestAnimationFrame(animate);
+      };
+
+      // Start rotation after delay
+      setTimeout(animate, 2000);
+
+      // Stop rotation on interaction
+      container.addEventListener('mousedown', () => { rotating = false; });
+      container.addEventListener('wheel', () => { rotating = false; });
+      container.addEventListener('touchstart', () => { rotating = false; });
+    };
+
+    // Initialize
+    if (document.readyState === 'complete') {
+      initMap();
+    } else {
+      window.addEventListener('load', initMap);
+    }
+  </script>
+</body>
+</html>
