@@ -3,6 +3,7 @@ import { sql } from '../../lib/db';
 import SEO from '../../components/SEO.astro';
 import ZepGraphVisualization from '../../components/ZepGraphVisualization.astro';
 import ZepGraph3D from '../../components/ZepGraph3D.astro';
+import CompanyTimeline from '../../components/CompanyTimeline.astro';
 
 // Enable hybrid rendering for this page
 export const prerender = false;
@@ -200,7 +201,8 @@ const sidebarRotationIndex = (company.display_name.length + 1) % sidebarLinks.le
   <!-- Load vis-network library for 2D deal graphs -->
   <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" defer></script>
 
-  <!-- Load 3d-force-graph for 3D WebGL visualization -->
+  <!-- Load 3d-force-graph for 3D WebGL visualization with text labels -->
+  <script src="https://unpkg.com/three-spritetext" defer></script>
   <script src="https://unpkg.com/3d-force-graph" defer></script>
 
   <style is:inline>
@@ -869,17 +871,31 @@ const sidebarRotationIndex = (company.display_name.length + 1) % sidebarLinks.le
       </p>
 
       <!-- 3D Interactive Knowledge Graph -->
-      <ZepGraph3D companyId={company.slug} companyName={company.name} height="500px" />
-
-      <!-- 2D Graph fallback (shown below for accessibility) -->
-      <details style="margin-top: 1.5rem;">
-        <summary style="cursor: pointer; color: #a5b4fc; font-size: 0.875rem; padding: 0.5rem 0;">
-          📊 View 2D Graph (better for accessibility)
-        </summary>
-        <div style="margin-top: 1rem;">
-          <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
+      <div style="margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <span style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">3D WebGL</span>
+          <span style="color: #64748b; font-size: 0.8rem;">Interactive • Drag to rotate • Click to explore</span>
         </div>
-      </details>
+        <ZepGraph3D companyId={company.slug} companyName={company.name} height="500px" />
+      </div>
+
+      <!-- Timeline Visualization -->
+      <div style="margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <span style="background: linear-gradient(135deg, #10b981, #14b8a6); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Timeline</span>
+          <span style="color: #64748b; font-size: 0.8rem;">Company history & milestones</span>
+        </div>
+        <CompanyTimeline companyId={company.slug} companyName={company.name} />
+      </div>
+
+      <!-- 2D Network Graph -->
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <span style="background: linear-gradient(135deg, #3b82f6, #0ea5e9); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">2D Network</span>
+          <span style="color: #64748b; font-size: 0.8rem;">Classic view • Better for accessibility</span>
+        </div>
+        <ZepGraphVisualization companyId={company.slug} companyName={company.name} />
+      </div>
     </div>
 
     <!-- Our Coverage Section -->

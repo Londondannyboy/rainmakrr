@@ -43,6 +43,26 @@ const uniqueId = `graph3d-${companyId}-${Math.random().toString(36).substr(2, 9)
       <span style="margin-right: 12px;">🔍 Scroll to zoom</span>
       <span>👆 Click node to explore</span>
     </div>
+
+    <!-- Color Legend -->
+    <div style="position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; font-size: 10px; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px; max-width: 280px;">
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 6px #3b82f6;"></div>
+        <span style="color: #94a3b8;">Company</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 6px #a855f7;"></div>
+        <span style="color: #94a3b8;">Deals</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></div>
+        <span style="color: #94a3b8;">People</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: #64748b; box-shadow: 0 0 6px #64748b;"></div>
+        <span style="color: #94a3b8;">Info</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -121,7 +141,7 @@ const uniqueId = `graph3d-${companyId}-${Math.random().toString(36).substr(2, 9)
         default: '#6366f1'    // Indigo
       };
 
-      // Create 3D force graph
+      // Create 3D force graph with text labels
       const Graph = ForceGraph3D()
         (graphEl)
         .graphData({ nodes, links })
@@ -133,6 +153,17 @@ const uniqueId = `graph3d-${companyId}-${Math.random().toString(36).substr(2, 9)
         .nodeColor(node => groupColors[node.group] || groupColors.default)
         .nodeVal(node => node.val)
         .nodeOpacity(0.9)
+        // Add permanent text labels using Three.js sprites
+        .nodeThreeObject(node => {
+          const sprite = new SpriteText(node.name);
+          sprite.color = node.name === companyName ? '#fbbf24' : '#e2e8f0';
+          sprite.textHeight = node.name === companyName ? 6 : 4;
+          sprite.backgroundColor = 'rgba(15, 23, 42, 0.7)';
+          sprite.padding = 2;
+          sprite.borderRadius = 3;
+          return sprite;
+        })
+        .nodeThreeObjectExtend(true) // Keep the sphere AND add the label
         .linkColor(() => 'rgba(99, 102, 241, 0.4)')
         .linkWidth(1.5)
         .linkOpacity(0.6)
