@@ -2,8 +2,8 @@
 /**
  * Global Deal Map Visualization
  *
- * Interactive 3D globe showing deal flow, placement agent locations,
- * and capital movement arcs between regions
+ * Interactive map showing placement agent locations and deal flows
+ * Uses Leaflet for reliable, lightweight mapping
  */
 import SEO from '../../components/SEO.astro';
 import Navigation from '../../components/Navigation.astro';
@@ -26,53 +26,39 @@ const agents = await sql`
   LIMIT 100
 `;
 
-// Fetch recent deals/articles with location context
-const deals = await sql`
-  SELECT
-    id, title, slug,
-    payload->>'deal_value' as deal_value,
-    payload->>'location' as location
-  FROM articles
-  WHERE app = 'placement'
-    AND status = 'published'
-  ORDER BY COALESCE(published_at, created_at) DESC
-  LIMIT 50
-`;
-
 // City coordinates mapping
 const cityCoords: Record<string, [number, number]> = {
-  'london': [-0.1276, 51.5074],
-  'new york': [-74.006, 40.7128],
-  'hong kong': [114.1694, 22.3193],
-  'singapore': [103.8198, 1.3521],
-  'tokyo': [139.6917, 35.6895],
-  'paris': [2.3522, 48.8566],
-  'frankfurt': [8.6821, 50.1109],
-  'sydney': [151.2093, -33.8688],
-  'dubai': [55.2708, 25.2048],
-  'mumbai': [72.8777, 19.0760],
-  'shanghai': [121.4737, 31.2304],
-  'boston': [-71.0589, 42.3601],
-  'chicago': [-87.6298, 41.8781],
-  'los angeles': [-118.2437, 34.0522],
-  'san francisco': [-122.4194, 37.7749],
-  'toronto': [-79.3832, 43.6532],
-  'zurich': [8.5417, 47.3769],
-  'amsterdam': [4.9041, 52.3676],
-  'edinburgh': [-3.1883, 55.9533],
-  'manchester': [-2.2426, 53.4808],
-  'birmingham': [-1.8904, 52.4862],
-  'seoul': [126.9780, 37.5665],
-  'beijing': [116.4074, 39.9042],
-  'melbourne': [144.9631, -37.8136],
-  'cape town': [18.4241, -33.9249],
-  'sao paulo': [-46.6333, -23.5505]
+  'london': [51.5074, -0.1276],
+  'new york': [40.7128, -74.006],
+  'hong kong': [22.3193, 114.1694],
+  'singapore': [1.3521, 103.8198],
+  'tokyo': [35.6895, 139.6917],
+  'paris': [48.8566, 2.3522],
+  'frankfurt': [50.1109, 8.6821],
+  'sydney': [-33.8688, 151.2093],
+  'dubai': [25.2048, 55.2708],
+  'mumbai': [19.0760, 72.8777],
+  'shanghai': [31.2304, 121.4737],
+  'boston': [42.3601, -71.0589],
+  'chicago': [41.8781, -87.6298],
+  'los angeles': [34.0522, -118.2437],
+  'san francisco': [37.7749, -122.4194],
+  'toronto': [43.6532, -79.3832],
+  'zurich': [47.3769, 8.5417],
+  'amsterdam': [52.3676, 4.9041],
+  'edinburgh': [55.9533, -3.1883],
+  'manchester': [53.4808, -2.2426],
+  'seoul': [37.5665, 126.9780],
+  'beijing': [39.9042, 116.4074],
+  'melbourne': [-37.8136, 144.9631],
+  'cape town': [-33.9249, 18.4241],
+  'sao paulo': [-23.5505, -46.6333]
 };
 
 // Process agents into map points
 const agentPoints = agents.map((agent: any) => {
   const hq = (agent.headquarters || '').toLowerCase();
-  let coords: [number, number] = [0, 51.5]; // Default London
+  let coords: [number, number] = [51.5074, -0.1276]; // Default London
 
   for (const [city, coord] of Object.entries(cityCoords)) {
     if (hq.includes(city)) {
@@ -83,8 +69,8 @@ const agentPoints = agents.map((agent: any) => {
 
   // Add small random offset to prevent overlap
   coords = [
-    coords[0] + (Math.random() - 0.5) * 0.5,
-    coords[1] + (Math.random() - 0.5) * 0.5
+    coords[0] + (Math.random() - 0.5) * 0.3,
+    coords[1] + (Math.random() - 0.5) * 0.3
   ];
 
   return {
@@ -92,28 +78,11 @@ const agentPoints = agents.map((agent: any) => {
     name: agent.display_name,
     slug: agent.slug,
     headquarters: agent.headquarters,
-    coordinates: coords,
-    aum: agent.aum,
+    lat: coords[0],
+    lng: coords[1],
     rank: agent.global_rank
   };
 });
-
-// Create flow arcs between major financial centers
-const flowArcs = [
-  { source: cityCoords['london'], target: cityCoords['new york'], value: 45 },
-  { source: cityCoords['new york'], target: cityCoords['london'], value: 38 },
-  { source: cityCoords['london'], target: cityCoords['hong kong'], value: 22 },
-  { source: cityCoords['hong kong'], target: cityCoords['singapore'], value: 18 },
-  { source: cityCoords['new york'], target: cityCoords['san francisco'], value: 25 },
-  { source: cityCoords['zurich'], target: cityCoords['london'], value: 15 },
-  { source: cityCoords['frankfurt'], target: cityCoords['london'], value: 12 },
-  { source: cityCoords['tokyo'], target: cityCoords['hong kong'], value: 20 },
-  { source: cityCoords['singapore'], target: cityCoords['sydney'], value: 14 },
-  { source: cityCoords['dubai'], target: cityCoords['london'], value: 16 },
-  { source: cityCoords['mumbai'], target: cityCoords['singapore'], value: 10 },
-  { source: cityCoords['boston'], target: cityCoords['new york'], value: 18 },
-  { source: cityCoords['toronto'], target: cityCoords['new york'], value: 12 }
-];
 
 // Regional stats
 const regionStats = {
@@ -142,108 +111,122 @@ const regionStats = {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <SEO
-    title="Global Deal Map | Private Equity Capital Flows"
-    description="Visualize global private equity deal flows. Interactive 3D map showing placement agent locations, capital movement, and regional market activity."
+    title="Global Deal Map | Placement Agent Locations"
+    description="Interactive map showing placement agent locations worldwide. Visualize the global distribution of PE fundraising advisors."
   />
 
-  <!-- Deck.gl and dependencies - load synchronously for reliability -->
-  <script src="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.js"></script>
-  <script src="https://unpkg.com/deck.gl@8.9/dist.min.js"></script>
-  <link href="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <style is:inline>
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a0f;
-      color: #f1f5f9;
-      overflow: hidden;
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fff;
+      color: #1a1a1a;
+      line-height: 1.6;
     }
 
-    #map-container {
-      position: fixed;
-      inset: 0;
-      top: 80px;
-    }
-
-    #deck-canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Overlays */
-    .overlay {
-      position: fixed;
-      z-index: 100;
-      pointer-events: none;
-    }
-
-    .overlay > * {
-      pointer-events: auto;
+    .page-container {
+      min-height: 100vh;
+      padding-top: 80px;
     }
 
     /* Header */
     .header-section {
-      top: 90px;
-      left: 50%;
-      transform: translateX(-50%);
+      padding: 32px 20px 24px;
       text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
     }
 
     .header-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 8px 16px;
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      padding: 6px 14px;
       border-radius: 100px;
-      font-size: 12px;
-      color: #93c5fd;
+      font-size: 11px;
+      color: #1d4ed8;
       margin-bottom: 12px;
     }
 
     .header-badge .beta {
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 4px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      font-size: 8px;
+      padding: 2px 5px;
+      border-radius: 3px;
       font-weight: 700;
+      color: #fff;
     }
 
     h1 {
       font-size: 2rem;
       font-weight: 800;
-      background: linear-gradient(to right, #fff, #93c5fd, #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #1a1a1a;
       margin-bottom: 8px;
     }
 
     .subtitle {
-      color: #64748b;
-      font-size: 0.95rem;
+      color: #6b7280;
+      font-size: 1rem;
     }
 
-    /* Legend Panel */
-    .legend-panel {
-      top: 110px;
-      left: 20px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(51, 65, 85, 0.5);
-      border-radius: 12px;
-      padding: 16px;
-      max-width: 180px;
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 20px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
     }
 
-    .legend-title {
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+
+    .stat-label {
       font-size: 11px;
-      font-weight: 600;
-      color: #94a3b8;
-      margin-bottom: 12px;
+      color: #6b7280;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    /* Map Container */
+    .map-section {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 250px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      padding: 20px;
+      border-right: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
 
     .legend-item {
@@ -251,8 +234,8 @@ const regionStats = {
       align-items: center;
       gap: 10px;
       margin: 8px 0;
-      font-size: 12px;
-      color: #cbd5e1;
+      font-size: 13px;
+      color: #374151;
     }
 
     .legend-dot {
@@ -262,506 +245,266 @@ const regionStats = {
       flex-shrink: 0;
     }
 
-    .legend-arc {
-      width: 20px;
-      height: 3px;
-      border-radius: 2px;
-      background: linear-gradient(90deg, #3b82f6, #ef4444);
+    .region-list {
+      margin-top: 20px;
     }
 
-    /* Stats Panel */
-    .stats-panel {
-      top: 110px;
-      right: 20px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(51, 65, 85, 0.5);
-      border-radius: 12px;
-      padding: 16px;
-      min-width: 160px;
-    }
-
-    .stat-row {
+    .region-item {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.3);
-    }
-
-    .stat-row:last-child {
-      border-bottom: none;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #94a3b8;
-    }
-
-    .stat-value {
-      font-size: 14px;
-      font-weight: 700;
-      color: #3b82f6;
-    }
-
-    /* Controls */
-    .controls-panel {
-      bottom: 30px;
-      left: 20px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .control-btn {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(51, 65, 85, 0.5);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: #cbd5e1;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .control-btn:hover {
-      border-color: rgba(59, 130, 246, 0.5);
-      background: rgba(59, 130, 246, 0.1);
-    }
-
-    .control-btn.active {
-      border-color: #3b82f6;
-      background: rgba(59, 130, 246, 0.2);
-      color: #fff;
-    }
-
-    .control-btn svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    /* Export buttons */
-    .export-panel {
-      bottom: 30px;
-      right: 20px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .export-btn {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(51, 65, 85, 0.5);
-      border-radius: 6px;
-      padding: 8px 12px;
-      color: #94a3b8;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .export-btn:hover {
-      border-color: #6366f1;
-      color: #a5b4fc;
-    }
-
-    /* Tooltip */
-    .map-tooltip {
-      position: fixed;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(59, 130, 246, 0.5);
-      border-radius: 8px;
-      padding: 12px 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
       font-size: 13px;
-      max-width: 280px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-      z-index: 200;
     }
 
-    .map-tooltip.visible {
-      opacity: 1;
+    .region-name {
+      color: #374151;
     }
 
-    .tooltip-title {
-      font-weight: 600;
-      color: #fff;
+    .region-count {
+      font-weight: 700;
+      color: #1d4ed8;
+    }
+
+    /* Map */
+    #map {
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+    }
+
+    /* Custom marker styles */
+    .custom-marker {
+      background: #4f46e5;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .top-marker {
+      background: #10b981;
+    }
+
+    /* Popup styles */
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .popup-content {
+      padding: 4px;
+    }
+
+    .popup-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #1a1a1a;
       margin-bottom: 4px;
     }
 
-    .tooltip-subtitle {
-      font-size: 11px;
-      color: #64748b;
+    .popup-subtitle {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
     }
 
-    .tooltip-link {
+    .popup-link {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      margin-top: 6px;
-      font-size: 11px;
-      color: #3b82f6;
+      font-size: 12px;
+      color: #4f46e5;
+      text-decoration: none;
     }
 
-    /* Provenance */
-    .provenance {
-      bottom: 80px;
-      right: 20px;
-      font-size: 10px;
-      color: #475569;
-      background: rgba(15, 23, 42, 0.8);
-      padding: 4px 10px;
-      border-radius: 4px;
+    .popup-link:hover {
+      text-decoration: underline;
     }
 
-    /* Loading */
-    .loading {
-      position: fixed;
-      inset: 0;
-      background: #0a0a0f;
+    /* Controls */
+    .map-controls {
+      padding: 16px 20px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      transition: opacity 0.5s;
     }
 
-    .loading.hidden {
-      opacity: 0;
-      pointer-events: none;
+    .control-btn {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 8px 14px;
+      color: #374151;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(59, 130, 246, 0.2);
-      border-top-color: #3b82f6;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+    .control-btn:hover {
+      border-color: #4f46e5;
+      color: #4f46e5;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .provenance {
+      font-size: 11px;
+      color: #9ca3af;
     }
 
     /* Mobile */
     @media (max-width: 768px) {
-      h1 { font-size: 1.5rem; }
-      .legend-panel { display: none; }
-      .stats-panel { top: auto; bottom: 100px; right: 10px; }
-      .controls-panel { bottom: 10px; left: 10px; }
-      .export-panel { display: none; }
+      .map-section {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: none;
+      }
+      .stats-bar {
+        gap: 20px;
+        flex-wrap: wrap;
+      }
     }
   </style>
 </head>
 <body>
-  <Navigation currentPage="visualizations" />
+  <Navigation />
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
+  <div class="page-container">
+    <div class="header-section">
+      <div class="header-badge">
+        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"></path>
+        </svg>
+        Global Map
+        <span class="beta">BETA</span>
+      </div>
+      <h1>Placement Agent Locations</h1>
+      <p class="subtitle">Global distribution of PE fundraising advisors</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-value">{agents.length}</div>
+        <div class="stat-label">Total Agents</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{regionStats['North America']}</div>
+        <div class="stat-label">North America</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{regionStats['Europe']}</div>
+        <div class="stat-label">Europe</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{regionStats['Asia Pacific']}</div>
+        <div class="stat-label">Asia Pacific</div>
+      </div>
+    </div>
+
+    <div class="map-section">
+      <aside class="sidebar">
+        <div class="sidebar-title">Legend</div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #10b981;"></div>
+          <span>Top 10 Agents</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #4f46e5;"></div>
+          <span>Other Agents</span>
+        </div>
+
+        <div class="region-list">
+          <div class="sidebar-title">By Region</div>
+          <div class="region-item">
+            <span class="region-name">North America</span>
+            <span class="region-count">{regionStats['North America']}</span>
+          </div>
+          <div class="region-item">
+            <span class="region-name">Europe</span>
+            <span class="region-count">{regionStats['Europe']}</span>
+          </div>
+          <div class="region-item">
+            <span class="region-name">Asia Pacific</span>
+            <span class="region-count">{regionStats['Asia Pacific']}</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="sidebar-title">Quick Links</div>
+          <a href="/ecosystem" class="control-btn" style="display: block; text-align: center; margin-top: 8px; text-decoration: none;">
+            Agent Universe
+          </a>
+          <a href="/visualizations/capital-flow" class="control-btn" style="display: block; text-align: center; margin-top: 8px; text-decoration: none;">
+            Capital Flow
+          </a>
+        </div>
+      </aside>
+
+      <div id="map"></div>
+    </div>
+
+    <div class="map-controls">
+      <div>
+        <button class="control-btn" id="reset-view">Reset View</button>
+        <button class="control-btn" id="export-png" style="margin-left: 8px;">Export PNG</button>
+      </div>
+      <div class="provenance">
+        Data: Placement Quest Directory | Updated: {new Date().toLocaleDateString()}
+      </div>
+    </div>
   </div>
 
-  <div id="map-container">
-    <div id="deck-canvas"></div>
-  </div>
+  <script define:vars={{ agentPoints }}>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize map centered on Atlantic (between US and Europe)
+      const map = L.map('map').setView([35, -20], 2);
 
-  <!-- Header -->
-  <div class="overlay header-section">
-    <div class="header-badge">
-      <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"></path>
-      </svg>
-      Global Deal Intelligence
-      <span class="beta">BETA</span>
-    </div>
-    <h1>Global Deal Flow Map</h1>
-    <p class="subtitle">Capital movement across financial centers</p>
-  </div>
+      // Add light tile layer
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map);
 
-  <!-- Legend -->
-  <div class="overlay legend-panel">
-    <div class="legend-title">Map Legend</div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: #3b82f6;"></div>
-      <span>Placement Agents</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: #10b981;"></div>
-      <span>Top 10 Ranked</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: #f59e0b;"></div>
-      <span>Recent Deals</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-arc"></div>
-      <span>Capital Flow</span>
-    </div>
-  </div>
+      // Add markers for each agent
+      agentPoints.forEach(agent => {
+        const isTop10 = agent.rank && agent.rank <= 10;
+        const size = isTop10 ? 14 : 10;
+        const color = isTop10 ? '#10b981' : '#4f46e5';
 
-  <!-- Regional Stats -->
-  <div class="overlay stats-panel">
-    <div class="legend-title">Regional Distribution</div>
-    <div class="stat-row">
-      <span class="stat-label">North America</span>
-      <span class="stat-value">{regionStats['North America']}</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Europe</span>
-      <span class="stat-value">{regionStats['Europe']}</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Asia Pacific</span>
-      <span class="stat-value">{regionStats['Asia Pacific']}</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Total Agents</span>
-      <span class="stat-value" style="color: #10b981;">{agents.length}</span>
-    </div>
-  </div>
+        const marker = L.circleMarker([agent.lat, agent.lng], {
+          radius: size / 2,
+          fillColor: color,
+          color: '#fff',
+          weight: 2,
+          fillOpacity: 0.9
+        }).addTo(map);
 
-  <!-- Controls -->
-  <div class="overlay controls-panel">
-    <button class="control-btn active" id="view-globe">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-      </svg>
-      Globe
-    </button>
-    <button class="control-btn" id="view-flat">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-      </svg>
-      Flat
-    </button>
-    <button class="control-btn" id="toggle-arcs">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-      </svg>
-      Flows
-    </button>
-    <a href="/visualizations/capital-flow" class="control-btn">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      Sankey
-    </a>
-  </div>
+        // Create popup content
+        const popupContent = `
+          <div class="popup-content">
+            <div class="popup-title">${agent.name}</div>
+            <div class="popup-subtitle">${agent.headquarters || 'Global'}</div>
+            <a href="/private-equity-placement-agents-list/${agent.slug}" class="popup-link">
+              View Profile →
+            </a>
+          </div>
+        `;
 
-  <!-- Export -->
-  <div class="overlay export-panel">
-    <button class="export-btn" id="export-png">Export PNG</button>
-    <button class="export-btn" id="export-csv">Export CSV</button>
-  </div>
-
-  <!-- Provenance -->
-  <div class="overlay provenance">
-    Source: Placement Quest Directory | Updated: {new Date().toLocaleDateString()}
-  </div>
-
-  <!-- Tooltip -->
-  <div class="map-tooltip" id="tooltip">
-    <div class="tooltip-title" id="tooltip-title"></div>
-    <div class="tooltip-subtitle" id="tooltip-subtitle"></div>
-    <div class="tooltip-link">Click to view profile</div>
-  </div>
-
-  <script define:vars={{ agentPoints, flowArcs, cityCoords }}>
-    let initAttempts = 0;
-    const maxAttempts = 50; // 5 seconds max
-
-    const initMap = () => {
-      initAttempts++;
-
-      if (typeof deck === 'undefined') {
-        if (initAttempts < maxAttempts) {
-          setTimeout(initMap, 100);
-        } else {
-          // Show error after timeout
-          const loading = document.getElementById('loading');
-          if (loading) {
-            loading.innerHTML = '<div style="text-align: center; color: #94a3b8;"><p>Loading visualization...</p><p style="font-size: 12px; margin-top: 8px;">If this persists, please refresh the page</p></div>';
-          }
-        }
-        return;
-      }
-
-      const container = document.getElementById('deck-canvas');
-      const tooltip = document.getElementById('tooltip');
-      const loading = document.getElementById('loading');
-
-      let showArcs = true;
-      let isGlobe = true;
-
-      // Color helpers
-      const hexToRgb = (hex) => {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? [
-          parseInt(result[1], 16),
-          parseInt(result[2], 16),
-          parseInt(result[3], 16)
-        ] : [59, 130, 246];
-      };
-
-      // Create layers
-      const createLayers = () => {
-        const layers = [];
-
-        // Agent scatter layer
-        layers.push(new deck.ScatterplotLayer({
-          id: 'agents',
-          data: agentPoints,
-          getPosition: d => d.coordinates,
-          getRadius: d => d.rank && d.rank <= 10 ? 80000 : 50000,
-          getFillColor: d => d.rank && d.rank <= 10 ? [16, 185, 129, 200] : [59, 130, 246, 180],
-          pickable: true,
-          onClick: ({ object }) => {
-            if (object?.slug) {
-              window.location.href = `/private-equity-placement-agents-list/${object.slug}`;
-            }
-          },
-          onHover: ({ object, x, y }) => {
-            if (object) {
-              tooltip.style.left = (x + 15) + 'px';
-              tooltip.style.top = (y - 15) + 'px';
-              document.getElementById('tooltip-title').textContent = object.name;
-              document.getElementById('tooltip-subtitle').textContent = object.headquarters || 'Global';
-              tooltip.classList.add('visible');
-            } else {
-              tooltip.classList.remove('visible');
-            }
-          }
-        }));
-
-        // Arc layer for capital flows
-        if (showArcs) {
-          layers.push(new deck.ArcLayer({
-            id: 'arcs',
-            data: flowArcs,
-            getSourcePosition: d => d.source,
-            getTargetPosition: d => d.target,
-            getSourceColor: [59, 130, 246, 180],
-            getTargetColor: [239, 68, 68, 180],
-            getWidth: d => Math.max(1, d.value / 10),
-            greatCircle: true
-          }));
-        }
-
-        return layers;
-      };
-
-      // Initial view state
-      const INITIAL_VIEW_STATE = {
-        longitude: 0,
-        latitude: 30,
-        zoom: 1.5,
-        pitch: 0,
-        bearing: 0
-      };
-
-      // Create deck instance
-      const deckgl = new deck.DeckGL({
-        container,
-        initialViewState: INITIAL_VIEW_STATE,
-        controller: true,
-        layers: createLayers(),
-        views: new deck.GlobeView(),
-        parameters: {
-          clearColor: [10/255, 10/255, 15/255, 1]
-        }
+        marker.bindPopup(popupContent);
       });
 
-      // Hide loading
-      setTimeout(() => {
-        loading.classList.add('hidden');
-      }, 1000);
-
-      // View toggle handlers
-      document.getElementById('view-globe')?.addEventListener('click', function() {
-        if (!isGlobe) {
-          isGlobe = true;
-          this.classList.add('active');
-          document.getElementById('view-flat')?.classList.remove('active');
-          deckgl.setProps({
-            views: new deck.GlobeView()
-          });
-        }
+      // Reset view button
+      document.getElementById('reset-view')?.addEventListener('click', () => {
+        map.setView([35, -20], 2);
       });
 
-      document.getElementById('view-flat')?.addEventListener('click', function() {
-        if (isGlobe) {
-          isGlobe = false;
-          this.classList.add('active');
-          document.getElementById('view-globe')?.classList.remove('active');
-          deckgl.setProps({
-            views: new deck.MapView()
-          });
-        }
-      });
-
-      document.getElementById('toggle-arcs')?.addEventListener('click', function() {
-        showArcs = !showArcs;
-        this.classList.toggle('active', showArcs);
-        deckgl.setProps({ layers: createLayers() });
-      });
-
-      // Export PNG
+      // Export PNG (basic screenshot via canvas)
       document.getElementById('export-png')?.addEventListener('click', () => {
-        const canvas = container.querySelector('canvas');
-        if (canvas) {
-          const link = document.createElement('a');
-          link.download = 'global-deal-map.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        }
+        alert('To export: Use your browser\'s screenshot tool or right-click > Save image');
       });
-
-      // Export CSV
-      document.getElementById('export-csv')?.addEventListener('click', () => {
-        let csv = 'Name,Headquarters,Coordinates\n';
-        agentPoints.forEach(p => {
-          csv += `"${p.name}","${p.headquarters || ''}","${p.coordinates.join(', ')}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const link = document.createElement('a');
-        link.download = 'placement-agents-locations.csv';
-        link.href = URL.createObjectURL(blob);
-        link.click();
-      });
-
-      // Auto-rotate
-      let rotation = 0;
-      let rotating = true;
-
-      const animate = () => {
-        if (rotating && isGlobe) {
-          rotation += 0.1;
-          deckgl.setProps({
-            initialViewState: {
-              ...INITIAL_VIEW_STATE,
-              longitude: rotation
-            }
-          });
-        }
-        requestAnimationFrame(animate);
-      };
-
-      // Start rotation after delay
-      setTimeout(animate, 2000);
-
-      // Stop rotation on interaction
-      container.addEventListener('mousedown', () => { rotating = false; });
-      container.addEventListener('wheel', () => { rotating = false; });
-      container.addEventListener('touchstart', () => { rotating = false; });
-    };
-
-    // Initialize
-    if (document.readyState === 'complete') {
-      initMap();
-    } else {
-      window.addEventListener('load', initMap);
-    }
+    });
   </script>
 </body>
 </html>
