@@ -78,7 +78,7 @@ const uniqueId = `graph3d-${companyId}-${Math.random().toString(36).substr(2, 9)
     if (typeof ForceGraph3D === 'undefined') {
       const loaded = await new Promise((resolve) => {
         let attempts = 0;
-        const maxAttempts = 50;
+        const maxAttempts = 60; // 6 seconds max
         const check = setInterval(() => {
           attempts++;
           if (typeof ForceGraph3D !== 'undefined') {
@@ -153,17 +153,7 @@ const uniqueId = `graph3d-${companyId}-${Math.random().toString(36).substr(2, 9)
         .nodeColor(node => groupColors[node.group] || groupColors.default)
         .nodeVal(node => node.val)
         .nodeOpacity(0.9)
-        // Add permanent text labels using Three.js sprites
-        .nodeThreeObject(node => {
-          const sprite = new SpriteText(node.name);
-          sprite.color = node.name === companyName ? '#fbbf24' : '#e2e8f0';
-          sprite.textHeight = node.name === companyName ? 6 : 4;
-          sprite.backgroundColor = 'rgba(15, 23, 42, 0.7)';
-          sprite.padding = 2;
-          sprite.borderRadius = 3;
-          return sprite;
-        })
-        .nodeThreeObjectExtend(true) // Keep the sphere AND add the label
+        .nodeRelSize(6)
         .linkColor(() => 'rgba(99, 102, 241, 0.4)')
         .linkWidth(1.5)
         .linkOpacity(0.6)
