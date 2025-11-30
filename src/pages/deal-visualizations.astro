@@ -14,7 +14,7 @@ import DealTimeline3D from '../components/DealTimeline3D.astro';
 const recentArticles = await sql`
   SELECT id, title, slug, article_angle, published_at
   FROM articles
-  WHERE app = 'placement' AND status = 'published'
+  WHERE app = 'rainmakrr' AND status = 'published'
   ORDER BY COALESCE(published_at, created_at) DESC
   LIMIT 50
 `;

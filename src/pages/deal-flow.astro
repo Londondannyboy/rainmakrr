@@ -36,7 +36,7 @@ const dealArticles = await sql`
   SELECT id, title, slug, excerpt, published_at, created_at,
     featured_asset_url, video_playback_id, payload
   FROM articles
-  WHERE app = 'placement' AND status = 'published'
+  WHERE app = 'rainmakrr' AND status = 'published'
     AND (
       title ILIKE '%acqui%' OR title ILIKE '%merger%' OR
       title ILIKE '%raises%' OR title ILIKE '%closes%' OR
@@ -613,7 +613,7 @@ function getThumbnail(deal: any): string | null {
       )}
 
       <div class="provenance">
-        Deal data extracted from Placement Quest news articles.
+        Deal data extracted from Rainmakrr news articles.
         Last updated: {new Date().toLocaleDateString()}
       </div>
     </div>

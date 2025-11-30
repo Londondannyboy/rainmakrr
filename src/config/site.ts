@@ -1,12 +1,12 @@
 export const siteConfig = {
-  name: 'Placement Quest',
+  name: 'Rainmakrr',
   title: 'Top Private Equity Placement Agents',
-  description: 'Directory of top private equity placement agents. Expert rankings, fee structures, and LP networks for PE fundraising.',
-  url: 'https://placement.quest',
-  ogImage: 'https://placement.quest/og-image.jpg',
+  description: 'The no-BS guide to PE and VC placement agents. Rankings, fee breakdowns, and LP networks for serious fundraisers.',
+  url: 'https://rainmakrr.com',
+  ogImage: 'https://rainmakrr.com/og-image.jpg',
   links: {
-    twitter: 'https://twitter.com/placementquest',
-    linkedin: 'https://linkedin.com/company/placementquest',
+    twitter: 'https://twitter.com/rainmakrr',
+    linkedin: 'https://linkedin.com/company/rainmakrr',
   },
   keywords: [
     // Primary keywords (high volume)
@@ -36,6 +36,6 @@ export const siteConfig = {
     'UK placement agents',
     'US placement agents',
   ],
-  author: 'Placement Quest Editorial Team',
+  author: 'Rainmakrr Editorial Team',
   language: 'en',
 };

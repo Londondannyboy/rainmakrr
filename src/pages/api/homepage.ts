@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
         content,
         metadata
       FROM homepage_content
-      WHERE site = 'placement'
+      WHERE site = 'rainmakrr'
         AND is_active = true
       ORDER BY section_order ASC
     `;

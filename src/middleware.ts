@@ -48,7 +48,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   // Force redirect from Railway URL to custom domain
   if (url.hostname.includes('railway.app')) {
-    const redirectUrl = `https://placement.quest${url.pathname}${url.search}`;
+    const redirectUrl = `https://rainmakrr.com${url.pathname}${url.search}`;
     return Response.redirect(redirectUrl, 301);
   }
 

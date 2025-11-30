@@ -25,7 +25,7 @@ const companies = await sql`
 const articles = await sql`
   SELECT id, title, slug, article_angle
   FROM articles
-  WHERE app = 'placement' AND status = 'published'
+  WHERE app = 'rainmakrr' AND status = 'published'
   ORDER BY COALESCE(published_at, created_at) DESC
   LIMIT 30
 `;

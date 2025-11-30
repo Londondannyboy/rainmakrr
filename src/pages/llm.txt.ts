@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ site }) => {
-  const siteUrl = site || 'https://placement.quest';
+  const siteUrl = site || 'https://rainmakrr.com';
 
   const content = `# Placement.quest
 

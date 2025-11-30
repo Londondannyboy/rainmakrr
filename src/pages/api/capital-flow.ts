@@ -48,7 +48,7 @@ export const GET: APIRoute = async () => {
         payload->>'deal_value' as deal_value,
         payload->>'fund_size' as fund_size
       FROM articles
-      WHERE app = 'placement'
+      WHERE app = 'rainmakrr'
         AND status = 'published'
         AND (title ILIKE '%fund%' OR title ILIKE '%raise%' OR title ILIKE '%commit%')
       ORDER BY COALESCE(published_at, created_at) DESC

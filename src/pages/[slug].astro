@@ -1,6 +1,6 @@
 ---
 /**
- * Placement Quest Article Template
+ * Rainmakrr Article Template
  * =================================
  * Refactored to use component library for cleaner, maintainable code.
  *
@@ -65,7 +65,7 @@ const articleResult = await sql`
     a.zep_facts
   FROM articles a
   WHERE a.slug = ${slug}
-    AND a.app = 'placement'
+    AND a.app = 'rainmakrr'
   LIMIT 1
 `;
 
@@ -79,7 +79,7 @@ if (!article) {
 const relatedResult = await sql`
   SELECT slug, title, meta_description, video_playback_id, article_angle
   FROM articles
-  WHERE app = 'placement'
+  WHERE app = 'rainmakrr'
     AND slug != ${slug}
     AND published_at IS NOT NULL
   ORDER BY created_at DESC
@@ -171,7 +171,7 @@ const actTimestamps = [
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{article.title} - Placement Quest</title>
+  <title>{article.title} - Rainmakrr</title>
   <meta name="description" content={excerpt || article.title}>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://unpkg.com/@mux/mux-player"></script>
@@ -447,8 +447,8 @@ const actTimestamps = [
   <!-- Site Footer -->
   <footer class="bg-gray-900 text-white py-12 mt-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <p class="text-gray-400">&copy; {new Date().getFullYear()} Placement Quest. All rights reserved.</p>
-      <p class="text-gray-500 text-sm mt-4 max-w-2xl mx-auto">Placement Quest is a financial news site. Nothing on this site should be considered financial advice.</p>
+      <p class="text-gray-400">&copy; {new Date().getFullYear()} Rainmakrr. All rights reserved.</p>
+      <p class="text-gray-500 text-sm mt-4 max-w-2xl mx-auto">Rainmakrr is a financial news site. Nothing on this site should be considered financial advice.</p>
     </div>
   </footer>
 

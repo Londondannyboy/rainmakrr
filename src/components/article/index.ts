@@ -1,5 +1,5 @@
 /**
- * Placement Quest Article Components
+ * Rainmakrr Article Components
  * Finance-themed components for article rendering
  *
  * Usage:

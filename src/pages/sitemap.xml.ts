@@ -1,8 +1,8 @@
-// Dynamic sitemap for placement.quest
+// Dynamic sitemap for rainmakrr.com
 import type { APIRoute } from 'astro';
 import { sql } from '../lib/db';
 
-const BASE_URL = 'https://placement.quest';
+const BASE_URL = 'https://rainmakrr.com';
 
 // Static pages
 const staticPages = [
@@ -89,7 +89,7 @@ async function generateSitemapXML(): Promise<string> {
         hero_asset_alt,
         video_playback_id
       FROM articles
-      WHERE app = 'placement'
+      WHERE app = 'rainmakrr'
         AND status = 'published'
       ORDER BY published_at DESC NULLS LAST
     `;

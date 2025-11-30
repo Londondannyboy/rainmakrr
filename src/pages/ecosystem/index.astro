@@ -31,7 +31,7 @@ const articles = await sql`
   SELECT id, title, slug, article_angle,
     payload->>'timeline' as timeline
   FROM articles
-  WHERE app = 'placement' AND status = 'published'
+  WHERE app = 'rainmakrr' AND status = 'published'
   ORDER BY COALESCE(published_at, created_at) DESC
   LIMIT 50
 `;
@@ -563,7 +563,7 @@ const regionCounts = {
         </div>
 
         <div class="provenance">
-          Data from Placement Quest Directory
+          Data from Rainmakrr Directory
           <span class="provenance-badge">
             <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>

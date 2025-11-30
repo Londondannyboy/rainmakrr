@@ -22,7 +22,7 @@ const articlesRaw = await sql`
     meta_description,
     payload->>'timeline' as timeline_json
   FROM articles
-  WHERE app = 'placement' AND status = 'published'
+  WHERE app = 'rainmakrr' AND status = 'published'
   ORDER BY COALESCE(published_at, created_at) DESC
   LIMIT ${maxItems}
 `;

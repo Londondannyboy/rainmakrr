@@ -186,7 +186,7 @@ export const POST: APIRoute = async ({ request }) => {
       const articles = await sql`
         SELECT id, title, excerpt, content, published_at
         FROM articles
-        WHERE app = 'placement'
+        WHERE app = 'rainmakrr'
           AND status = 'published'
           AND id NOT IN (SELECT DISTINCT article_id FROM momentum_signals WHERE article_id IS NOT NULL)
         ORDER BY COALESCE(published_at, created_at) DESC

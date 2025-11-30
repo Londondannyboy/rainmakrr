@@ -20,7 +20,7 @@ export const GET: APIRoute = async () => {
         payload,
         meta_description
       FROM articles
-      WHERE app = 'placement'
+      WHERE app = 'rainmakrr'
         AND status = 'published'
       ORDER BY COALESCE(published_at, created_at) DESC
       LIMIT 50

@@ -6,7 +6,7 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://placement.quest',
+  site: 'https://rainmakrr.com',
   output: 'server',
   adapter: node({
     mode: 'standalone'

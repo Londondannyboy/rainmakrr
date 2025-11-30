@@ -1,4 +1,4 @@
-# robots.txt for placement.quest
+# robots.txt for rainmakrr.com
 # Updated: November 2025
 
 # Allow all search engines
@@ -49,7 +49,7 @@ Allow: /llms-full.txt
 Allow: /
 
 # Sitemap location
-Sitemap: https://placement.quest/sitemap.xml
+Sitemap: https://rainmakrr.com/sitemap.xml
 
 # Host directive (for Yandex and others)
-Host: https://placement.quest
+Host: https://rainmakrr.com

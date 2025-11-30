@@ -17,7 +17,7 @@ const featuredArticles = await sql`
     article_angle, featured_asset_url, featured_asset_alt,
     video_playback_id, country, view_count
   FROM articles
-  WHERE app = 'placement'
+  WHERE app = 'rainmakrr'
     AND status = 'published'
     AND is_featured = true
   ORDER BY published_at DESC NULLS LAST
@@ -33,7 +33,7 @@ const articles = await sql`
     article_angle, featured_asset_url, featured_asset_alt,
     video_playback_id, country, view_count
   FROM articles
-  WHERE app = 'placement'
+  WHERE app = 'rainmakrr'
     AND status = 'published'
     AND is_featured = false
   ORDER BY published_at DESC NULLS LAST, created_at DESC
@@ -43,7 +43,7 @@ const articles = await sql`
 const agents = await sql`
   SELECT id, name, slug, description, logo_url, location
   FROM companies
-  WHERE app = 'placement'
+  WHERE app = 'rainmakrr'
     AND status = 'published'
   ORDER BY created_at DESC
   LIMIT 6
@@ -258,7 +258,7 @@ function timeAgo(date: string | Date | null): string {
     </div>
     <div style="max-width: 1200px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #e5e7eb; text-align: center;">
       <p style="font-size: 14px; color: #9ca3af;">© 2025 Placement Agent. All rights reserved.</p>
-      <p style="font-size: 12px; color: #b0b0b0; margin-top: 16px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6;">Placement Quest is a financial news site. Nothing on this site should be considered financial advice.</p>
+      <p style="font-size: 12px; color: #b0b0b0; margin-top: 16px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6;">Rainmakrr is a financial news site. Nothing on this site should be considered financial advice.</p>
     </div>
   </footer>
 
