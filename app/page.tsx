@@ -27,6 +27,7 @@ const financeCluster = [
 
 const otherServices = [
   { href: "/space-recruitment-agency", title: "Space & Aerospace", description: "Satellite & NewSpace talent", color: "from-slate-400 to-purple-500" },
+  { href: "/digital-marketing-recruitment-agency", title: "Digital Marketing", description: "Performance & growth talent", color: "from-pink-500 to-orange-400" },
 ];
 
 const stats = [

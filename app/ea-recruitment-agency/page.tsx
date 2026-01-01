@@ -125,12 +125,12 @@ export default function EARecruitmentAgency() {
                 <span className="bg-gradient-to-r from-amber-200 to-slate-300 bg-clip-text text-transparent">
                   EA Recruitment Agency
                 </span>{" "}
-                | Executive Assistant Specialists
+                | Executive Assistant Recruitment Specialists
               </h1>
               <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-                Exceptional support for exceptional leaders. The UK&apos;s premier{" "}
-                <strong>EA recruitment agency</strong> placing world-class Executive Assistants
-                with C-suite executives, HNWIs, and top-tier firms.
+                Rainmakrr is a specialist <strong>executive assistant recruitment agency</strong> placing
+                EAs, PAs, and business support professionals into leadership teams across London and the UK.
+                Whether you need a C-suite EA or a team assistant, our EA recruitment agency has the network to deliver.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-10">
@@ -163,7 +163,7 @@ export default function EARecruitmentAgency() {
         {/* EA Roles */}
         <section className="py-16 bg-slate-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">EA Roles We Place</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">Executive Assistant Recruitment Agency Services</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               {eaRoles.map((role) => (
                 <div key={role} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-amber-300/50 transition-all">
@@ -177,7 +177,7 @@ export default function EARecruitmentAgency() {
         {/* Sectors */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">Sectors We Serve</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">EA Recruitment Agency Sectors</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {sectors.map((sector) => (
                 <div key={sector.name} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-amber-300/50 transition-all text-center">
@@ -192,7 +192,7 @@ export default function EARecruitmentAgency() {
         {/* What Makes a Great EA */}
         <section className="py-16 bg-slate-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">What Makes a Great EA</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">Why Choose Our EA Recruitment Agency</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {qualities.map((item) => (
                 <div key={item.trait} className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
@@ -207,7 +207,8 @@ export default function EARecruitmentAgency() {
         {/* Salary Benchmarks */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">EA Salary Benchmarks (London)</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">EA Recruitment Agency London</h2>
+            <h3 className="text-xl font-bold text-amber-200 mb-6">Executive Assistant Salary Benchmarks (London)</h3>
             <div className="max-w-2xl">
               {salaryData.map((row) => (
                 <div key={row.role} className="flex justify-between items-center py-4 border-b border-slate-800">
@@ -225,7 +226,7 @@ export default function EARecruitmentAgency() {
         {/* CTA */}
         <section className="py-20 bg-gradient-to-r from-amber-100/10 via-slate-900 to-slate-800/30">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Find Your Perfect EA Match</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">Partner With a Specialist EA Recruitment Agency</h2>
             <p className="text-slate-300 mb-8">
               Whether you need a strategic partner for your CEO or a discreet PA for a private principal, we find the perfect fit.
             </p>

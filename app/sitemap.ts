@@ -18,10 +18,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Finance & Executive cluster
     { url: "/private-equity-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     { url: "/venture-capital-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
+    { url: "/fintech-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     { url: "/chief-of-staff-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     { url: "/ea-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     // Emerging sectors
     { url: "/space-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
+    { url: "/digital-marketing-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
   ];
 
   // Fetch article slugs from database

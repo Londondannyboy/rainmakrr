@@ -156,7 +156,7 @@ export default function SustainabilityRecruitmentAgency() {
         {/* Roles We Recruit */}
         <section className="py-16 bg-slate-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">Sustainability Roles We Recruit</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">Sustainability Recruitment Agency Services</h2>
             <div className="grid md:grid-cols-3 gap-4">
               {roles.map((role) => (
                 <div key={role} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-teal-500/50 transition-all">
@@ -170,7 +170,7 @@ export default function SustainabilityRecruitmentAgency() {
         {/* Sectors */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">Sectors We Cover</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">Sustainability Recruitment Agency Expertise by Sector</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {sectors.map((sector) => (
                 <div key={sector.name} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-teal-500/50 transition-all text-center">
@@ -182,10 +182,16 @@ export default function SustainabilityRecruitmentAgency() {
           </div>
         </section>
 
-        {/* ESG Trends */}
+        {/* ESG Section */}
         <section className="py-16 bg-slate-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">ESG Trends & Insights</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">ESG Recruitment Agency Expertise</h2>
+            <p className="text-slate-300 mb-8 max-w-3xl">
+              As a specialist <strong>ESG recruitment agency</strong>, we place professionals across
+              environmental, social, and governance functions — from ESG analysts to Chief Sustainability
+              Officers. Our ESG recruitment covers CSRD compliance, TCFD reporting, and net-zero strategy roles.
+            </p>
+            <h3 className="text-2xl font-bold text-white mb-6">Sustainability Recruitment Agency Insights</h3>
             <div className="grid md:grid-cols-2 gap-6">
               {trends.map((item) => (
                 <div key={item.trend} className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
@@ -200,7 +206,7 @@ export default function SustainabilityRecruitmentAgency() {
         {/* Why Choose Us */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Why Companies Choose Us</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">Why Choose Our Sustainability Recruitment Agency</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                 <div className="text-3xl mb-4">🌍</div>
@@ -232,7 +238,7 @@ export default function SustainabilityRecruitmentAgency() {
         {/* CTA */}
         <section className="py-20 bg-gradient-to-r from-teal-600/20 via-slate-900 to-amber-700/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Build Your Sustainability Function</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">Partner With a Specialist Sustainability Recruitment Agency</h2>
             <p className="text-slate-300 mb-8">
               Whether you&apos;re hiring your first ESG analyst or a Chief Sustainability Officer, we have the network.
             </p>

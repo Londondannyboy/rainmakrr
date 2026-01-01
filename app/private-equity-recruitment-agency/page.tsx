@@ -161,7 +161,7 @@ export default function PrivateEquityRecruitmentAgency() {
         {/* Investment Team Roles */}
         <section className="py-16 bg-slate-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">PE Roles We Recruit</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">Private Equity Recruitment Agency Services</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-xl font-bold text-yellow-400 mb-6">Investment Team</h3>
@@ -191,7 +191,7 @@ export default function PrivateEquityRecruitmentAgency() {
         {/* Fund Types */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">Fund Types We Serve</h2>
+            <h2 className="text-3xl font-bold text-white mb-10">Private Equity Recruitment Agency Expertise</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {fundTypes.map((fund) => (
                 <div key={fund.type} className="bg-slate-800/50 rounded-xl p-6 border border-slate-700 hover:border-yellow-500/50 transition-all">
@@ -203,10 +203,33 @@ export default function PrivateEquityRecruitmentAgency() {
           </div>
         </section>
 
-        {/* Salary Guide */}
+        {/* London Section */}
         <section className="py-16 bg-slate-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-10">PE Salary Guide (London)</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">Private Equity Recruitment Agency London</h2>
+            <p className="text-slate-300 mb-8 max-w-3xl">
+              As London&apos;s specialist <strong>private equity recruitment agency</strong>, we recruit
+              across Mayfair, the City, and the West End — where the UK&apos;s PE industry is concentrated.
+            </p>
+            <div className="grid md:grid-cols-4 gap-4 mb-12">
+              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                <h4 className="text-white font-medium mb-1">Mayfair</h4>
+                <p className="text-slate-400 text-sm">Mega-cap & upper mid-market</p>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                <h4 className="text-white font-medium mb-1">City of London</h4>
+                <p className="text-slate-400 text-sm">Credit funds & secondaries</p>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                <h4 className="text-white font-medium mb-1">West End</h4>
+                <p className="text-slate-400 text-sm">Growth equity & mid-market</p>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                <h4 className="text-white font-medium mb-1">Canary Wharf</h4>
+                <p className="text-slate-400 text-sm">Infrastructure PE</p>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-6">PE Salary Guide (London)</h3>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -235,7 +258,7 @@ export default function PrivateEquityRecruitmentAgency() {
         {/* Why PE Firms Choose Us */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Why PE Firms Choose Us</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">Why Choose Our Private Equity Recruitment Agency</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                 <div className="text-3xl mb-4">🔒</div>
@@ -272,7 +295,7 @@ export default function PrivateEquityRecruitmentAgency() {
         {/* CTA */}
         <section className="py-20 bg-gradient-to-r from-slate-900/80 via-slate-900 to-yellow-600/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Find Your Next PE Investment Professional</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">Partner With a Specialist Private Equity Recruitment Agency</h2>
             <p className="text-slate-300 mb-8">
               From Analysts to Partners, we connect PE funds with exceptional investment talent.
             </p>
