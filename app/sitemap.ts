@@ -17,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: "/climate-tech-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     // Finance & Executive cluster
     { url: "/private-equity-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
-    { url: "/venture-capital-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     { url: "/fintech-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     { url: "/chief-of-staff-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },
     { url: "/ea-recruitment-agency", priority: 0.9, changeFrequency: "weekly" as const },

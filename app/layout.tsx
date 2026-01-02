@@ -13,11 +13,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Rainmakrr | Specialist Recruitment Agency UK",
-    template: "%s | Rainmakrr",
+    default: "Venture Capital Recruitment Agency 🎯 UK VC Jobs & Headhunters | Rainmakrr",
+    template: "%s | Venture Capital Recruitment Agency Rainmakrr",
   },
-  description: "UK specialist recruitment agency for green energy, private equity, venture capital, and emerging sectors.",
+  description: "Venture capital recruitment agency placing VC talent at top funds. Specialist headhunters for Partners, Principals & Associates. London & UK-wide.",
   metadataBase: new URL("https://rainmakrr.com"),
+  keywords: ["venture capital recruitment agency", "vc recruitment", "vc jobs uk", "venture capital headhunters"],
 };
 
 function LoadingFallback() {

@@ -13,9 +13,9 @@ export function Footer() {
   ];
 
   const financeCluster = [
+    { href: "/", label: "Venture Capital Recruitment Agency" },
     { href: "/private-equity-recruitment-agency", label: "Private Equity" },
-    { href: "/venture-capital-recruitment-agency", label: "Venture Capital" },
-    { href: "/chief-of-staff-recruitment-agency", label: "Chief of Staff" },
+    { href: "/fintech-recruitment-agency", label: "Fintech" },
     { href: "/ea-recruitment-agency", label: "Executive Assistant" },
   ];
 
@@ -39,11 +39,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               Rainmakrr
             </Link>
             <p className="mt-4 text-slate-400 text-sm">
-              Specialist recruitment agency connecting exceptional talent with leading employers across green, finance, and emerging sectors.
+              <strong className="text-slate-300">Venture capital recruitment agency</strong> placing exceptional VC talent at top funds across London and the UK.
             </p>
           </div>
 

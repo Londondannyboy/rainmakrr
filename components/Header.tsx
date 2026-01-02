@@ -35,9 +35,9 @@ export function Header() {
               </button>
               <div className="absolute top-full left-0 mt-2 w-64 bg-slate-900 border border-slate-700 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="p-2">
-                  <Link href="/green-recruitment-agency" className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Green Recruitment</Link>
+                  <Link href="/" className="block px-4 py-2 text-purple-400 hover:text-purple-300 hover:bg-slate-800 rounded-lg transition-colors font-medium">Venture Capital Recruitment Agency</Link>
                   <Link href="/private-equity-recruitment-agency" className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Private Equity</Link>
-                  <Link href="/venture-capital-recruitment-agency" className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Venture Capital</Link>
+                  <Link href="/green-recruitment-agency" className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Green Recruitment</Link>
                   <Link href="/sustainability-recruitment-agency" className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Sustainability</Link>
                   <Link href="/space-recruitment-agency" className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Space & Aerospace</Link>
                 </div>
@@ -93,11 +93,10 @@ export function Header() {
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-800">
-            <Link href="/" className="block py-2 text-slate-300 hover:text-white">Home</Link>
+            <Link href="/" className="block py-2 text-purple-400 hover:text-purple-300 font-medium">Venture Capital Recruitment Agency</Link>
             <Link href="/insights" className="block py-2 text-slate-300 hover:text-white">Insights</Link>
-            <Link href="/green-recruitment-agency" className="block py-2 text-slate-300 hover:text-white">Green Recruitment</Link>
             <Link href="/private-equity-recruitment-agency" className="block py-2 text-slate-300 hover:text-white">Private Equity</Link>
-            <Link href="/venture-capital-recruitment-agency" className="block py-2 text-slate-300 hover:text-white">Venture Capital</Link>
+            <Link href="/green-recruitment-agency" className="block py-2 text-slate-300 hover:text-white">Green Recruitment</Link>
             {user && (
               <>
                 <Link href="/voice" className="block py-2 text-violet-400 hover:text-violet-300">Voice Chat</Link>

@@ -3,7 +3,7 @@
  * Run with: npx ts-node scripts/convert-article-currencies.ts
  */
 
-import { sql } from '../src/lib/db';
+import { sql } from '../lib/db';
 
 const API_KEY = '04a70949baa5efdd987cd84f';
 
