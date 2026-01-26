@@ -251,7 +251,7 @@ export default async function Home() {
                 Our <strong>venture capital recruitment agency</strong> process starts with understanding your fund&apos;s thesis, stage focus, and team dynamics. We then leverage our network of passive candidates — operators-turned-investors, ex-founders, and rising associates — to build a shortlist that fits.
               </p>
               <p className="text-slate-300 mb-6">
-                For portfolio companies needing interim leadership while scaling, our partners at <a href="https://fractional.quest" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">fractional.quest</a> specialise in fractional executive recruitment — placing part-time CFOs, CTOs, and CMOs with high-growth startups.
+                For portfolio companies needing interim leadership while scaling, our partners at <a href="https://fractional.quest" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">fractional.quest</a> specialise in fractional executive recruitment — placing <a href="https://fractional.quest/fractional-cfo" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">part-time CFOs</a>, <a href="https://fractional.quest/fractional-cto" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">CTOs</a>, and <a href="https://fractional.quest/fractional-cmo" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">CMOs</a> with high-growth startups.
               </p>
             </div>
           </div>
